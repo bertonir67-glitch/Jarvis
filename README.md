@@ -72,14 +72,23 @@ Opcional, também grátis:
 
 ## Instalação
 
-### Opção A — pegar o APK pronto do GitHub Actions (recomendado, não precisa instalar nada)
+### Opção A — baixar o APK pronto (recomendado, não precisa instalar nada)
 
-1. Faça um push desta branch. A action **Gerar APK** roda sozinha.
-2. Abra a aba **Actions** do repositório → a execução mais recente → baixe o artefato `jarvis-apk`.
-3. Descompacte e transfira o `.apk` para o celular.
-4. Instale (o Android vai pedir para permitir "instalar apps de fontes desconhecidas").
-5. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Gemini e a do
+**Link direto, sempre a última versão:**
+
+**https://github.com/bertonir67-glitch/Jarvis/releases/latest/download/jarvis.apk**
+
+Abra esse endereço no navegador **do próprio celular** e o download começa direto. Não precisa
+estar logado no GitHub, e não vem em zip.
+
+1. Baixe o `jarvis.apk` pelo link acima.
+2. Toque no arquivo baixado para instalar (o Android vai pedir para permitir "instalar apps de
+   fontes desconhecidas" — normal para apps fora da Play Store).
+3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Gemini e a do
    Picovoice e salve — só isso é obrigatório.
+
+Cada push gera um build novo e atualiza esse link. A lista de versões fica em
+[Releases](https://github.com/bertonir67-glitch/Jarvis/releases).
 
 As chaves ficam guardadas no aparelho — **não** vão para o APK nem para o repositório.
 

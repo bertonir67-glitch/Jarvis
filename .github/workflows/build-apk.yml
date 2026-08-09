@@ -9,6 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Necessário para publicar o release com o APK anexado.
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -35,9 +39,32 @@ jobs:
           PICOVOICE_ACCESS_KEY: ${{ secrets.PICOVOICE_ACCESS_KEY }}
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
-      - name: Publicar o APK
+      - name: Renomear o APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/*.apk dist/jarvis.apk
+          ls -lh dist/
+
+      - name: Publicar o APK como artefato
         uses: actions/upload-artifact@v4
         with:
           name: jarvis-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: dist/jarvis.apk
           if-no-files-found: error
+
+      # Publica também como release, para existir um link direto e permanente
+      # para o .apk — sem precisar estar logado no GitHub e sem baixar zip.
+      # O link fixo da última versão fica em:
+      #   https://github.com/<owner>/<repo>/releases/latest/download/jarvis.apk
+      - name: Publicar release com o APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="build-${{ github.run_number }}"
+          gh release create "$TAG" dist/jarvis.apk \
+            --target "${{ github.sha }}" \
+            --title "JARVIS — build ${{ github.run_number }}" \
+            --notes "APK pronto para instalar. Baixe \`jarvis.apk\` abaixo, transfira para o celular e instale.
+
+          Nenhuma chave de API vai embutida: o app pede a do Gemini e a do Picovoice na primeira abertura e guarda no aparelho." \
+            --latest
