@@ -68,6 +68,17 @@ fun SettingsDialog(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Estado real do que está salvo — evita o caso de colar a chave certa
+                // no fornecedor errado e não entender por que continua travado.
+                Status("Cérebro (${prefs.brainLabel})", prefs.brainKey.isNotBlank())
+                Status("Palavra de ativação (Picovoice)", prefs.wakeWordAvailable)
+                Status("Voz do ElevenLabs", prefs.elevenLabsKey.isNotBlank())
+                Hint(
+                    "Só o cérebro é obrigatório. Sem Picovoice o JARVIS funciona pelo botão " +
+                        "FALAR; sem ElevenLabs ele fala com a voz do Android."
+                )
+
+                HorizontalDivider(color = JarvisColors.CyanDim)
                 Section("Cérebro")
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -202,6 +213,22 @@ fun SettingsDialog(
             }
         }
     )
+}
+
+@Composable
+private fun Status(label: String, ok: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = JarvisColors.TextPrimary)
+        Text(
+            text = if (ok) "configurado" else "faltando",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (ok) JarvisColors.CyanSoft else JarvisColors.Amber
+        )
+    }
 }
 
 @Composable

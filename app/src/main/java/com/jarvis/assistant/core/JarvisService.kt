@@ -89,16 +89,23 @@ class JarvisService : LifecycleService() {
             return START_NOT_STICKY
         }
 
-        val error = wakeWord.start()
-        if (error != null) {
-            JarvisState.reportError(error)
-            JarvisState.setPhase(Phase.OFF)
-            stopSelf()
-            return START_NOT_STICKY
+        // Sem chave do Picovoice o app não morre: passa a responder só pelo botão.
+        // Falhar aqui deixaria o usuário sem nada, sendo que o resto funciona.
+        var listening = false
+        if (prefs.wakeWordAvailable) {
+            val error = wakeWord.start()
+            if (error == null) {
+                listening = true
+                JarvisState.reportError(null)
+            } else {
+                JarvisState.reportError("$error Use o botão FALAR enquanto isso.")
+            }
+        } else {
+            JarvisState.reportError(null)
         }
 
-        acquireWakeLock()
-        JarvisState.reportError(null)
+        JarvisState.setWakeWordActive(listening)
+        if (listening) acquireWakeLock()
         JarvisState.setPhase(Phase.STANDBY)
         return START_STICKY
     }
@@ -123,7 +130,7 @@ class JarvisService : LifecycleService() {
 
         conversation = lifecycleScope.launch {
             // O microfone é exclusivo: o detector precisa soltá-lo antes do reconhecedor abrir.
-            wakeWord.pause()
+            if (JarvisState.wakeWordActive.value) wakeWord.pause()
             try {
                 // Se qualquer etapa travar, o turno morre sozinho e a escuta volta — sem isso
                 // um travamento deixaria o JARVIS surdo até alguém reiniciar o serviço.
@@ -134,7 +141,9 @@ class JarvisService : LifecycleService() {
                 speakSafely("Alguma coisa deu errado, ${prefs.addressee}.")
             } finally {
                 JarvisState.setPhase(Phase.STANDBY)
-                wakeWord.resume()?.let { JarvisState.reportError(it) }
+                if (JarvisState.wakeWordActive.value) {
+                    wakeWord.resume()?.let { JarvisState.reportError(it) }
+                }
             }
         }
     }
@@ -246,9 +255,15 @@ class JarvisService : LifecycleService() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
+        val hint = if (JarvisState.wakeWordActive.value) {
+            "Diga \"Jarvis\" para começar."
+        } else {
+            "Toque em Falar para começar."
+        }
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("JARVIS em espera")
-            .setContentText("Diga \"Jarvis\" para começar.")
+            .setContentText(hint)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentIntent(open)
             .addAction(0, "Falar", trigger)
@@ -262,6 +277,7 @@ class JarvisService : LifecycleService() {
     override fun onDestroy() {
         conversation?.cancel()
         releaseWakeLock()
+        JarvisState.setWakeWordActive(false)
         wakeWord.release()
         voice.shutdown()
         JarvisState.setPhase(Phase.OFF)

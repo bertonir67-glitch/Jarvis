@@ -93,7 +93,12 @@ class MainActivity : ComponentActivity() {
 
     private fun withPermissions(action: () -> Unit) {
         if (!prefs.isConfigured) {
-            JarvisState.reportError("Configure as chaves de API antes de ativar.")
+            // Dizer exatamente o que falta, e em qual campo: colar a chave certa no
+            // fornecedor errado é o engano mais fácil de cometer nessa tela.
+            JarvisState.reportError(
+                "Falta a chave do ${prefs.brainLabel}. Abra Configurações, confirme que o " +
+                    "cérebro selecionado é \"${prefs.brainLabel}\" e cole a chave nesse campo."
+            )
             return
         }
 

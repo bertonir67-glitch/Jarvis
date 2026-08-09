@@ -47,6 +47,7 @@ fun JarvisScreen(
     val amplitude by JarvisState.amplitude.collectAsStateWithLifecycle()
     val transcript by JarvisState.transcript.collectAsStateWithLifecycle()
     val error by JarvisState.lastError.collectAsStateWithLifecycle()
+    val wakeWordActive by JarvisState.wakeWordActive.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -79,6 +80,17 @@ fun JarvisScreen(
             color = if (phase == Phase.OFF) JarvisColors.TextMuted else JarvisColors.CyanSoft
         )
 
+        // Sem palavra de ativação, mandar o usuário dizer "Jarvis" seria mentira.
+        if (phase == Phase.STANDBY && !wakeWordActive) {
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = "sem palavra de ativação · use o botão FALAR",
+                style = MaterialTheme.typography.bodyMedium,
+                color = JarvisColors.Amber,
+                textAlign = TextAlign.Center
+            )
+        }
+
         if (error != null) {
             Spacer(Modifier.height(10.dp))
             Text(
@@ -93,6 +105,7 @@ fun JarvisScreen(
 
         Transcript(
             turns = transcript,
+            wakeWordActive = wakeWordActive,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
@@ -138,7 +151,11 @@ fun JarvisScreen(
 }
 
 @Composable
-private fun Transcript(turns: List<Turn>, modifier: Modifier = Modifier) {
+private fun Transcript(
+    turns: List<Turn>,
+    wakeWordActive: Boolean,
+    modifier: Modifier = Modifier
+) {
     val listState = rememberLazyListState()
 
     LaunchedEffect(turns.size) {
@@ -148,7 +165,8 @@ private fun Transcript(turns: List<Turn>, modifier: Modifier = Modifier) {
     if (turns.isEmpty()) {
         Box(modifier, contentAlignment = Alignment.Center) {
             Text(
-                text = "Diga \"Jarvis\" para começar.",
+                text = if (wakeWordActive) "Diga \"Jarvis\" para começar."
+                       else "Toque em FALAR para começar.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = JarvisColors.TextMuted
             )

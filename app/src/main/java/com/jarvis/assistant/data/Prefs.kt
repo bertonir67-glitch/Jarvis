@@ -96,9 +96,27 @@ class Prefs(context: Context) {
         get() = sp.getBoolean(KEY_BOOT, true)
         set(v) = sp.edit().putBoolean(KEY_BOOT, v).apply()
 
-    /** A chave de voz não entra aqui: sem ela o app usa a voz do próprio Android. */
+    /**
+     * Só a chave do cérebro é obrigatória.
+     *
+     * A do Picovoice dá a palavra de ativação, e a do ElevenLabs dá a voz melhor — mas exigir
+     * qualquer uma das duas para deixar o app ligar só trava quem quer testar: sem Picovoice
+     * ele funciona pelo botão, e sem ElevenLabs fala com a voz do Android.
+     */
     val isConfigured: Boolean
-        get() = picovoiceKey.isNotBlank() && brainKey.isNotBlank()
+        get() = brainKey.isNotBlank()
+
+    /** A palavra de ativação só existe com a chave do Picovoice. */
+    val wakeWordAvailable: Boolean
+        get() = picovoiceKey.isNotBlank()
+
+    /** Nome do fornecedor em uso, para mensagens que precisam ser específicas. */
+    val brainLabel: String
+        get() = when (brainProvider) {
+            BrainProvider.GROQ -> "Groq"
+            BrainProvider.GEMINI -> "Gemini"
+            BrainProvider.CLAUDE -> "Anthropic"
+        }
 
     /** A chave do cérebro em uso. */
     val brainKey: String

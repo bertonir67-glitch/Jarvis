@@ -43,6 +43,13 @@ object JarvisState {
     private val _lastError = MutableStateFlow<String?>(null)
     val lastError: StateFlow<String?> = _lastError.asStateFlow()
 
+    /**
+     * Falso quando não há chave do Picovoice: o app segue funcionando, mas só pelo botão.
+     * A interface precisa saber disso para não mandar o usuário falar "Jarvis" à toa.
+     */
+    private val _wakeWordActive = MutableStateFlow(false)
+    val wakeWordActive: StateFlow<Boolean> = _wakeWordActive.asStateFlow()
+
     fun setPhase(p: Phase) {
         _phase.value = p
         if (p != Phase.LISTENING) _amplitude.value = 0f
@@ -55,6 +62,10 @@ object JarvisState {
     fun addTurn(fromUser: Boolean, text: String) {
         if (text.isBlank()) return
         _transcript.update { (it + Turn(fromUser, text)).takeLast(40) }
+    }
+
+    fun setWakeWordActive(active: Boolean) {
+        _wakeWordActive.value = active
     }
 
     fun reportError(message: String?) {
