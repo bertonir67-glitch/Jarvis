@@ -106,9 +106,27 @@ class Prefs(context: Context) {
     val isConfigured: Boolean
         get() = brainKey.isNotBlank()
 
-    /** A palavra de ativação só existe com a chave do Picovoice. */
+    /**
+     * Palavra de ativação sem chave, pelo reconhecedor do Android. Desligada por padrão
+     * porque gasta bem mais bateria que o Porcupine — é uma troca que o usuário precisa
+     * fazer conscientemente.
+     */
+    var freeWakeWord: Boolean
+        get() = sp.getBoolean(KEY_FREE_WAKE, false)
+        set(v) = sp.edit().putBoolean(KEY_FREE_WAKE, v).apply()
+
+    /** Há alguma forma de palavra de ativação disponível. */
     val wakeWordAvailable: Boolean
-        get() = picovoiceKey.isNotBlank()
+        get() = picovoiceKey.isNotBlank() || freeWakeWord
+
+    /** Gravidade da voz do Android. Abaixo de 1.0 fica mais grave, mais perto do JARVIS. */
+    var ttsPitch: Float
+        get() = sp.getFloat(KEY_TTS_PITCH, 0.85f)
+        set(v) = sp.edit().putFloat(KEY_TTS_PITCH, v).apply()
+
+    var ttsSpeed: Float
+        get() = sp.getFloat(KEY_TTS_SPEED, 1.0f)
+        set(v) = sp.edit().putFloat(KEY_TTS_SPEED, v).apply()
 
     /** Nome do fornecedor em uso, para mensagens que precisam ser específicas. */
     val brainLabel: String
@@ -146,5 +164,8 @@ class Prefs(context: Context) {
         private const val KEY_SENSITIVITY = "wake_sensitivity"
         private const val KEY_AUTO_SEND = "auto_send"
         private const val KEY_BOOT = "start_on_boot"
+        private const val KEY_FREE_WAKE = "free_wake_word"
+        private const val KEY_TTS_PITCH = "tts_pitch"
+        private const val KEY_TTS_SPEED = "tts_speed"
     }
 }

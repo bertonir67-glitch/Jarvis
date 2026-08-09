@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
 import android.util.Log
 import com.jarvis.assistant.data.Prefs
 import kotlinx.coroutines.CancellableContinuation
@@ -169,16 +170,45 @@ class VoiceEngine(
             var engine: TextToSpeech? = null
             engine = TextToSpeech(context) { status ->
                 if (status == TextToSpeech.SUCCESS) {
-                    engine?.language = Locale("pt", "BR")
-                    engine?.setPitch(0.85f)   // mais grave, para aproximar do timbre do JARVIS
-                    engine?.setSpeechRate(1.0f)
-                    androidTts = engine
-                    cont.resumeOnce(engine)
+                    val tts = engine
+                    tts?.language = PT_BR
+                    tts?.let { selectBestVoice(it) }
+                    // Abaixo de 1.0 a voz fica mais grave, mais perto do timbre do JARVIS.
+                    tts?.setPitch(prefs.ttsPitch)
+                    tts?.setSpeechRate(prefs.ttsSpeed)
+                    androidTts = tts
+                    cont.resumeOnce(tts)
                 } else {
                     cont.resumeOnce(null)
                 }
             }
         }
+    }
+
+    /**
+     * O conjunto de vozes varia muito entre fabricantes, e a voz padrão raramente é a melhor
+     * instalada. Escolher explicitamente a de maior qualidade faz mais diferença no resultado
+     * do que qualquer ajuste de tom.
+     */
+    private fun selectBestVoice(tts: TextToSpeech) {
+        runCatching {
+            val candidates = tts.voices
+                ?.filter { it.locale.language == PT_BR.language }
+                ?.filter { !it.isNetworkConnectionRequired }
+                ?.filter { TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED !in it.features.orEmpty() }
+                ?: return
+
+            val best = candidates
+                .sortedWith(
+                    compareByDescending<Voice> { it.locale.country == PT_BR.country }
+                        .thenByDescending { it.quality }
+                        .thenBy { it.latency }
+                )
+                .firstOrNull() ?: return
+
+            tts.voice = best
+            Log.d(TAG, "voz do Android escolhida: ${best.name} (qualidade ${best.quality})")
+        }.onFailure { Log.w(TAG, "não consegui escolher a voz: ${it.message}") }
     }
 
     // ---------------------------------------------------------------- Utilidades
@@ -197,6 +227,7 @@ class VoiceEngine(
 
     private companion object {
         const val TAG = "VoiceEngine"
+        val PT_BR: Locale = Locale("pt", "BR")
         val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
     }
 }

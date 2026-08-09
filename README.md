@@ -19,18 +19,42 @@ e responde com voz masculina britânica.
 
 | Camada | O que usa | Custo |
 |---|---|---|
-| Palavra de ativação | **Porcupine** (Picovoice), palavra nativa `JARVIS` | **Grátis.** Roda 100% no aparelho: nenhum áudio sai do celular enquanto ele está em espera, e o gasto de bateria é de um detector dedicado — não de um reconhecedor de fala ligado o dia inteiro. |
+| Palavra de ativação | Reconhecedor do Android (sem chave) ou **Porcupine** | **Grátis.** Sem cadastro nenhum no modo padrão. Com uma chave Picovoice a detecção fica bem mais leve — veja abaixo. |
 | Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | **Grátis.** Já vem no celular e nos aparelhos atuais roda no próprio dispositivo. |
 | Decidir e agir | **Groq** (padrão) ou **Google Gemini**, com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
 | Pesquisar | Busca embutida do cérebro escolhido | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
 | Falar | **Voz do Android** (padrão) ou **ElevenLabs** | **Grátis** nas duas opções — veja abaixo. |
 
+### Como ele é ativado
+
+Três modos, e nenhum deles é obrigatório para o app funcionar:
+
+| Modo | Precisa de quê | Bateria | Precisão |
+|---|---|---|---|
+| **Botão FALAR** (padrão) | Nada | Nenhuma | Perfeita |
+| **Voz sem chave** | Nada — ligue em `Configurações → Ativar por voz sem chave` | Alta | Boa |
+| **Voz com Porcupine** | Chave Picovoice | Baixa | Ótima |
+
+O modo sem chave roda o reconhecedor de fala do próprio Android num laço, ouvindo trechos
+curtos e checando se você disse "Jarvis". Não exige cadastro nenhum, tudo fica no aparelho
+(`EXTRA_PREFER_OFFLINE`), e ele aceita as confusões comuns do reconhecedor — "jarves",
+"jarvez", "charles" — porque exigir a grafia exata deixaria o assistente praticamente surdo.
+
+O custo honesto: um reconhecedor de fala completo ligado o tempo todo gasta bem mais bateria
+que o Porcupine, que é um detector de uma palavra só. Por isso vem desligado — é uma troca
+que você decide fazer.
+
+Você também pode deixar o JARVIS como **assistente padrão do Android** e chamá-lo segurando o
+botão home: zero bateria e zero cadastro.
+
 ### Sobre a voz
 
 Aqui está o único lugar onde grátis custa qualidade, então vale escolher com consciência:
 
-- **Sem chave nenhuma** (padrão): usa o TTS do próprio Android, com o tom mais grave. Grátis,
-  offline, ilimitado — e claramente sintético. Não é a voz do filme.
+- **Sem chave nenhuma** (padrão): usa o TTS do próprio Android. O app escolhe automaticamente
+  a voz em português de maior qualidade instalada no aparelho — a padrão raramente é a melhor —
+  e você ajusta gravidade e velocidade em `Configurações → Voz`. Grátis, offline, ilimitado, e
+  ainda assim claramente sintético. Não é a voz do filme.
 - **Com chave do ElevenLabs**: voz britânica grave, bem mais próxima do original. O plano
   gratuito dá cerca de 10 mil caracteres por mês, o que é mais ou menos 100 respostas curtas.
   Quando a cota acaba, o app **volta sozinho** para a voz do Android — ele nunca fica mudo e
@@ -72,7 +96,9 @@ custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos 
 | # | Serviço | Onde pegar | Custo |
 |---|---|---|---|
 | 1 | **Groq** — o cérebro | [console.groq.com/keys](https://console.groq.com/keys) → *Create API Key* | Grátis. Cadastro só com e-mail |
-| 2 | **Picovoice** — a palavra "Jarvis" | [console.picovoice.ai](https://console.picovoice.ai) → *AccessKey* | Grátis para uso pessoal |
+
+**É só isso.** Uma chave, um cadastro, e o app funciona inteiro — inclusive falando e sendo
+ativado por voz.
 
 Alternativa ao Groq, se você preferir: **Google Gemini** em
 [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — também grátis, mas exige
@@ -83,6 +109,7 @@ Opcional, também grátis:
 | Serviço | Para quê | Custo |
 |---|---|---|
 | **ElevenLabs** | Voz britânica em vez da voz do Android | Grátis até ~10 mil caracteres/mês; depois volta sozinho para a voz local |
+| **Picovoice** | Palavra de ativação mais leve e precisa | Grátis, **mas o plano gratuito exige e-mail corporativo** |
 | **Anthropic** | Cérebro alternativo, melhor em pedidos complexos | **Pago** — só use se quiser |
 
 > **Não é preciso cadastrar cartão em lugar nenhum** para o app funcionar inteiro. Se você
@@ -149,7 +176,8 @@ ANTHROPIC_API_KEY=sk-ant-...
    notificações. Microfone é obrigatório; os outros só limitam funções específicas se você
    recusar (sem telefone, por exemplo, ele abre o discador com o número em vez de ligar).
 2. Toque em **ATIVAR**. O reator acende e aparece `EM ESPERA` — pronto, ele está ouvindo.
-3. Diga **"Jarvis"**, espere o reator mudar para `OUVINDO`, e fale o comando.
+3. Toque em **FALAR** e fale o comando. Para chamar dizendo "Jarvis", ligue antes em
+   `Configurações → Ativar por voz sem chave`.
 
 ### Dois ajustes que fazem diferença
 

@@ -40,7 +40,7 @@ class JarvisService : LifecycleService() {
     private lateinit var voice: VoiceEngine
     private lateinit var speech: SpeechInput
     private lateinit var executor: ToolExecutor
-    private lateinit var wakeWord: WakeWordDetector
+    private lateinit var wakeWord: WakeWord
 
     private var brain: Brain? = null
     private var brainProvider: BrainProvider? = null
@@ -61,7 +61,13 @@ class JarvisService : LifecycleService() {
         voice = VoiceEngine(this, prefs)
         speech = SpeechInput(this)
         executor = ToolExecutor(this, prefs)
-        wakeWord = WakeWordDetector(this, prefs) { onWakeWord() }
+        // Porcupine quando há chave (melhor bateria); senão o reconhecedor do Android,
+        // que não exige cadastro nenhum.
+        wakeWord = if (prefs.picovoiceKey.isNotBlank()) {
+            PorcupineWakeWord(this, prefs) { onWakeWord() }
+        } else {
+            AndroidWakeWord(this) { onWakeWord() }
+        }
         createNotificationChannel()
     }
 

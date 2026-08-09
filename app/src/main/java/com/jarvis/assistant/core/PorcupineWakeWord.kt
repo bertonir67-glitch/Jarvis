@@ -15,17 +15,20 @@ import com.jarvis.assistant.data.Prefs
  *
  * "Jarvis" já é uma palavra-chave nativa da biblioteca — não precisa treinar modelo.
  */
-class WakeWordDetector(
+class PorcupineWakeWord(
     private val context: Context,
     private val prefs: Prefs,
     private val onWake: () -> Unit
-) {
+) : WakeWord {
+
+    override val label = "Porcupine"
+
 
     private var manager: PorcupineManager? = null
     private var running = false
 
     /** @return null em caso de sucesso, ou a mensagem de erro para mostrar ao usuário. */
-    fun start(): String? {
+    override fun start(): String? {
         if (running) return null
 
         val key = prefs.picovoiceKey
@@ -51,13 +54,13 @@ class WakeWordDetector(
     }
 
     /** Pausa a detecção — usado enquanto o JARVIS ouve o comando ou fala, para não se auto-ativar. */
-    fun pause() {
+    override fun pause() {
         if (!running) return
         runCatching { manager?.stop() }
         running = false
     }
 
-    fun resume(): String? {
+    override fun resume(): String? {
         if (running) return null
         val existing = manager ?: return start()
         return try {
@@ -70,7 +73,7 @@ class WakeWordDetector(
         }
     }
 
-    fun release() {
+    override fun release() {
         runCatching { manager?.stop() }
         runCatching { manager?.delete() }
         manager = null

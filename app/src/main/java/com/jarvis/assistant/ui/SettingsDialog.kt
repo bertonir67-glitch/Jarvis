@@ -56,6 +56,9 @@ fun SettingsDialog(
     var voiceModel by remember { mutableStateOf(prefs.voiceModel) }
     var addressee by remember { mutableStateOf(prefs.addressee) }
     var sensitivity by remember { mutableFloatStateOf(prefs.wakeSensitivity) }
+    var freeWakeWord by remember { mutableStateOf(prefs.freeWakeWord) }
+    var ttsPitch by remember { mutableFloatStateOf(prefs.ttsPitch) }
+    var ttsSpeed by remember { mutableFloatStateOf(prefs.ttsSpeed) }
     var autoSend by remember { mutableStateOf(prefs.autoSend) }
     var startOnBoot by remember { mutableStateOf(prefs.startOnBoot) }
 
@@ -71,11 +74,11 @@ fun SettingsDialog(
                 // Estado real do que está salvo — evita o caso de colar a chave certa
                 // no fornecedor errado e não entender por que continua travado.
                 Status("Cérebro (${prefs.brainLabel})", prefs.brainKey.isNotBlank())
-                Status("Palavra de ativação (Picovoice)", prefs.wakeWordAvailable)
+                Status("Palavra de ativação", prefs.wakeWordAvailable)
                 Status("Voz do ElevenLabs", prefs.elevenLabsKey.isNotBlank())
                 Hint(
-                    "Só o cérebro é obrigatório. Sem Picovoice o JARVIS funciona pelo botão " +
-                        "FALAR; sem ElevenLabs ele fala com a voz do Android."
+                    "Só o cérebro é obrigatório. Sem palavra de ativação o JARVIS funciona " +
+                        "pelo botão FALAR; sem ElevenLabs ele fala com a voz do Android."
                 )
 
                 HorizontalDivider(color = JarvisColors.CyanDim)
@@ -130,11 +133,27 @@ fun SettingsDialog(
                 HorizontalDivider(color = JarvisColors.CyanDim)
                 Section("Palavra de ativação")
 
-                Secret("Chave do Picovoice", picovoice) { picovoice = it }
-                Hint("Grátis para uso pessoal, em console.picovoice.ai.")
+                Toggle(
+                    label = "Ativar por voz sem chave",
+                    checked = freeWakeWord,
+                    onChange = { freeWakeWord = it }
+                )
+                Hint(
+                    "Usa o reconhecedor de fala do próprio Android para ouvir \"Jarvis\" — " +
+                        "não precisa de cadastro nenhum. Em troca, gasta bem mais bateria que " +
+                        "o Porcupine e erra mais. Deixe desligado se preferir acionar pelo " +
+                        "botão FALAR."
+                )
+
+                Secret("Chave do Picovoice (opcional)", picovoice) { picovoice = it }
+                Hint(
+                    "Com ela a detecção fica muito mais leve e precisa. O plano gratuito do " +
+                        "Picovoice exige e-mail corporativo, então é opcional — sem a chave o " +
+                        "app usa o modo acima."
+                )
 
                 Text(
-                    "Sensibilidade: ${"%.2f".format(sensitivity)}",
+                    "Sensibilidade do Picovoice: ${"%.2f".format(sensitivity)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = JarvisColors.TextPrimary
                 )
@@ -157,6 +176,29 @@ fun SettingsDialog(
                 )
                 Field("ID da voz", voiceId) { voiceId = it }
                 Field("Modelo de voz", voiceModel) { voiceModel = it }
+
+                Text(
+                    "Gravidade da voz do Android: ${"%.2f".format(ttsPitch)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = JarvisColors.TextPrimary
+                )
+                Slider(
+                    value = ttsPitch,
+                    onValueChange = { ttsPitch = it },
+                    valueRange = 0.5f..1.3f
+                )
+                Hint("Abaixo de 1,00 fica mais grave. Perto de 0,80 costuma soar mais JARVIS.")
+
+                Text(
+                    "Velocidade da fala: ${"%.2f".format(ttsSpeed)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = JarvisColors.TextPrimary
+                )
+                Slider(
+                    value = ttsSpeed,
+                    onValueChange = { ttsSpeed = it },
+                    valueRange = 0.7f..1.4f
+                )
 
                 HorizontalDivider(color = JarvisColors.CyanDim)
                 Section("Comportamento")
@@ -202,6 +244,9 @@ fun SettingsDialog(
                 prefs.voiceModel = voiceModel
                 prefs.addressee = addressee
                 prefs.wakeSensitivity = sensitivity
+                prefs.freeWakeWord = freeWakeWord
+                prefs.ttsPitch = ttsPitch
+                prefs.ttsSpeed = ttsSpeed
                 prefs.autoSend = autoSend
                 prefs.startOnBoot = startOnBoot
                 onSaved()
