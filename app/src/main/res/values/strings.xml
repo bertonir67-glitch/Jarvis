@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JARVIS</string>
+    <string name="accessibility_label">JARVIS — envio automático de mensagens</string>
+    <string name="accessibility_description">Permite que o JARVIS toque no botão de enviar do WhatsApp e do Telegram, para que as mensagens sejam enviadas sem você precisar tocar na tela.</string>
+    <string name="notification_channel_name">JARVIS ativo</string>
+</resources>

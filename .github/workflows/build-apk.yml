@@ -1,0 +1,42 @@
+name: Gerar APK
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Permissão de execução no gradlew
+        run: chmod +x ./gradlew
+
+      # As chaves NÃO são embutidas por padrão — o app pede as três na primeira
+      # abertura e guarda no aparelho. Se preferir embutir, cadastre os secrets
+      # com estes nomes no repositório e eles entram no build automaticamente.
+      - name: Compilar APK
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          PICOVOICE_ACCESS_KEY: ${{ secrets.PICOVOICE_ACCESS_KEY }}
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Publicar o APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: jarvis-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
