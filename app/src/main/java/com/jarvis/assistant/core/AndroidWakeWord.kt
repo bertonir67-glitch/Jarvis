@@ -18,7 +18,7 @@ import java.util.Locale
  * É a alternativa ao Porcupine para quem não consegue uma conta Picovoice. Funciona em
  * qualquer aparelho e não exige cadastro, mas gasta mais bateria — o Porcupine é um detector
  * dedicado de uma palavra só, enquanto aqui roda um reconhecedor de fala completo o tempo
- * todo. Por isso fica atrás de um interruptor, e não ligado por padrão.
+ * todo. Vem ligado, e quem preferir economizar bateria desliga nas configurações.
  */
 class AndroidWakeWord(
     private val context: Context,
@@ -140,7 +140,9 @@ class AndroidWakeWord(
     private fun fire() {
         if (!running) return
         running = false
-        destroy()
+        // Destruir a SpeechRecognizer de dentro do callback dela mesma trava em alguns
+        // aparelhos; enfileirar evita isso.
+        main.post { destroy() }
         onWake()
     }
 

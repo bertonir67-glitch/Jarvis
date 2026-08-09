@@ -107,12 +107,12 @@ class Prefs(context: Context) {
         get() = brainKey.isNotBlank()
 
     /**
-     * Palavra de ativação sem chave, pelo reconhecedor do Android. Desligada por padrão
-     * porque gasta bem mais bateria que o Porcupine — é uma troca que o usuário precisa
-     * fazer conscientemente.
+     * Palavra de ativação sem chave, pelo reconhecedor do Android. Ligada por padrão: um
+     * assistente que só responde a botão não é o que se espera do JARVIS. Custa bateria, e
+     * quem preferir economizar desliga aqui.
      */
     var freeWakeWord: Boolean
-        get() = sp.getBoolean(KEY_FREE_WAKE, false)
+        get() = sp.getBoolean(KEY_FREE_WAKE, true)
         set(v) = sp.edit().putBoolean(KEY_FREE_WAKE, v).apply()
 
     /** Há alguma forma de palavra de ativação disponível. */
@@ -164,7 +164,7 @@ class Prefs(context: Context) {
         private const val KEY_SENSITIVITY = "wake_sensitivity"
         private const val KEY_AUTO_SEND = "auto_send"
         private const val KEY_BOOT = "start_on_boot"
-        private const val KEY_FREE_WAKE = "free_wake_word"
+        private const val KEY_FREE_WAKE = "free_wake_word_v2"
         private const val KEY_TTS_PITCH = "tts_pitch"
         private const val KEY_TTS_SPEED = "tts_speed"
     }

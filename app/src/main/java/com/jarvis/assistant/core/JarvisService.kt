@@ -112,6 +112,9 @@ class JarvisService : LifecycleService() {
 
         JarvisState.setWakeWordActive(listening)
         if (listening) acquireWakeLock()
+        // A notificação foi montada antes de sabermos se a escuta subiu — reescreve agora,
+        // senão ela diria "toque em Falar" mesmo com a palavra de ativação funcionando.
+        refreshNotification()
         JarvisState.setPhase(Phase.STANDBY)
         return START_STICKY
     }
@@ -209,6 +212,13 @@ class JarvisService : LifecycleService() {
     }
 
     // ------------------------------------------------------------------ infra
+
+    private fun refreshNotification() {
+        runCatching {
+            getSystemService(NotificationManager::class.java)
+                .notify(NOTIFICATION_ID, buildNotification())
+        }
+    }
 
     private fun acquireWakeLock() {
         if (wakeLock?.isHeld == true) return

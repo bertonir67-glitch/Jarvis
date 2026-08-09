@@ -139,9 +139,10 @@ fun SettingsDialog(
                     onChange = { freeWakeWord = it }
                 )
                 Hint(
-                    "Usa o reconhecedor de fala do próprio Android para ouvir \"Jarvis\" — " +
-                        "não precisa de cadastro nenhum. Em troca, gasta bem mais bateria que " +
-                        "o Porcupine e erra mais. Deixe desligado se preferir acionar pelo " +
+                    "Ligado: o JARVIS acorda quando você diz o nome dele. Usa o reconhecedor " +
+                        "do próprio Android, sem cadastro nenhum, e o áudio não sai do " +
+                        "aparelho.\n" +
+                        "Desligue se quiser economizar bateria — aí ele responde só pelo " +
                         "botão FALAR."
                 )
 

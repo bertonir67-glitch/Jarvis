@@ -31,9 +31,9 @@ Três modos, e nenhum deles é obrigatório para o app funcionar:
 
 | Modo | Precisa de quê | Bateria | Precisão |
 |---|---|---|---|
-| **Botão FALAR** (padrão) | Nada | Nenhuma | Perfeita |
-| **Voz sem chave** | Nada — ligue em `Configurações → Ativar por voz sem chave` | Alta | Boa |
-| **Voz com Porcupine** | Chave Picovoice | Baixa | Ótima |
+| **Dizer "Jarvis"** (padrão) | Nada | Alta | Boa |
+| **Botão FALAR** | Nada | Nenhuma | Perfeita |
+| **Dizer "Jarvis" com Porcupine** | Chave Picovoice | Baixa | Ótima |
 
 O modo sem chave roda o reconhecedor de fala do próprio Android num laço, ouvindo trechos
 curtos e checando se você disse "Jarvis". Não exige cadastro nenhum, tudo fica no aparelho
@@ -41,8 +41,9 @@ curtos e checando se você disse "Jarvis". Não exige cadastro nenhum, tudo fica
 "jarvez", "charles" — porque exigir a grafia exata deixaria o assistente praticamente surdo.
 
 O custo honesto: um reconhecedor de fala completo ligado o tempo todo gasta bem mais bateria
-que o Porcupine, que é um detector de uma palavra só. Por isso vem desligado — é uma troca
-que você decide fazer.
+que o Porcupine, que é um detector de uma palavra só. Vem ligado porque um assistente que só
+responde a botão não é o que se espera do JARVIS — se a bateria incomodar, desligue em
+`Configurações → Ativar por voz sem chave` e use o botão FALAR.
 
 Você também pode deixar o JARVIS como **assistente padrão do Android** e chamá-lo segurando o
 botão home: zero bateria e zero cadastro.
@@ -91,7 +92,7 @@ custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos 
 
 ## O que você precisa antes de começar
 
-**Duas chaves, as duas gratuitas, nenhuma pede cartão de crédito.**
+**Uma chave, gratuita, sem cartão de crédito.**
 
 | # | Serviço | Onde pegar | Custo |
 |---|---|---|---|
@@ -132,8 +133,8 @@ estar logado no GitHub, e não vem em zip.
 1. Baixe o `jarvis.apk` pelo link acima.
 2. Toque no arquivo baixado para instalar (o Android vai pedir para permitir "instalar apps de
    fontes desconhecidas" — normal para apps fora da Play Store).
-3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Groq e a do
-   Picovoice e salve — só isso é obrigatório.
+3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Groq e salve —
+   só isso é obrigatório.
 
 Cada push gera um build novo e atualiza esse link. A lista de versões fica em
 [Releases](https://github.com/bertonir67-glitch/Jarvis/releases).
@@ -155,9 +156,9 @@ Crie um arquivo `local.properties` na raiz (ele já está no `.gitignore`):
 sdk.dir=/caminho/para/o/Android/Sdk
 
 GROQ_API_KEY=...
-PICOVOICE_ACCESS_KEY=...
 
 # Opcionais
+PICOVOICE_ACCESS_KEY=...
 GEMINI_API_KEY=...
 ELEVENLABS_API_KEY=...
 ANTHROPIC_API_KEY=sk-ant-...
@@ -176,8 +177,8 @@ ANTHROPIC_API_KEY=sk-ant-...
    notificações. Microfone é obrigatório; os outros só limitam funções específicas se você
    recusar (sem telefone, por exemplo, ele abre o discador com o número em vez de ligar).
 2. Toque em **ATIVAR**. O reator acende e aparece `EM ESPERA` — pronto, ele está ouvindo.
-3. Toque em **FALAR** e fale o comando. Para chamar dizendo "Jarvis", ligue antes em
-   `Configurações → Ativar por voz sem chave`.
+3. Diga **"Jarvis"**, espere o reator mudar para `OUVINDO`, e fale o comando. (O botão
+   **FALAR** faz a mesma coisa, se preferir não usar a voz.)
 
 ### Dois ajustes que fazem diferença
 
