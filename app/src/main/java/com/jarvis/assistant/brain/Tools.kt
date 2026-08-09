@@ -192,6 +192,25 @@ object Tools {
         }
     }
 
+    // ------------------------------------------------------------------ Groq
+
+    /**
+     * Formato OpenAI, que é o que o Groq expõe. `parameters` vai sempre presente, mesmo
+     * vazio — a API rejeita a função sem ele.
+     */
+    fun groqDeclarations(): JsonArray = buildJsonArray {
+        (device + webSearch).forEach { spec ->
+            addJsonObject {
+                put("type", "function")
+                putJsonObject("function") {
+                    put("name", spec.name)
+                    put("description", spec.description)
+                    put("parameters", jsonSchema(spec, uppercaseTypes = false))
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ comum
 
     /**

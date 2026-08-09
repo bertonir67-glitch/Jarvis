@@ -21,8 +21,8 @@ e responde com voz masculina britânica.
 |---|---|---|
 | Palavra de ativação | **Porcupine** (Picovoice), palavra nativa `JARVIS` | **Grátis.** Roda 100% no aparelho: nenhum áudio sai do celular enquanto ele está em espera, e o gasto de bateria é de um detector dedicado — não de um reconhecedor de fala ligado o dia inteiro. |
 | Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | **Grátis.** Já vem no celular e nos aparelhos atuais roda no próprio dispositivo. |
-| Decidir e agir | **Google Gemini** (`gemini-2.5-flash`) com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
-| Pesquisar | **Google Search** acoplado ao Gemini | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
+| Decidir e agir | **Groq** (padrão) ou **Google Gemini**, com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
+| Pesquisar | Busca embutida do cérebro escolhido | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
 | Falar | **Voz do Android** (padrão) ou **ElevenLabs** | **Grátis** nas duas opções — veja abaixo. |
 
 ### Sobre a voz
@@ -39,6 +39,23 @@ Aqui está o único lugar onde grátis custa qualidade, então vale escolher com
 Ou seja: dá para usar as duas e nunca pagar nada. A voz boa entra enquanto tem cota, a local
 cobre o resto do mês.
 
+### Escolhendo o cérebro
+
+São três, selecionáveis em `Configurações → Cérebro`:
+
+| | Cadastro | Busca web | Custo |
+|---|---|---|---|
+| **Groq** (padrão) | Só e-mail | Sim, via `groq/compound-mini` | Grátis |
+| **Google Gemini** | Conta Google | Sim, via Google Search | Grátis |
+| **Anthropic Claude** | Conta Anthropic | Sim, server-side | **Pago** |
+
+O Groq é o padrão por um motivo prático: o AI Studio do Google fica **bloqueado em contas
+corporativas e escolares** pelo administrador, e a mensagem de erro não explica isso. O
+cadastro do Groq aceita e-mail comum e não esbarra nesse problema.
+
+IDs de modelo no Groq saem de circulação com alguma frequência. Se isso acontecer, o app
+tenta sozinho os substitutos conhecidos em vez de parar de funcionar.
+
 ### Trocar para o Claude (opcional, pago)
 
 O app aceita a Claude API como cérebro alternativo — as respostas são melhores em pedidos
@@ -54,8 +71,12 @@ custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos 
 
 | # | Serviço | Onde pegar | Custo |
 |---|---|---|---|
-| 1 | **Google Gemini** — o cérebro | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → *Create API key* | Grátis. 250 pedidos/dia no `gemini-2.5-flash`; 1.000/dia no `gemini-2.5-flash-lite` |
+| 1 | **Groq** — o cérebro | [console.groq.com/keys](https://console.groq.com/keys) → *Create API Key* | Grátis. Cadastro só com e-mail |
 | 2 | **Picovoice** — a palavra "Jarvis" | [console.picovoice.ai](https://console.picovoice.ai) → *AccessKey* | Grátis para uso pessoal |
+
+Alternativa ao Groq, se você preferir: **Google Gemini** em
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey) — também grátis, mas exige
+conta Google pessoal (contas de empresa ou escola costumam ter o acesso bloqueado).
 
 Opcional, também grátis:
 
@@ -65,7 +86,7 @@ Opcional, também grátis:
 | **Anthropic** | Cérebro alternativo, melhor em pedidos complexos | **Pago** — só use se quiser |
 
 > **Não é preciso cadastrar cartão em lugar nenhum** para o app funcionar inteiro. Se você
-> estourar a cota diária do Gemini, ele avisa por voz e volta a funcionar sozinho depois de
+> estourar a cota diária gratuita, ele avisa por voz e volta a funcionar sozinho depois de
 > alguns minutos — não vira cobrança.
 
 ---
@@ -84,7 +105,7 @@ estar logado no GitHub, e não vem em zip.
 1. Baixe o `jarvis.apk` pelo link acima.
 2. Toque no arquivo baixado para instalar (o Android vai pedir para permitir "instalar apps de
    fontes desconhecidas" — normal para apps fora da Play Store).
-3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Gemini e a do
+3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Groq e a do
    Picovoice e salve — só isso é obrigatório.
 
 Cada push gera um build novo e atualiza esse link. A lista de versões fica em
@@ -106,10 +127,11 @@ Crie um arquivo `local.properties` na raiz (ele já está no `.gitignore`):
 ```properties
 sdk.dir=/caminho/para/o/Android/Sdk
 
-GEMINI_API_KEY=...
+GROQ_API_KEY=...
 PICOVOICE_ACCESS_KEY=...
 
 # Opcionais
+GEMINI_API_KEY=...
 ELEVENLABS_API_KEY=...
 ANTHROPIC_API_KEY=sk-ant-...
 ```

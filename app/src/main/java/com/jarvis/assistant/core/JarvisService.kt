@@ -22,6 +22,7 @@ import com.jarvis.assistant.brain.Brain
 import com.jarvis.assistant.brain.BrainProvider
 import com.jarvis.assistant.brain.ClaudeClient
 import com.jarvis.assistant.brain.GeminiClient
+import com.jarvis.assistant.brain.GroqClient
 import com.jarvis.assistant.brain.JarvisApiException
 import com.jarvis.assistant.data.Prefs
 import com.jarvis.assistant.skills.ToolExecutor
@@ -176,6 +177,7 @@ class JarvisService : LifecycleService() {
         if (current != null && brainProvider == provider) return current
 
         val created: Brain = when (provider) {
+            BrainProvider.GROQ -> GroqClient(prefs, executor)
             BrainProvider.GEMINI -> GeminiClient(prefs, executor)
             BrainProvider.CLAUDE -> ClaudeClient(prefs, executor)
         }

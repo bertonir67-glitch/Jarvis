@@ -22,10 +22,22 @@ class Prefs(context: Context) {
         return if (stored.isNullOrBlank()) fallback else stored
     }
 
-    /** Qual API responde. Padrão: Gemini, que tem camada gratuita sem cartão. */
+    /**
+     * Qual API responde. Padrão: Groq — gratuito como o Gemini, mas o cadastro é só e-mail,
+     * sem depender de uma conta Google que pode estar bloqueada pelo administrador.
+     */
     var brainProvider: BrainProvider
-        get() = BrainProvider.from(read(KEY_PROVIDER, BrainProvider.GEMINI.id))
+        get() = BrainProvider.from(read(KEY_PROVIDER, BrainProvider.GROQ.id))
         set(v) = sp.edit().putString(KEY_PROVIDER, v.id).apply()
+
+    var groqKey: String
+        get() = read(KEY_GROQ, BuildConfig.GROQ_API_KEY)
+        set(v) = sp.edit().putString(KEY_GROQ, v.trim()).apply()
+
+    /** Se o ID sair de circulação, o app tenta sozinho os substitutos conhecidos. */
+    var groqModel: String
+        get() = read(KEY_GROQ_MODEL, DEFAULT_GROQ_MODEL)
+        set(v) = sp.edit().putString(KEY_GROQ_MODEL, v.trim()).apply()
 
     var geminiKey: String
         get() = read(KEY_GEMINI, BuildConfig.GEMINI_API_KEY)
@@ -91,6 +103,7 @@ class Prefs(context: Context) {
     /** A chave do cérebro em uso. */
     val brainKey: String
         get() = when (brainProvider) {
+            BrainProvider.GROQ -> groqKey
             BrainProvider.GEMINI -> geminiKey
             BrainProvider.CLAUDE -> anthropicKey
         }
@@ -99,8 +112,11 @@ class Prefs(context: Context) {
         const val DEFAULT_VOICE_ID = "onwK4e9ZLuTAKqWW03F9" // Daniel (britânico, grave)
         const val DEFAULT_VOICE_MODEL = "eleven_multilingual_v2"
         const val DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+        const val DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile"
 
         private const val KEY_PROVIDER = "brain_provider"
+        private const val KEY_GROQ = "groq_key"
+        private const val KEY_GROQ_MODEL = "groq_model"
         private const val KEY_GEMINI = "gemini_key"
         private const val KEY_GEMINI_MODEL = "gemini_model"
         private const val KEY_ANTHROPIC = "anthropic_key"

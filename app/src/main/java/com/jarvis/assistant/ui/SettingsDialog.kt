@@ -45,6 +45,8 @@ fun SettingsDialog(
     val context = LocalContext.current
 
     var provider by remember { mutableStateOf(prefs.brainProvider) }
+    var groq by remember { mutableStateOf(prefs.groqKey) }
+    var groqModel by remember { mutableStateOf(prefs.groqModel) }
     var gemini by remember { mutableStateOf(prefs.geminiKey) }
     var geminiModel by remember { mutableStateOf(prefs.geminiModel) }
     var anthropic by remember { mutableStateOf(prefs.anthropicKey) }
@@ -74,13 +76,30 @@ fun SettingsDialog(
                             selected = provider == option,
                             onClick = { provider = option },
                             label = {
-                                Text(if (option == BrainProvider.GEMINI) "Gemini" else "Claude")
+                                Text(
+                                    when (option) {
+                                        BrainProvider.GROQ -> "Groq"
+                                        BrainProvider.GEMINI -> "Gemini"
+                                        BrainProvider.CLAUDE -> "Claude"
+                                    }
+                                )
                             }
                         )
                     }
                 }
 
                 when (provider) {
+                    BrainProvider.GROQ -> {
+                        Secret("Chave do Groq", groq) { groq = it }
+                        Field("Modelo", groqModel) { groqModel = it }
+                        Hint(
+                            "Grátis, sem cartão, e o cadastro é só e-mail — não precisa de " +
+                                "conta Google. Pegue em console.groq.com/keys.\n" +
+                                "Se o modelo sair de circulação, o app troca sozinho por um " +
+                                "equivalente."
+                        )
+                    }
+
                     BrainProvider.GEMINI -> {
                         Secret("Chave do Gemini", gemini) { gemini = it }
                         Field("Modelo", geminiModel) { geminiModel = it }
@@ -161,6 +180,8 @@ fun SettingsDialog(
         confirmButton = {
             TextButton(onClick = {
                 prefs.brainProvider = provider
+                prefs.groqKey = groq
+                prefs.groqModel = groqModel
                 prefs.geminiKey = gemini
                 prefs.geminiModel = geminiModel
                 prefs.anthropicKey = anthropic
