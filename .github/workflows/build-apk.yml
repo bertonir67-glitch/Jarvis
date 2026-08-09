@@ -45,6 +45,23 @@ jobs:
           cp app/build/outputs/apk/release/*.apk dist/jarvis.apk
           ls -lh dist/
 
+      # Um APK sem assinatura instala em lugar nenhum, e o erro que o Android mostra
+      # ("App não instalado") não diz isso. Falhar aqui é melhor do que publicar.
+      - name: Verificar que o APK está assinado e instalável
+        run: |
+          BUILD_TOOLS="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          echo "build-tools: $BUILD_TOOLS"
+
+          echo "--- arquivos gerados pelo Gradle ---"
+          ls -l app/build/outputs/apk/release/
+
+          echo "--- assinatura ---"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs dist/jarvis.apk
+
+          echo "--- identidade e SDK mínimo ---"
+          "$BUILD_TOOLS/aapt2" dump badging dist/jarvis.apk \
+            | grep -E "^package|sdkVersion|targetSdkVersion|application-label"
+
       - name: Publicar o APK como artefato
         uses: actions/upload-artifact@v4
         with:
