@@ -17,34 +17,56 @@ e responde com voz masculina britânica.
 
 ## Como funciona
 
-| Camada | O que usa | Por quê |
+| Camada | O que usa | Custo |
 |---|---|---|
-| Palavra de ativação | **Porcupine** (Picovoice), palavra nativa `JARVIS` | Roda 100% no aparelho. Nenhum áudio sai do celular enquanto ele está em espera, e o gasto de bateria é de um detector dedicado — não de um reconhecedor de fala ligado o dia inteiro. |
-| Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | Grátis, e nos aparelhos atuais roda no próprio dispositivo. |
-| Decidir e agir | **Claude API** (`claude-opus-5`) com *tool use* | O modelo escolhe a ação e chama a ferramenta. Não é uma lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
-| Pesquisar | ferramenta `web_search` da própria Anthropic | Roda no servidor. Ele pesquisa e já devolve a resposta pronta e resumida para falar, em vez de abrir o navegador. |
-| Falar | **ElevenLabs** (voz *Daniel*, britânica grave) | É o que dá o timbre parecido com o do filme. Se a rede ou os créditos falharem, cai para o TTS do Android com tom grave — pior, mas ele não fica mudo. |
+| Palavra de ativação | **Porcupine** (Picovoice), palavra nativa `JARVIS` | **Grátis.** Roda 100% no aparelho: nenhum áudio sai do celular enquanto ele está em espera, e o gasto de bateria é de um detector dedicado — não de um reconhecedor de fala ligado o dia inteiro. |
+| Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | **Grátis.** Já vem no celular e nos aparelhos atuais roda no próprio dispositivo. |
+| Decidir e agir | **Google Gemini** (`gemini-2.5-flash`) com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
+| Pesquisar | **Google Search** acoplado ao Gemini | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
+| Falar | **Voz do Android** (padrão) ou **ElevenLabs** | **Grátis** nas duas opções — veja abaixo. |
 
-O raciocínio do modelo fica **ligado** de propósito, com esforço baixo. Desligar deixaria mais
-rápido, mas no Opus 5 as chamadas de ferramenta às vezes viram texto solto e a ação **nunca
-executa** — falha silenciosa que num assistente de voz é fatal (você acha que mandou a mensagem
-e não mandou).
+### Sobre a voz
+
+Aqui está o único lugar onde grátis custa qualidade, então vale escolher com consciência:
+
+- **Sem chave nenhuma** (padrão): usa o TTS do próprio Android, com o tom mais grave. Grátis,
+  offline, ilimitado — e claramente sintético. Não é a voz do filme.
+- **Com chave do ElevenLabs**: voz britânica grave, bem mais próxima do original. O plano
+  gratuito dá cerca de 10 mil caracteres por mês, o que é mais ou menos 100 respostas curtas.
+  Quando a cota acaba, o app **volta sozinho** para a voz do Android — ele nunca fica mudo e
+  nunca gera cobrança.
+
+Ou seja: dá para usar as duas e nunca pagar nada. A voz boa entra enquanto tem cota, a local
+cobre o resto do mês.
+
+### Trocar para o Claude (opcional, pago)
+
+O app aceita a Claude API como cérebro alternativo — as respostas são melhores em pedidos
+ambíguos ou de várias etapas. É só escolher em `Configurações → Cérebro → Claude` e colar a
+chave. **Só ligue isso se você quiser pagar por uso**; no Gemini o app funciona inteiro sem
+custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos dois.
 
 ---
 
 ## O que você precisa antes de começar
 
-Três contas. As duas primeiras têm plano gratuito suficiente para uso pessoal.
+**Duas chaves, as duas gratuitas, nenhuma pede cartão de crédito.**
 
-| Serviço | Onde pegar | Custo |
+| # | Serviço | Onde pegar | Custo |
+|---|---|---|---|
+| 1 | **Google Gemini** — o cérebro | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → *Create API key* | Grátis. 250 pedidos/dia no `gemini-2.5-flash`; 1.000/dia no `gemini-2.5-flash-lite` |
+| 2 | **Picovoice** — a palavra "Jarvis" | [console.picovoice.ai](https://console.picovoice.ai) → *AccessKey* | Grátis para uso pessoal |
+
+Opcional, também grátis:
+
+| Serviço | Para quê | Custo |
 |---|---|---|
-| **Picovoice** (palavra de ativação) | [console.picovoice.ai](https://console.picovoice.ai) → *AccessKey* | Grátis para uso pessoal |
-| **ElevenLabs** (voz) | [elevenlabs.io](https://elevenlabs.io) → Profile → API Key | Grátis até ~10 mil caracteres/mês |
-| **Anthropic** (cérebro) | [console.anthropic.com](https://console.anthropic.com) → API Keys | Pago por uso |
+| **ElevenLabs** | Voz britânica em vez da voz do Android | Grátis até ~10 mil caracteres/mês; depois volta sozinho para a voz local |
+| **Anthropic** | Cérebro alternativo, melhor em pedidos complexos | **Pago** — só use se quiser |
 
-> **Sobre o custo da Anthropic:** cada comando curto gasta poucos centavos. O app usa
-> `effort: low` e histórico curto justamente para segurar isso. Coloque um limite de gasto
-> mensal no console da Anthropic se quiser dormir tranquilo.
+> **Não é preciso cadastrar cartão em lugar nenhum** para o app funcionar inteiro. Se você
+> estourar a cota diária do Gemini, ele avisa por voz e volta a funcionar sozinho depois de
+> alguns minutos — não vira cobrança.
 
 ---
 
@@ -56,7 +78,8 @@ Três contas. As duas primeiras têm plano gratuito suficiente para uso pessoal.
 2. Abra a aba **Actions** do repositório → a execução mais recente → baixe o artefato `jarvis-apk`.
 3. Descompacte e transfira o `.apk` para o celular.
 4. Instale (o Android vai pedir para permitir "instalar apps de fontes desconhecidas").
-5. Abra o app. Ele já abre na tela de **Configurações** pedindo as três chaves. Cole e salve.
+5. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Gemini e a do
+   Picovoice e salve — só isso é obrigatório.
 
 As chaves ficam guardadas no aparelho — **não** vão para o APK nem para o repositório.
 
@@ -74,9 +97,12 @@ Crie um arquivo `local.properties` na raiz (ele já está no `.gitignore`):
 ```properties
 sdk.dir=/caminho/para/o/Android/Sdk
 
-ANTHROPIC_API_KEY=sk-ant-...
-ELEVENLABS_API_KEY=...
+GEMINI_API_KEY=...
 PICOVOICE_ACCESS_KEY=...
+
+# Opcionais
+ELEVENLABS_API_KEY=...
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ```bash
@@ -117,7 +143,8 @@ botão home chama ele direto, sem precisar falar o nome.
 
 ## Ajustando a voz
 
-A voz padrão é a **Daniel** do ElevenLabs (britânica, grave, tom de locutor). Para trocar:
+Sem chave do ElevenLabs, ele fala com a voz do Android (grátis e ilimitada). Com a chave, a
+voz padrão é a **Daniel** (britânica, grave, tom de locutor). Para trocar:
 
 1. Entre em [elevenlabs.io/voice-library](https://elevenlabs.io/app/voice-lab), escolha ou clone
    uma voz.

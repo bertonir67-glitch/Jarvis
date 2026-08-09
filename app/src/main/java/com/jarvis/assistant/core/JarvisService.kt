@@ -17,7 +17,10 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.jarvis.assistant.MainActivity
 import com.jarvis.assistant.R
+import com.jarvis.assistant.brain.Brain
+import com.jarvis.assistant.brain.BrainProvider
 import com.jarvis.assistant.brain.ClaudeClient
+import com.jarvis.assistant.brain.GeminiClient
 import com.jarvis.assistant.brain.JarvisApiException
 import com.jarvis.assistant.data.Prefs
 import com.jarvis.assistant.skills.ToolExecutor
@@ -34,8 +37,10 @@ class JarvisService : LifecycleService() {
     private lateinit var voice: VoiceEngine
     private lateinit var speech: SpeechInput
     private lateinit var executor: ToolExecutor
-    private lateinit var claude: ClaudeClient
     private lateinit var wakeWord: WakeWordDetector
+
+    private var brain: Brain? = null
+    private var brainProvider: BrainProvider? = null
 
     /** Um turno por vez — um segundo "Jarvis" no meio da resposta não pode abrir outro ciclo. */
     private var conversation: Job? = null
@@ -46,7 +51,6 @@ class JarvisService : LifecycleService() {
         voice = VoiceEngine(this, prefs)
         speech = SpeechInput(this)
         executor = ToolExecutor(this, prefs)
-        claude = ClaudeClient(prefs, executor)
         wakeWord = WakeWordDetector(this, prefs) { onWakeWord() }
         createNotificationChannel()
     }
@@ -136,7 +140,7 @@ class JarvisService : LifecycleService() {
         JarvisState.setPhase(Phase.THINKING)
 
         val reply = try {
-            claude.ask(heard, executor.deviceSummary())
+            brain().ask(heard, executor.deviceSummary())
         } catch (e: JarvisApiException) {
             JarvisState.reportError(e.message)
             e.message ?: "Não consegui falar com o servidor, ${prefs.addressee}."
@@ -151,6 +155,21 @@ class JarvisService : LifecycleService() {
         if (allowFollowUp && reply.trimEnd().endsWith("?")) {
             runTurn(allowFollowUp = false)
         }
+    }
+
+    /** Recria o cérebro se o usuário trocou de fornecedor nas configurações. */
+    private fun brain(): Brain {
+        val provider = prefs.brainProvider
+        val current = brain
+        if (current != null && brainProvider == provider) return current
+
+        val created: Brain = when (provider) {
+            BrainProvider.GEMINI -> GeminiClient(prefs, executor)
+            BrainProvider.CLAUDE -> ClaudeClient(prefs, executor)
+        }
+        brain = created
+        brainProvider = provider
+        return created
     }
 
     private suspend fun speakSafely(text: String) {

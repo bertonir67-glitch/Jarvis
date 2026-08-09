@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -30,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.jarvis.assistant.accessibility.AutoSendRequest
+import com.jarvis.assistant.brain.BrainProvider
 import com.jarvis.assistant.data.Prefs
 import com.jarvis.assistant.ui.theme.JarvisColors
 
@@ -41,9 +44,12 @@ fun SettingsDialog(
 ) {
     val context = LocalContext.current
 
+    var provider by remember { mutableStateOf(prefs.brainProvider) }
+    var gemini by remember { mutableStateOf(prefs.geminiKey) }
+    var geminiModel by remember { mutableStateOf(prefs.geminiModel) }
     var anthropic by remember { mutableStateOf(prefs.anthropicKey) }
-    var eleven by remember { mutableStateOf(prefs.elevenLabsKey) }
     var picovoice by remember { mutableStateOf(prefs.picovoiceKey) }
+    var eleven by remember { mutableStateOf(prefs.elevenLabsKey) }
     var voiceId by remember { mutableStateOf(prefs.voiceId) }
     var voiceModel by remember { mutableStateOf(prefs.voiceModel) }
     var addressee by remember { mutableStateOf(prefs.addressee) }
@@ -60,19 +66,45 @@ fun SettingsDialog(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Secret("Chave da Anthropic", anthropic) { anthropic = it }
-                Secret("Chave do ElevenLabs", eleven) { eleven = it }
+                Section("Cérebro")
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    BrainProvider.entries.forEach { option ->
+                        FilterChip(
+                            selected = provider == option,
+                            onClick = { provider = option },
+                            label = {
+                                Text(if (option == BrainProvider.GEMINI) "Gemini" else "Claude")
+                            }
+                        )
+                    }
+                }
+
+                when (provider) {
+                    BrainProvider.GEMINI -> {
+                        Secret("Chave do Gemini", gemini) { gemini = it }
+                        Field("Modelo", geminiModel) { geminiModel = it }
+                        Hint(
+                            "Grátis, sem cartão. Pegue em aistudio.google.com/apikey.\n" +
+                                "gemini-2.5-flash: 250 pedidos/dia.\n" +
+                                "gemini-2.5-flash-lite: 1.000 pedidos/dia, mais rápido."
+                        )
+                    }
+
+                    BrainProvider.CLAUDE -> {
+                        Secret("Chave da Anthropic", anthropic) { anthropic = it }
+                        Hint("Pago por uso. Respostas melhores, mas gera custo.")
+                    }
+                }
+
+                HorizontalDivider(color = JarvisColors.CyanDim)
+                Section("Palavra de ativação")
+
                 Secret("Chave do Picovoice", picovoice) { picovoice = it }
+                Hint("Grátis para uso pessoal, em console.picovoice.ai.")
 
-                Field("ID da voz (ElevenLabs)", voiceId) { voiceId = it }
-                Field("Modelo de voz", voiceModel) { voiceModel = it }
-                Hint("eleven_multilingual_v2 soa melhor. eleven_turbo_v2_5 responde mais rápido.")
-
-                Field("Como ele deve te chamar", addressee) { addressee = it }
-
-                Spacer(Modifier.height(4.dp))
                 Text(
-                    "Sensibilidade da palavra \"Jarvis\": ${"%.2f".format(sensitivity)}",
+                    "Sensibilidade: ${"%.2f".format(sensitivity)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = JarvisColors.TextPrimary
                 )
@@ -82,6 +114,24 @@ fun SettingsDialog(
                     valueRange = 0.2f..0.95f
                 )
                 Hint("Mais alto detecta melhor, mas dispara sozinho com mais frequência.")
+
+                HorizontalDivider(color = JarvisColors.CyanDim)
+                Section("Voz")
+
+                Secret("Chave do ElevenLabs (opcional)", eleven) { eleven = it }
+                Hint(
+                    "Deixe em branco para usar a voz do próprio Android — grátis, offline e " +
+                        "ilimitada, mas bem menos parecida com a do filme. Com a chave, ele usa " +
+                        "a voz britânica do ElevenLabs (plano grátis: ~10 mil caracteres/mês) e " +
+                        "volta sozinho para a voz local quando a cota acabar."
+                )
+                Field("ID da voz", voiceId) { voiceId = it }
+                Field("Modelo de voz", voiceModel) { voiceModel = it }
+
+                HorizontalDivider(color = JarvisColors.CyanDim)
+                Section("Comportamento")
+
+                Field("Como ele deve te chamar", addressee) { addressee = it }
 
                 Toggle(
                     label = "Enviar mensagens automaticamente",
@@ -104,13 +154,18 @@ fun SettingsDialog(
                     checked = startOnBoot,
                     onChange = { startOnBoot = it }
                 )
+
+                Spacer(Modifier.height(4.dp))
             }
         },
         confirmButton = {
             TextButton(onClick = {
+                prefs.brainProvider = provider
+                prefs.geminiKey = gemini
+                prefs.geminiModel = geminiModel
                 prefs.anthropicKey = anthropic
-                prefs.elevenLabsKey = eleven
                 prefs.picovoiceKey = picovoice
+                prefs.elevenLabsKey = eleven
                 prefs.voiceId = voiceId
                 prefs.voiceModel = voiceModel
                 prefs.addressee = addressee
@@ -125,6 +180,15 @@ fun SettingsDialog(
                 Text("Cancelar", color = JarvisColors.TextMuted)
             }
         }
+    )
+}
+
+@Composable
+private fun Section(title: String) {
+    Text(
+        text = title.uppercase(),
+        style = MaterialTheme.typography.labelLarge,
+        color = JarvisColors.CyanSoft
     )
 }
 

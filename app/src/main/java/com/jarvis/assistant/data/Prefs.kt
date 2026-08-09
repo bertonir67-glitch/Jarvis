@@ -3,6 +3,7 @@ package com.jarvis.assistant.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.jarvis.assistant.BuildConfig
+import com.jarvis.assistant.brain.BrainProvider
 
 /**
  * Configuração do JARVIS.
@@ -20,6 +21,23 @@ class Prefs(context: Context) {
         val stored = sp.getString(key, null)
         return if (stored.isNullOrBlank()) fallback else stored
     }
+
+    /** Qual API responde. Padrão: Gemini, que tem camada gratuita sem cartão. */
+    var brainProvider: BrainProvider
+        get() = BrainProvider.from(read(KEY_PROVIDER, BrainProvider.GEMINI.id))
+        set(v) = sp.edit().putString(KEY_PROVIDER, v.id).apply()
+
+    var geminiKey: String
+        get() = read(KEY_GEMINI, BuildConfig.GEMINI_API_KEY)
+        set(v) = sp.edit().putString(KEY_GEMINI, v.trim()).apply()
+
+    /**
+     * `gemini-2.5-flash` é o padrão da camada gratuita. `gemini-2.5-flash-lite` tem cota
+     * diária bem maior e responde mais rápido, com um pouco menos de precisão.
+     */
+    var geminiModel: String
+        get() = read(KEY_GEMINI_MODEL, DEFAULT_GEMINI_MODEL)
+        set(v) = sp.edit().putString(KEY_GEMINI_MODEL, v.trim()).apply()
 
     var anthropicKey: String
         get() = read(KEY_ANTHROPIC, BuildConfig.ANTHROPIC_API_KEY)
@@ -66,13 +84,25 @@ class Prefs(context: Context) {
         get() = sp.getBoolean(KEY_BOOT, true)
         set(v) = sp.edit().putBoolean(KEY_BOOT, v).apply()
 
+    /** A chave de voz não entra aqui: sem ela o app usa a voz do próprio Android. */
     val isConfigured: Boolean
-        get() = anthropicKey.isNotBlank() && picovoiceKey.isNotBlank()
+        get() = picovoiceKey.isNotBlank() && brainKey.isNotBlank()
+
+    /** A chave do cérebro em uso. */
+    val brainKey: String
+        get() = when (brainProvider) {
+            BrainProvider.GEMINI -> geminiKey
+            BrainProvider.CLAUDE -> anthropicKey
+        }
 
     companion object {
         const val DEFAULT_VOICE_ID = "onwK4e9ZLuTAKqWW03F9" // Daniel (britânico, grave)
         const val DEFAULT_VOICE_MODEL = "eleven_multilingual_v2"
+        const val DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
 
+        private const val KEY_PROVIDER = "brain_provider"
+        private const val KEY_GEMINI = "gemini_key"
+        private const val KEY_GEMINI_MODEL = "gemini_model"
         private const val KEY_ANTHROPIC = "anthropic_key"
         private const val KEY_ELEVENLABS = "elevenlabs_key"
         private const val KEY_PICOVOICE = "picovoice_key"

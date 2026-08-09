@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 class ClaudeClient(
     private val prefs: Prefs,
     private val executor: ToolExecutor
-) {
+) : Brain {
 
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
 
@@ -49,13 +49,13 @@ class ClaudeClient(
     /** Desligado automaticamente se a conta não tiver esse beta liberado. */
     private var useFallbacks = true
 
-    fun resetConversation() = history.clear()
+    override fun resetConversation() = history.clear()
 
     /**
      * Manda o que o usuário falou e devolve o texto que o JARVIS deve falar de volta.
      * @throws JarvisApiException em falha de rede ou erro da API.
      */
-    suspend fun ask(userText: String, deviceSummary: String): String = withContext(Dispatchers.IO) {
+    override suspend fun ask(userText: String, deviceSummary: String): String = withContext(Dispatchers.IO) {
         val apiKey = prefs.anthropicKey
         if (apiKey.isBlank()) throw JarvisApiException("Chave da Anthropic não configurada.")
 
@@ -152,7 +152,7 @@ class ClaudeClient(
             put("max_tokens", 8192)
             put("system", system)
             put("output_config", buildJsonObject { put("effort", EFFORT) })
-            put("tools", Tools.definitions)
+            put("tools", Tools.anthropicDefinitions())
             put("messages", JsonArray(history))
             if (withFallbacks) put("fallbacks", "default")
         }
@@ -243,5 +243,3 @@ class ClaudeClient(
         private val JSON_MEDIA = "application/json; charset=utf-8".toMediaType()
     }
 }
-
-class JarvisApiException(message: String, cause: Throwable? = null) : Exception(message, cause)
