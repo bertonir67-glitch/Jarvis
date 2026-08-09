@@ -24,6 +24,10 @@ object Tools {
     const val OPEN_URL = "open_url"
     const val DEVICE_ACTION = "device_action"
     const val DEVICE_STATUS = "device_status"
+    const val SET_ALARM = "set_alarm"
+    const val SET_TIMER = "set_timer"
+    const val CONTROL_MUSIC = "control_music"
+    const val MAKE_CALL = "make_call"
     const val WEB_SEARCH = "web_search"
 
     data class Param(
@@ -95,6 +99,49 @@ object Tools {
             name = DEVICE_STATUS,
             description = "Lê o estado do aparelho: bateria, se está carregando, volume atual, " +
                 "rede, espaço livre e hora. Use quando o usuário perguntar sobre o próprio celular."
+        ),
+        Spec(
+            name = SET_ALARM,
+            description = "Cria um despertador para um horário do dia. Converta a fala para " +
+                "24 horas: \"sete da manhã\" é 7:00, \"sete da noite\" é 19:00, \"meio-dia\" é " +
+                "12:00. Se o usuário disser só a hora sem período, escolha o próximo horário " +
+                "que ainda vai acontecer.",
+            params = listOf(
+                Param("hour", "integer", "Hora em formato 24h, de 0 a 23.", required = true),
+                Param("minute", "integer", "Minutos, de 0 a 59. Use 0 se não foi dito.", required = true),
+                Param("label", "string", "Do que é o despertador, se o usuário disser.")
+            )
+        ),
+        Spec(
+            name = SET_TIMER,
+            description = "Cria um cronômetro regressivo. Use para pedidos de contagem a partir " +
+                "de agora (\"me avisa em 10 minutos\", \"timer de meia hora\"), diferente de " +
+                "$SET_ALARM, que é para um horário do dia.",
+            params = listOf(
+                Param("seconds", "integer", "Duração total em segundos.", required = true),
+                Param("label", "string", "Do que é o timer, se o usuário disser.")
+            )
+        ),
+        Spec(
+            name = CONTROL_MUSIC,
+            description = "Controla o que está tocando, em qualquer app de música. Use `play` " +
+                "com `query` para tocar algo específico; as outras ações agem sobre o que já " +
+                "está tocando.",
+            params = listOf(
+                Param(
+                    "action", "string", "O que fazer.", required = true,
+                    values = listOf("play", "play_pause", "next", "previous", "stop")
+                ),
+                Param("query", "string", "Só para `play`: música, artista ou álbum a tocar."),
+                Param("app", "string", "Onde tocar, se o usuário disser.", values = listOf("spotify", "youtube_music"))
+            )
+        ),
+        Spec(
+            name = MAKE_CALL,
+            description = "Liga para um contato da agenda ou para um número.",
+            params = listOf(
+                Param("contact", "string", "Nome do contato ou número de telefone.", required = true)
+            )
         )
     )
 

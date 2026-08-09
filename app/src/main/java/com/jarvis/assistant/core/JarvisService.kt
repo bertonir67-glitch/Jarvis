@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -26,6 +27,7 @@ import com.jarvis.assistant.data.Prefs
 import com.jarvis.assistant.skills.ToolExecutor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * O JARVIS em si: fica vivo em primeiro plano, escuta o nome dele e conduz o ciclo
@@ -44,6 +46,13 @@ class JarvisService : LifecycleService() {
 
     /** Um turno por vez — um segundo "Jarvis" no meio da resposta não pode abrir outro ciclo. */
     private var conversation: Job? = null
+
+    /**
+     * Sem isto o Android suspende a CPU com a tela apagada e o detector simplesmente para de
+     * ouvir — o app parece ligado, com notificação e tudo, e não responde. É o preço de um
+     * assistente que fica de prontidão: mantém a CPU acordada, não a tela.
+     */
+    private var wakeLock: PowerManager.WakeLock? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -87,6 +96,7 @@ class JarvisService : LifecycleService() {
             return START_NOT_STICKY
         }
 
+        acquireWakeLock()
         JarvisState.reportError(null)
         JarvisState.setPhase(Phase.STANDBY)
         return START_STICKY
@@ -114,7 +124,9 @@ class JarvisService : LifecycleService() {
             // O microfone é exclusivo: o detector precisa soltá-lo antes do reconhecedor abrir.
             wakeWord.pause()
             try {
-                runTurn(allowFollowUp = true)
+                // Se qualquer etapa travar, o turno morre sozinho e a escuta volta — sem isso
+                // um travamento deixaria o JARVIS surdo até alguém reiniciar o serviço.
+                withTimeoutOrNull(TURN_TIMEOUT_MS) { runTurn(allowFollowUp = true) }
             } catch (e: Exception) {
                 Log.e(TAG, "erro no turno", e)
                 JarvisState.reportError(e.message)
@@ -181,6 +193,20 @@ class JarvisService : LifecycleService() {
 
     // ------------------------------------------------------------------ infra
 
+    private fun acquireWakeLock() {
+        if (wakeLock?.isHeld == true) return
+        val power = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG).apply {
+            setReferenceCounted(false)
+            acquire()
+        }
+    }
+
+    private fun releaseWakeLock() {
+        runCatching { if (wakeLock?.isHeld == true) wakeLock?.release() }
+        wakeLock = null
+    }
+
     private fun hasMicPermission(): Boolean =
         ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
             PackageManager.PERMISSION_GRANTED
@@ -233,6 +259,7 @@ class JarvisService : LifecycleService() {
 
     override fun onDestroy() {
         conversation?.cancel()
+        releaseWakeLock()
         wakeWord.release()
         voice.shutdown()
         JarvisState.setPhase(Phase.OFF)
@@ -243,6 +270,8 @@ class JarvisService : LifecycleService() {
         private const val TAG = "JarvisService"
         private const val CHANNEL_ID = "jarvis_listening"
         private const val NOTIFICATION_ID = 4200
+        private const val WAKE_LOCK_TAG = "jarvis:listening"
+        private const val TURN_TIMEOUT_MS = 120_000L
 
         const val ACTION_STOP = "com.jarvis.assistant.STOP"
         const val ACTION_TRIGGER = "com.jarvis.assistant.TRIGGER"

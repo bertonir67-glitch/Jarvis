@@ -25,6 +25,8 @@ class ToolExecutor(
     private val launcher = AppLauncher(appContext)
     private val messenger = Messenger(appContext, prefs, contacts)
     private val system = SystemControl(appContext)
+    private val scheduler = Scheduler(appContext)
+    private val music = MusicControl(appContext)
 
     fun deviceSummary(): String = system.shortSummary()
 
@@ -73,6 +75,41 @@ class ToolExecutor(
         }
 
         Tools.DEVICE_STATUS -> Result(system.status())
+
+        Tools.SET_ALARM -> when (val hour = input.int("hour")) {
+            null -> Result("O horário do despertador não veio.", isError = true)
+            else -> Result(
+                scheduler.setAlarm(
+                    hour = hour,
+                    minute = input.int("minute") ?: 0,
+                    label = input.str("label")
+                )
+            )
+        }
+
+        Tools.SET_TIMER -> when (val seconds = input.int("seconds")) {
+            null -> Result("A duração do timer não veio.", isError = true)
+            else -> Result(scheduler.setTimer(seconds, input.str("label")))
+        }
+
+        Tools.CONTROL_MUSIC -> when (val action = input.str("action")) {
+            "play" -> Result(music.play(input.str("query"), input.str("app")))
+            "play_pause" -> Result(music.playPause())
+            "next" -> Result(music.next())
+            "previous" -> Result(music.previous())
+            "stop" -> Result(music.stop())
+            else -> Result("Ação de música desconhecida: $action", isError = true)
+        }
+
+        Tools.MAKE_CALL -> when (val outcome = messenger.call(input.str("contact").orEmpty())) {
+            is Messenger.Outcome.Sent -> Result("Ligando para ${outcome.contactName}.")
+            is Messenger.Outcome.Opened -> Result(
+                "Abri o discador com o número de ${outcome.contactName}. A permissão de " +
+                    "telefone não foi concedida, então o usuário precisa tocar para completar " +
+                    "a ligação. Avise isso a ele."
+            )
+            is Messenger.Outcome.Failed -> Result(outcome.reason, isError = true)
+        }
 
         else -> Result("Ferramenta desconhecida: $name", isError = true)
     }

@@ -114,15 +114,17 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 ## Primeira execução
 
-1. **Permissões.** Ao tocar em ATIVAR, o app pede microfone, contatos, SMS e notificações.
-   Microfone é obrigatório; os outros só limitam funções específicas se você recusar.
+1. **Permissões.** Ao tocar em ATIVAR, o app pede microfone, contatos, SMS, telefone e
+   notificações. Microfone é obrigatório; os outros só limitam funções específicas se você
+   recusar (sem telefone, por exemplo, ele abre o discador com o número em vez de ligar).
 2. Toque em **ATIVAR**. O reator acende e aparece `EM ESPERA` — pronto, ele está ouvindo.
 3. Diga **"Jarvis"**, espere o reator mudar para `OUVINDO`, e fale o comando.
 
 ### Dois ajustes que fazem diferença
 
 **Tirar o app da otimização de bateria.** Sem isso o Android mata o serviço depois de algumas
-horas e ele para de ouvir.
+horas e ele para de ouvir. O app mantém a CPU acordada (não a tela) para continuar ouvindo com
+o celular no bolso — isso custa bateria, e é o preço de um assistente de prontidão.
 `Configurações → Apps → JARVIS → Bateria → Sem restrições`
 (em Xiaomi/Samsung/Motorola o caminho muda de nome, procure por "bateria" ou "início automático").
 
@@ -171,8 +173,19 @@ mais rápido. Troque em `Configurações → Modelo de voz`.
 | `open_url` | "abre o site do banco" |
 | `device_action` | "aumenta o volume", "põe o volume em 30%", "liga a lanterna", "abre o wi-fi" |
 | `device_status` | "quanto tem de bateria?", "quanto de espaço sobrou?" |
+| `set_alarm` | "me acorda às sete da manhã", "despertador pras seis e meia" |
+| `set_timer` | "timer de 10 minutos", "me avisa daqui meia hora" |
+| `control_music` | "toca Pink Floyd no Spotify", "pausa", "próxima", "volta a música" |
+| `make_call` | "liga pro João", "liga pra minha mãe" |
 
 Se ele fizer uma pergunta de volta, continua ouvindo sem você precisar dizer "Jarvis" de novo.
+
+**Alarmes e timers** entram no app de relógio que você já usa — o JARVIS não mantém
+agendamento próprio, então eles tocam mesmo se o app for fechado ou o celular reiniciar.
+
+**Play, pausa e próxima** funcionam em qualquer player (Spotify, YouTube Music, Deezer,
+podcast) porque usam as teclas de mídia do Android, não integração app por app. Só "toca tal
+música" precisa escolher um app.
 
 ---
 

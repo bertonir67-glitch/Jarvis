@@ -48,6 +48,37 @@ class Messenger(
         }
     }
 
+    /**
+     * Sem a permissão de telefone, discar já com o número na tela é o mais longe que dá para
+     * ir — melhor do que falhar, e o usuário só precisa tocar no botão verde.
+     */
+    fun call(contactQuery: String): Outcome {
+        val contact = contacts.resolve(contactQuery)
+            ?: return Outcome.Failed(
+                if (contacts.hasPermission())
+                    "Não encontrei ninguém chamado \"$contactQuery\" na agenda."
+                else
+                    "Permissão de acesso aos contatos não concedida."
+            )
+
+        val canDialDirectly = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.CALL_PHONE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val intent = Intent(
+            if (canDialDirectly) Intent.ACTION_CALL else Intent.ACTION_DIAL,
+            Uri.parse("tel:${Uri.encode(contact.phone)}")
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        if (!launch(intent)) return Outcome.Failed("Não consegui abrir o discador.")
+
+        return if (canDialDirectly) {
+            Outcome.Sent(contact.name, "chamada")
+        } else {
+            Outcome.Opened(contact.name, "discador")
+        }
+    }
+
     private fun sendSms(contact: Contact, message: String): Outcome {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
             != PackageManager.PERMISSION_GRANTED
