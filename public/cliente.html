@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agendar horário</title>
+<meta name="description" content="Marque seu horário em menos de um minuto.">
+<meta name="theme-color" content="#6c5ce7">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/estilo.css">
+<link rel="stylesheet" href="/css/cliente.css">
+</head>
+<body>
+
+<header class="capa">
+  <div class="capa-conteudo">
+    <div class="marca-topo">
+      <div class="avatar" id="avatarNegocio">💈</div>
+      <div>
+        <h1 id="nomeNegocio">Carregando…</h1>
+        <p id="subNegocio"></p>
+      </div>
+    </div>
+    <div class="capa-acoes">
+      <a id="linkMapa" class="pilula" target="_blank" rel="noopener" hidden>📍 Como chegar</a>
+      <a id="linkZap" class="pilula" target="_blank" rel="noopener" hidden>💬 WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<nav class="abas" role="tablist">
+  <button class="aba ativa" data-aba="agendar" role="tab">📅 Agendar</button>
+  <button class="aba" data-aba="assistente" role="tab">✨ Assistente</button>
+  <button class="aba" data-aba="meus" role="tab">🔎 Meus horários</button>
+</nav>
+
+<main class="palco">
+
+  <!-- ============================================================ AGENDAR -->
+  <section id="painel-agendar" class="painel ativo">
+
+    <ol class="trilha" id="trilha">
+      <li class="passo atual" data-passo="1"><span>1</span> Serviço</li>
+      <li class="passo" data-passo="2"><span>2</span> Profissional</li>
+      <li class="passo" data-passo="3"><span>3</span> Dia e hora</li>
+      <li class="passo" data-passo="4"><span>4</span> Seus dados</li>
+    </ol>
+
+    <!-- 1. Serviço -->
+    <div class="etapa ativa" data-etapa="1">
+      <h2>O que você precisa?</h2>
+      <p class="legenda">Escolha o serviço para ver os horários livres.</p>
+      <div id="listaServicos" class="grade-servicos"><div class="carregando"></div></div>
+    </div>
+
+    <!-- 2. Profissional -->
+    <div class="etapa" data-etapa="2">
+      <button class="voltar" data-voltar="1">← Trocar serviço</button>
+      <h2>Com quem você prefere?</h2>
+      <p class="legenda">Sem preferência? A gente encaixa no melhor horário.</p>
+      <div id="listaProfissionais" class="grade-profissionais"></div>
+    </div>
+
+    <!-- 3. Data e hora -->
+    <div class="etapa" data-etapa="3">
+      <button class="voltar" data-voltar="2">← Trocar profissional</button>
+      <h2>Escolha o dia</h2>
+      <div class="calendario">
+        <div class="calendario-topo">
+          <button class="nav-mes" id="mesAnterior" aria-label="Mês anterior">‹</button>
+          <strong id="rotuloMes"></strong>
+          <button class="nav-mes" id="mesSeguinte" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="semana-cabecalho">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="grade-dias" id="gradeDias"></div>
+        <p class="legenda-calendario">
+          <i class="ponto livre"></i> com vaga
+          <i class="ponto cheio"></i> lotado
+        </p>
+      </div>
+
+      <div id="blocoHorarios" hidden>
+        <h2 id="tituloHorarios">Horários disponíveis</h2>
+        <div class="periodos" id="periodos"></div>
+      </div>
+    </div>
+
+    <!-- 4. Dados -->
+    <div class="etapa" data-etapa="4">
+      <button class="voltar" data-voltar="3">← Trocar horário</button>
+      <h2>Quase lá!</h2>
+      <div class="resumo" id="resumoReserva"></div>
+      <form id="formReserva" autocomplete="on">
+        <div class="campo">
+          <label for="cNome">Seu nome</label>
+          <input id="cNome" name="name" type="text" placeholder="Como podemos te chamar?" required minlength="2" autocomplete="name">
+        </div>
+        <div class="campo">
+          <label for="cTel">WhatsApp com DDD</label>
+          <input id="cTel" name="tel" type="tel" placeholder="(11) 98765-4321" required inputmode="numeric" autocomplete="tel">
+          <p class="dica">É por aqui que enviamos a confirmação e o lembrete.</p>
+        </div>
+        <div class="campo">
+          <label for="cObs">Alguma observação? <span class="opcional">(opcional)</span></label>
+          <input id="cObs" type="text" placeholder="Ex: quero degradê baixo" maxlength="200">
+        </div>
+        <button type="submit" class="botao bloco" id="btnConfirmar">Confirmar agendamento</button>
+      </form>
+    </div>
+
+    <!-- 5. Pronto -->
+    <div class="etapa" data-etapa="5">
+      <div class="sucesso">
+        <div class="selo-sucesso">✓</div>
+        <h2>Horário confirmado!</h2>
+        <div class="bilhete" id="bilhete"></div>
+        <p class="legenda">Enviamos a confirmação no seu WhatsApp. Guarde o código.</p>
+        <div class="botoes-linha">
+          <button class="botao neutro" id="btnAgendarOutro">Marcar outro</button>
+          <button class="botao" id="btnVerMeus">Ver meus horários</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= ASSISTENTE -->
+  <section id="painel-assistente" class="painel">
+    <div class="chat">
+      <div class="chat-topo">
+        <div class="avatar-ia">✨</div>
+        <div>
+          <strong>Assistente virtual</strong>
+          <span class="online">responde na hora</span>
+        </div>
+      </div>
+      <div class="chat-mensagens" id="chatMensagens"></div>
+      <div class="chat-opcoes" id="chatOpcoes"></div>
+      <form class="chat-entrada" id="chatForm">
+        <input id="chatTexto" type="text" placeholder="Escreva sua mensagem…" autocomplete="off" maxlength="500">
+        <button type="submit" aria-label="Enviar">➤</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- =============================================== MEUS AGENDAMENTOS -->
+  <section id="painel-meus" class="painel">
+    <div id="buscaMeus">
+      <div class="cartao">
+        <h2>Consultar meus horários</h2>
+        <p class="legenda">Digite o WhatsApp que você usou para agendar.</p>
+        <form id="formConsulta">
+          <div class="campo">
+            <input id="telConsulta" type="tel" placeholder="(11) 98765-4321" required inputmode="numeric" autocomplete="tel">
+          </div>
+          <button class="botao bloco" type="submit">Buscar</button>
+        </form>
+      </div>
+    </div>
+    <div id="resultadoMeus"></div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <p id="rodapeNegocio"></p>
+  <p class="creditos">Agenda inteligente por <strong>Jarvis</strong></p>
+</footer>
+
+<div id="recado"></div>
+
+<div class="modal" id="modalAvaliar">
+  <div class="caixa">
+    <div class="topo"><h3>Como foi seu atendimento?</h3><button class="fechar" data-fechar>&times;</button></div>
+    <div class="corpo">
+      <p class="legenda" id="avaliarSub"></p>
+      <div class="escolha-estrelas" id="escolhaEstrelas"></div>
+      <div class="campo" style="margin-top:16px">
+        <label for="avComentario">Quer contar mais? <span class="opcional">(opcional)</span></label>
+        <textarea id="avComentario" placeholder="O que você achou do atendimento?" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="rodape">
+      <button class="botao neutro" data-fechar>Agora não</button>
+      <button class="botao" id="btnEnviarAvaliacao" disabled>Enviar avaliação</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/cliente.js"></script>
+</body>
+</html>

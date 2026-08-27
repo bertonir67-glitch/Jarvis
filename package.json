@@ -1,0 +1,14 @@
+{
+  "name": "jarvis-agenda-ia",
+  "version": "1.0.0",
+  "description": "Automacao com IA para negocios locais: agendamento inteligente, atendimento automatico e gestao de avaliacoes",
+  "type": "module",
+  "main": "index.js",
+  "engines": { "node": ">=22.5.0" },
+  "scripts": {
+    "start": "node index.js",
+    "seed": "node seed.js",
+    "reset": "node seed.js --reset",
+    "teste": "node --test testes/*.test.js"
+  }
+}

@@ -1,0 +1,306 @@
+/* Portal do cliente — pensado primeiro para o celular */
+
+body { background: var(--fundo); padding-bottom: 40px; }
+
+/* ------------------------------------------------------------- CAPA */
+
+.capa {
+  background: linear-gradient(135deg, var(--marca) 0%, #8b7bf0 55%, #a58ff5 100%);
+  color: #fff; padding: 26px 20px 30px;
+}
+.capa-conteudo { max-width: 720px; margin: 0 auto; }
+.marca-topo { display: flex; align-items: center; gap: 14px; }
+.avatar {
+  width: 54px; height: 54px; flex: none; border-radius: 16px;
+  background: rgba(255, 255, 255, .2); backdrop-filter: blur(6px);
+  display: grid; place-items: center; font-size: 1.7rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28);
+}
+.capa h1 { color: #fff; font-size: 1.35rem; font-weight: 800; }
+.capa p { color: rgba(255, 255, 255, .82); font-size: .86rem; margin-top: 2px; }
+.capa-acoes { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.pilula {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 999px; font-size: .81rem; font-weight: 650;
+  background: rgba(255, 255, 255, .18); color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .26); transition: background .18s;
+}
+.pilula:hover { background: rgba(255, 255, 255, .3); }
+
+/* ------------------------------------------------------------- ABAS */
+
+.abas {
+  display: flex; gap: 4px; padding: 0 14px;
+  max-width: 720px; margin: -22px auto 0; position: relative; z-index: 2;
+}
+.aba {
+  flex: 1; padding: 13px 8px; border: 0; border-radius: var(--r-m) var(--r-m) 0 0;
+  background: rgba(255, 255, 255, .72); color: var(--apagado);
+  font-weight: 650; font-size: .84rem; cursor: pointer;
+  transition: background .18s, color .18s;
+}
+.aba:hover { background: rgba(255, 255, 255, .92); }
+.aba.ativa { background: var(--papel); color: var(--marca); box-shadow: 0 -3px 12px rgba(20, 22, 31, .06); }
+
+.palco { max-width: 720px; margin: 0 auto; padding: 0 14px; }
+.painel { display: none; background: var(--papel); border-radius: 0 0 var(--r-g) var(--r-g);
+          box-shadow: var(--sombra-2); padding: 24px 20px 28px; }
+.painel.ativo { display: block; }
+
+.legenda { color: var(--apagado); font-size: .87rem; margin-bottom: 18px; }
+.opcional { color: var(--apagado); font-weight: 400; }
+
+/* ------------------------------------------------------------ TRILHA */
+
+.trilha { display: flex; list-style: none; gap: 4px; margin-bottom: 24px; }
+.passo {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  font-size: .68rem; color: var(--apagado); font-weight: 600; text-align: center;
+  position: relative;
+}
+.passo span {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--fundo); color: var(--apagado); font-size: .78rem; font-weight: 700;
+  box-shadow: inset 0 0 0 1.5px var(--linha); transition: all .22s;
+}
+.passo::after {
+  content: ''; position: absolute; top: 13px; left: calc(50% + 18px); right: calc(-50% + 18px);
+  height: 2px; background: var(--linha);
+}
+.passo:last-child::after { display: none; }
+.passo.atual span { background: var(--marca); color: #fff; box-shadow: 0 0 0 4px var(--marca-suave); }
+.passo.atual { color: var(--marca); }
+.passo.feito span { background: var(--verde); color: #fff; box-shadow: none; }
+.passo.feito::after { background: var(--verde); }
+
+.etapa { display: none; animation: entrar .25s ease; }
+.etapa.ativa { display: block; }
+@keyframes entrar { from { opacity: 0; transform: translateX(10px); } }
+
+.voltar {
+  background: none; border: 0; color: var(--apagado); font-size: .84rem; font-weight: 600;
+  cursor: pointer; padding: 0 0 12px;
+}
+.voltar:hover { color: var(--marca); }
+
+/* ---------------------------------------------------------- SERVICOS */
+
+.grade-servicos { display: grid; gap: 10px; }
+.item-servico {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+  padding: 15px 16px; border: 1.5px solid var(--linha); border-radius: var(--r-g);
+  background: var(--papel); cursor: pointer;
+  transition: border-color .18s, transform .12s, box-shadow .2s;
+}
+.item-servico:hover { border-color: var(--marca); transform: translateY(-2px); box-shadow: var(--sombra-2); }
+.item-servico.escolhido { border-color: var(--marca); background: var(--marca-suave); }
+.item-servico .icone-servico {
+  width: 42px; height: 42px; flex: none; border-radius: 12px; background: var(--marca-suave);
+  display: grid; place-items: center; font-size: 1.25rem;
+}
+.item-servico .info { flex: 1; min-width: 0; }
+.item-servico .info strong { display: block; color: var(--tinta); font-size: .96rem; }
+.item-servico .info small { color: var(--apagado); font-size: .8rem; }
+.item-servico .preco { text-align: right; flex: none; }
+.item-servico .preco b { display: block; color: var(--tinta); font-size: .95rem; }
+.item-servico .preco small { color: var(--apagado); font-size: .74rem; }
+
+/* ------------------------------------------------------ PROFISSIONAIS */
+
+.grade-profissionais { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.item-prof {
+  padding: 18px 12px; border: 1.5px solid var(--linha); border-radius: var(--r-g);
+  background: var(--papel); cursor: pointer; text-align: center;
+  transition: border-color .18s, transform .12s, box-shadow .2s;
+}
+.item-prof:hover { border-color: var(--marca); transform: translateY(-2px); box-shadow: var(--sombra-2); }
+.item-prof.escolhido { border-color: var(--marca); background: var(--marca-suave); }
+.item-prof .inicial {
+  width: 48px; height: 48px; margin: 0 auto 9px; border-radius: 50%;
+  display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 1.1rem;
+}
+.item-prof strong { display: block; font-size: .9rem; color: var(--tinta); }
+.item-prof small { color: var(--apagado); font-size: .76rem; }
+
+/* ------------------------------------------------------- CALENDARIO */
+
+.calendario { border: 1.5px solid var(--linha); border-radius: var(--r-g); padding: 14px; margin-bottom: 22px; }
+.calendario-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.calendario-topo strong { color: var(--tinta); font-size: .96rem; }
+.nav-mes {
+  width: 32px; height: 32px; border: 0; border-radius: 9px; background: var(--fundo);
+  color: var(--tinta); font-size: 1.15rem; cursor: pointer; transition: background .15s;
+}
+.nav-mes:hover:not(:disabled) { background: var(--marca-suave); color: var(--marca); }
+.nav-mes:disabled { opacity: .3; cursor: not-allowed; }
+
+.semana-cabecalho, .grade-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.semana-cabecalho span {
+  text-align: center; font-size: .7rem; font-weight: 700; color: var(--apagado); padding-bottom: 6px;
+}
+.dia {
+  height: 40px; min-width: 0; border: 0; border-radius: 10px; background: transparent;
+  color: var(--texto); font-size: .87rem; font-weight: 600; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  transition: background .15s, color .15s;
+}
+.dia:hover:not(:disabled) { background: var(--marca-suave); }
+.dia:disabled { color: var(--linha-forte); cursor: not-allowed; }
+.dia.hoje { box-shadow: inset 0 0 0 1.5px var(--linha-forte); }
+.dia.escolhido { background: var(--marca); color: #fff; }
+.dia.escolhido .ponto { background: #fff; }
+.dia .ponto { width: 4px; height: 4px; border-radius: 50%; background: var(--verde); }
+.dia:disabled .ponto { background: transparent; }
+.dia.oculto { visibility: hidden; }
+
+.legenda-calendario {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+  margin-top: 12px; font-size: .74rem; color: var(--apagado);
+}
+.ponto { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+.ponto.livre { background: var(--verde); }
+.ponto.cheio { background: var(--linha-forte); margin-left: 10px; }
+
+/* --------------------------------------------------------- HORARIOS */
+
+.periodos { display: grid; gap: 18px; }
+.periodo h4 { font-size: .8rem; color: var(--apagado); margin-bottom: 9px; font-weight: 700; }
+.grade-horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
+.hora {
+  padding: 11px 6px; border: 1.5px solid var(--linha); border-radius: var(--r-m);
+  background: var(--papel); color: var(--tinta); font-weight: 650; font-size: .89rem;
+  cursor: pointer; transition: all .15s;
+}
+.hora:hover { border-color: var(--marca); color: var(--marca); background: var(--marca-suave); }
+.hora.escolhido { background: var(--marca); border-color: var(--marca); color: #fff; }
+
+/* ---------------------------------------------------------- RESUMO */
+
+.resumo {
+  background: var(--marca-suave); border-radius: var(--r-g); padding: 16px 18px; margin-bottom: 20px;
+}
+.resumo .linha { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: .89rem; }
+.resumo .linha span { color: var(--marca-forte); }
+.resumo .linha strong { color: var(--tinta); text-align: right; }
+.resumo .total { border-top: 1px solid rgba(108, 92, 231, .22); margin-top: 8px; padding-top: 10px; font-size: 1rem; }
+
+/* --------------------------------------------------------- SUCESSO */
+
+.sucesso { text-align: center; padding: 12px 0; }
+.selo-sucesso {
+  width: 62px; height: 62px; margin: 0 auto 16px; border-radius: 50%;
+  background: var(--verde); color: #fff; display: grid; place-items: center;
+  font-size: 1.9rem; font-weight: 700; box-shadow: 0 0 0 9px var(--verde-suave);
+  animation: pulsar .5s cubic-bezier(.2, .9, .3, 1.3);
+}
+@keyframes pulsar { from { transform: scale(.4); opacity: 0; } }
+.bilhete {
+  background: var(--papel-2); border: 1.5px dashed var(--linha-forte);
+  border-radius: var(--r-g); padding: 18px; margin: 18px 0; text-align: left;
+}
+.bilhete .linha { display: flex; justify-content: space-between; padding: 5px 0; font-size: .9rem; }
+.bilhete .linha span { color: var(--apagado); }
+.bilhete .linha strong { color: var(--tinta); }
+.bilhete .codigo {
+  text-align: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--linha-forte);
+}
+.bilhete .codigo b {
+  font-size: 1.5rem; letter-spacing: 3px; color: var(--marca); font-weight: 800;
+}
+.botoes-linha { display: flex; gap: 10px; }
+.botoes-linha .botao { flex: 1; }
+
+/* ------------------------------------------------------------ CHAT */
+
+.chat { display: flex; flex-direction: column; height: min(62vh, 540px); min-height: 400px; }
+.chat-topo {
+  display: flex; align-items: center; gap: 11px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--linha); margin-bottom: 14px;
+}
+.avatar-ia {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--marca), #a58ff5);
+  display: grid; place-items: center; font-size: 1.15rem;
+}
+.chat-topo strong { display: block; color: var(--tinta); font-size: .93rem; }
+.online { font-size: .76rem; color: var(--verde); font-weight: 600; }
+.online::before {
+  content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--verde); margin-right: 5px; vertical-align: middle;
+}
+
+.chat-mensagens { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+.balao {
+  max-width: 82%; padding: 11px 15px; border-radius: 18px; font-size: .9rem;
+  white-space: pre-wrap; word-break: break-word; animation: aparecer .22s ease;
+}
+@keyframes aparecer { from { opacity: 0; transform: translateY(6px); } }
+.balao.ia { background: var(--fundo); color: var(--texto); align-self: flex-start; border-bottom-left-radius: 5px; }
+.balao.cliente { background: var(--marca); color: #fff; align-self: flex-end; border-bottom-right-radius: 5px; }
+.balao.humano { background: var(--ambar-suave); color: #8a5a00; align-self: flex-start; border-bottom-left-radius: 5px; }
+.balao.digitando { display: flex; gap: 4px; padding: 15px; }
+.balao.digitando i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--apagado);
+  animation: pontinho 1.2s infinite;
+}
+.balao.digitando i:nth-child(2) { animation-delay: .18s; }
+.balao.digitando i:nth-child(3) { animation-delay: .36s; }
+@keyframes pontinho { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+.chat-opcoes { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 0 4px; }
+.chip {
+  padding: 8px 14px; border: 1.5px solid var(--marca); border-radius: 999px;
+  background: var(--papel); color: var(--marca); font-size: .83rem; font-weight: 650;
+  cursor: pointer; transition: background .15s, transform .1s;
+}
+.chip:hover { background: var(--marca-suave); transform: translateY(-1px); }
+
+.chat-entrada { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--linha); }
+.chat-entrada input { flex: 1; border-radius: 999px; }
+.chat-entrada button {
+  width: 44px; height: 44px; flex: none; border: 0; border-radius: 50%;
+  background: var(--marca); color: #fff; font-size: 1rem; cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.chat-entrada button:hover { background: var(--marca-forte); transform: scale(1.05); }
+
+/* ------------------------------------------------ MEUS AGENDAMENTOS */
+
+.reserva {
+  border: 1.5px solid var(--linha); border-radius: var(--r-g);
+  padding: 16px; margin-bottom: 11px; background: var(--papel);
+}
+.reserva.passada { opacity: .7; }
+.reserva-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.reserva-topo strong { color: var(--tinta); font-size: .98rem; }
+.reserva .quando { color: var(--marca); font-weight: 700; font-size: .88rem; }
+.reserva .detalhe { color: var(--apagado); font-size: .83rem; }
+.reserva-acoes { display: flex; gap: 8px; margin-top: 13px; flex-wrap: wrap; }
+
+.identificado {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--marca-suave); border-radius: var(--r-m); padding: 12px 15px; margin-bottom: 16px;
+}
+.identificado strong { color: var(--marca-forte); font-size: .9rem; }
+.identificado small { color: var(--marca-forte); opacity: .8; display: block; font-size: .78rem; }
+
+/* ---------------------------------------------------------- ESTRELAS */
+
+.escolha-estrelas { display: flex; gap: 8px; justify-content: center; padding: 14px 0; }
+.escolha-estrelas button {
+  background: none; border: 0; font-size: 2.2rem; cursor: pointer; line-height: 1;
+  filter: grayscale(1); opacity: .35; transition: all .15s;
+}
+.escolha-estrelas button:hover, .escolha-estrelas button.ativa { filter: none; opacity: 1; transform: scale(1.12); }
+
+/* ---------------------------------------------------------- RODAPE */
+
+.rodape { text-align: center; padding: 26px 20px; color: var(--apagado); font-size: .81rem; }
+.rodape .creditos { margin-top: 6px; opacity: .7; font-size: .76rem; }
+
+@media (min-width: 640px) {
+  .capa { padding: 34px 20px 40px; }
+  .capa h1 { font-size: 1.6rem; }
+  .painel { padding: 30px 28px 34px; }
+  .passo { font-size: .74rem; }
+}

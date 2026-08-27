@@ -1,0 +1,11 @@
+run = "node index.js"
+entrypoint = "index.js"
+
+[env]
+PORT = "3000"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "node index.js"]

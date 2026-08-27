@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel · Jarvis</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/estilo.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<aside class="lateral" id="lateral">
+  <div class="lateral-topo">
+    <div class="logo">💈</div>
+    <div class="logo-texto">
+      <strong id="lateralNome">Carregando…</strong>
+      <small>Painel do dono</small>
+    </div>
+  </div>
+
+  <nav class="menu">
+    <span class="menu-grupo">Dia a dia</span>
+    <button class="menu-item ativo" data-tela="painel"><i>📊</i> Painel</button>
+    <button class="menu-item" data-tela="agenda"><i>📅</i> Agenda</button>
+    <button class="menu-item" data-tela="conversas"><i>💬</i> Conversas <span class="conta" id="contaConversas"></span></button>
+    <button class="menu-item" data-tela="mensagens"><i>📤</i> Mensagens <span class="conta" id="contaMensagens"></span></button>
+
+    <span class="menu-grupo">Relacionamento</span>
+    <button class="menu-item" data-tela="clientes"><i>👥</i> Clientes</button>
+    <button class="menu-item" data-tela="avaliacoes"><i>⭐</i> Avaliações <span class="conta" id="contaAvaliacoes"></span></button>
+
+    <span class="menu-grupo">Configuração</span>
+    <button class="menu-item" data-tela="servicos"><i>✂️</i> Serviços</button>
+    <button class="menu-item" data-tela="equipe"><i>🧑‍🔧</i> Equipe</button>
+    <button class="menu-item" data-tela="horarios"><i>🕐</i> Horários</button>
+    <button class="menu-item" data-tela="ajustes"><i>⚙️</i> Ajustes</button>
+  </nav>
+
+  <div class="lateral-rodape">
+    <a href="/" target="_blank" class="menu-item externo"><i>🔗</i> Ver página do cliente</a>
+    <button class="menu-item" id="btnSair"><i>🚪</i> Sair</button>
+  </div>
+</aside>
+
+<div class="sombra-lateral" id="sombraLateral"></div>
+
+<main class="conteudo">
+  <header class="barra">
+    <button class="menu-hamburguer" id="abrirMenu" aria-label="Abrir menu">☰</button>
+    <div>
+      <h1 id="tituloTela">Painel</h1>
+      <p class="data-hoje" id="dataHoje"></p>
+    </div>
+    <div class="barra-acoes" id="barraAcoes"></div>
+  </header>
+
+  <div class="telas" id="telas">
+    <section class="tela ativa" id="tela-painel"></section>
+    <section class="tela" id="tela-agenda"></section>
+    <section class="tela" id="tela-conversas"></section>
+    <section class="tela" id="tela-mensagens"></section>
+    <section class="tela" id="tela-clientes"></section>
+    <section class="tela" id="tela-avaliacoes"></section>
+    <section class="tela" id="tela-servicos"></section>
+    <section class="tela" id="tela-equipe"></section>
+    <section class="tela" id="tela-horarios"></section>
+    <section class="tela" id="tela-ajustes"></section>
+  </div>
+</main>
+
+<div id="recado"></div>
+
+<div class="modal" id="modal">
+  <div class="caixa">
+    <div class="topo"><h3 id="modalTitulo"></h3><button class="fechar" id="modalFechar">&times;</button></div>
+    <div class="corpo" id="modalCorpo"></div>
+    <div class="rodape" id="modalRodape"></div>
+  </div>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
