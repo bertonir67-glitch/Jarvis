@@ -464,20 +464,34 @@ async function modalNovoAgendamento() {
     { rotulo: 'Agendar', aoClicar: salvarNovoAgendamento }
   ]);
 
-  const atualizar = async () => {
+  const buscarSlots = async (data) => {
+    const p = new URLSearchParams({ data, servico: $('#nServico').value });
+    if ($('#nProf').value) p.set('profissional', $('#nProf').value);
+    return api(`/api/admin/horarios-livres?${p}`);
+  };
+
+  /** Carrega os horários do dia. Se pularProLivre, avança até achar vaga. */
+  const atualizar = async (pularProLivre = false) => {
     const sel = $('#nHora');
     sel.innerHTML = `<option>Carregando…</option>`;
-    const p = new URLSearchParams({ data: $('#nData').value, servico: $('#nServico').value });
-    if ($('#nProf').value) p.set('profissional', $('#nProf').value);
     try {
-      const slots = await api(`/api/admin/horarios-livres?${p}`);
+      let data = $('#nData').value;
+      let slots = await buscarSlots(data);
+
+      // O dono costuma abrir isso no fim do dia: leva direto pro próximo dia com vaga
+      for (let i = 0; pularProLivre && !slots.length && i < 14; i++) {
+        data = somarDias(data, 1);
+        slots = await buscarSlots(data);
+      }
+      if (data !== $('#nData').value) $('#nData').value = data;
+
       sel.innerHTML = slots.length
         ? slots.map(s => `<option value="${s.hora}">${s.hora}</option>`).join('')
         : `<option value="">Sem vagas nesse dia</option>`;
     } catch { sel.innerHTML = `<option value="">Erro ao carregar</option>`; }
   };
-  ['#nData', '#nServico', '#nProf'].forEach(s => $(s).addEventListener('change', atualizar));
-  atualizar();
+  ['#nData', '#nServico', '#nProf'].forEach(s => $(s).addEventListener('change', () => atualizar()));
+  atualizar(true);
 }
 
 async function salvarNovoAgendamento() {
