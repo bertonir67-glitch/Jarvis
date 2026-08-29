@@ -142,7 +142,7 @@ export async function humanizar(textoBase, { fatos = '', curto = true } = {}) {
 Reescreva a mensagem do sistema para soar natural no WhatsApp, em portugues do Brasil.
 NUNCA altere datas, horarios, precos, nomes ou opcoes: eles vem do sistema e sao a verdade.
 Nao invente informacao. Nao adicione promessas. ${curto ? 'Maximo 3 linhas.' : 'Maximo 6 linhas.'}
-Pode usar no maximo 1 emoji. Responda apenas com a mensagem final.`
+Nao use emojis. Responda apenas com a mensagem final.`
     },
     { role: 'user', content: `${fatos ? `Fatos do sistema:\n${fatos}\n\n` : ''}Mensagem a reescrever:\n${textoBase}` }
   ], { temperatura: 0.6, maxTokens: 300 });
@@ -161,7 +161,7 @@ export async function responderDuvida(pergunta, historico = []) {
   if (!CHAVE()) return null;
 
   const sistema = `Voce e o assistente de "${negocio.nome}".
-Tom: ${tom}. Portugues do Brasil, no maximo 4 linhas, no maximo 1 emoji.
+Tom: ${tom}. Portugues do Brasil, no maximo 4 linhas. Nao use emojis.
 
 O que voce sabe:
 - Sobre: ${negocio.sobre || 'nao informado'}
@@ -207,7 +207,7 @@ export async function respostaParaAvaliacao(avaliacao) {
 Tom: ${tom}. Portugues do Brasil.
 Regras:
 - Comece agradecendo e cite o nome do cliente.
-- 2 a 4 linhas. No maximo 1 emoji.
+- 2 a 4 linhas. Nao use emojis.
 - Nota 4-5: agradeca e convide a voltar.
 - Nota 3: agradeca, reconheca o ponto levantado e diga que vai melhorar.
 - Nota 1-2: peca desculpas com sinceridade, NAO justifique, e chame para
@@ -234,7 +234,7 @@ export function respostaAvaliacaoLocal(av, negocio = bd.lerNegocio()) {
 
   if (nota >= 4) {
     return `${nome}, muito obrigado pela avaliação! Ficamos felizes que sua experiência${servico} ` +
-           `tenha sido boa. A equipe da ${negocio.nome} agradece a confiança e já está te esperando na próxima. 💜`;
+           `tenha sido boa. A equipe da ${negocio.nome} agradece a confiança e já está te esperando na próxima.`;
   }
   if (nota === 3) {
     return `Oi, ${nome}! Obrigado por dedicar um tempo pra avaliar. Anotamos seu comentário${servico} ` +
@@ -244,18 +244,4 @@ export function respostaAvaliacaoLocal(av, negocio = bd.lerNegocio()) {
   return `${nome}, sentimos muito que sua experiência${servico} não tenha sido boa. ` +
          `Isso não representa o padrão da ${negocio.nome} e queremos entender o que aconteceu. ` +
          `Pode falar com a gente${contato ? ` no ${contato}` : ''}? Vamos resolver.`;
-}
-
-/** Resumo diario para o dono, em uma frase util. */
-export async function resumoDoDia(dados) {
-  const base = `Hoje: ${dados.hoje} agendamentos. Próximos 7 dias: ${dados.proximos_7_dias}. ` +
-               `Receita realizada no mês: R$ ${Number(dados.receita_mes).toFixed(2)}. ` +
-               `${dados.avaliacoes_sem_resposta} avaliações esperando resposta. ` +
-               `${dados.taxa_ia}% dos agendamentos vieram do assistente.`;
-  if (!CHAVE()) return base;
-  const saida = await chamar([
-    { role: 'system', content: 'Voce e o assistente do dono de um negocio local. Resuma os numeros do dia em 2 frases, portugues do Brasil, tom direto e util, apontando a acao mais importante. Sem emoji.' },
-    { role: 'user', content: base }
-  ], { temperatura: 0.5, maxTokens: 160 });
-  return saida || base;
 }

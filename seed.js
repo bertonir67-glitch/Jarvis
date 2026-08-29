@@ -30,9 +30,9 @@ bd.salvarNegocio({
   whatsapp: '11987654321',
   endereco: 'Rua das Palmeiras, 245 - Vila Mariana, São Paulo/SP',
   instagram: '@navalhadeouro',
-  cor: '#6c5ce7',
+  cor: '#5f7a6e',
   sobre: 'Barbearia de bairro desde 2014. Corte, barba e cuidado com hora marcada, sem fila e sem pressa.',
-  boas_vindas: 'Fala! 👋 Sou o assistente da Navalha de Ouro. Marco seu horário em menos de um minuto — é só me dizer o que você quer.',
+  boas_vindas: 'Olá! Aqui é da Navalha de Ouro. Marco seu horário em menos de um minuto — é só me dizer o que você quer.',
   personalidade_ia: 'descontraido',
   intervalo_slots: 30,
   antecedencia_min_h: 1,
@@ -60,16 +60,16 @@ const porNome = n => servicos.find(s => s.nome === n).id;
 
 const equipe = [
   {
-    nome: 'Rafael Moura', apelido: 'Rafa', telefone: '11991110001', cor: '#6c5ce7',
+    nome: 'Rafael Moura', apelido: 'Rafa', telefone: '11991110001', cor: '#5f7a6e',
     servicos: servicos.map(s => s.id)
   },
   {
-    nome: 'Diego Nunes', apelido: 'Didi', telefone: '11991110002', cor: '#00b894',
+    nome: 'Diego Nunes', apelido: 'Didi', telefone: '11991110002', cor: '#7d8fa3',
     servicos: [porNome('Corte masculino'), porNome('Barba completa'), porNome('Corte + Barba'),
                porNome('Pezinho'), porNome('Corte infantil')]
   },
   {
-    nome: 'Camila Prado', apelido: 'Cacau', telefone: '11991110003', cor: '#e17055',
+    nome: 'Camila Prado', apelido: 'Cacau', telefone: '11991110003', cor: '#a08464',
     servicos: [porNome('Corte masculino'), porNome('Platinado'),
                porNome('Sobrancelha na navalha'), porNome('Corte infantil')]
   }
@@ -219,7 +219,7 @@ const dialogo = [
   ['cliente', 'as 17 tá ótimo'],
   ['ia', 'Fechado! Corte + Barba amanhã às 17:00 com o Rafa. Confirmo?'],
   ['cliente', 'confirma sim'],
-  ['ia', 'Pronto, Lucas! Horário confirmado 🎉 Te mando um lembrete um dia antes.']
+  ['ia', 'Pronto, Lucas! Horário confirmado. Te mando um lembrete um dia antes.']
 ];
 for (const [autor, texto] of dialogo) bd.gravarMensagem(conversa.id, autor, texto);
 bd.salvarEstadoConversa(conversa.id, { etapa: 'inicio', nome: 'Lucas Ferreira', telefone: '11988880001' });

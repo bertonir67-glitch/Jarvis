@@ -360,11 +360,6 @@ async function rotasAdmin(req, res, rota, met, q) {
     });
   }
 
-  if (met === 'GET' && sub === '/resumo') {
-    const texto = await ia.resumoDoDia(bd.indicadores(ag.hojeLocal()));
-    return json(res, { texto });
-  }
-
   /* Negocio */
   if (sub === '/negocio') {
     if (met === 'GET') return json(res, bd.lerNegocio());
@@ -574,15 +569,13 @@ async function tarefas() {
 servidor.listen(PORTA, () => {
   const n = bd.lerNegocio();
   console.log(`
-  ╭──────────────────────────────────────────────╮
-  │  Jarvis · Agenda com IA para negocios locais │
-  ╰──────────────────────────────────────────────╯
+  Jarvis  ·  agenda para negocios locais
 
-  Negocio ....... ${n.nome}
-  Portal cliente  http://localhost:${PORTA}/
-  Painel do dono  http://localhost:${PORTA}/admin
-  Assistente IA . ${ia.iaAtiva() ? 'Groq conectado' : 'modo local (sem GROQ_API_KEY)'}
-  WhatsApp ...... ${msg.whatsappAtivo() ? 'Cloud API conectada' : 'envio manual pelo painel'}
+  Negocio ......... ${n.nome}
+  Portal cliente .. http://localhost:${PORTA}/
+  Painel do dono .. http://localhost:${PORTA}/admin
+  Atendimento ..... ${ia.iaAtiva() ? 'Groq conectado' : 'modo local, sem GROQ_API_KEY'}
+  WhatsApp ........ ${msg.whatsappAtivo() ? 'Cloud API conectada' : 'envio manual pelo painel'}
 `);
   tarefas();
   setInterval(tarefas, 60_000);

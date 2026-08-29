@@ -30,12 +30,11 @@ function epochDe(data, hora) {
 export function textoConfirmacao(a) {
   const n = bd.lerNegocio();
   const primeiro = String(a.cliente_nome).split(' ')[0];
-  return `Oi, ${primeiro}! Seu horário na ${n.nome} está confirmado ✅\n\n` +
-         `📋 ${a.servico_nome}\n` +
-         `📅 ${ag.dataPorExtenso(a.data)}\n` +
-         `🕐 ${a.hora_inicio}\n` +
-         (a.profissional_nome ? `👤 com ${a.profissional_nome}\n` : '') +
-         (n.endereco ? `📍 ${n.endereco}\n` : '') +
+  return `Oi, ${primeiro}! Seu horário na ${n.nome} está confirmado.\n\n` +
+         `${a.servico_nome}\n` +
+         `${ag.dataPorExtenso(a.data)}, às ${a.hora_inicio}\n` +
+         (a.profissional_nome ? `com ${a.profissional_nome}\n` : '') +
+         (n.endereco ? `${n.endereco}\n` : '') +
          `\nCódigo: ${a.codigo}\n` +
          `Precisa remarcar? É só responder esta mensagem.`;
 }
@@ -43,10 +42,10 @@ export function textoConfirmacao(a) {
 export function textoLembrete(a) {
   const n = bd.lerNegocio();
   const primeiro = String(a.cliente_nome).split(' ')[0];
-  return `Oi, ${primeiro}! Passando pra lembrar do seu horário na ${n.nome} 😊\n\n` +
-         `📋 ${a.servico_nome}\n` +
-         `📅 ${ag.dataCurta(a.data)} as ${a.hora_inicio}\n` +
-         (a.profissional_nome ? `👤 com ${a.profissional_nome}\n` : '') +
+  return `Oi, ${primeiro}! Passando pra lembrar do seu horário na ${n.nome}.\n\n` +
+         `${a.servico_nome}\n` +
+         `${ag.dataCurta(a.data)} às ${a.hora_inicio}\n` +
+         (a.profissional_nome ? `com ${a.profissional_nome}\n` : '') +
          `\nConfirma pra gente? Se não puder vir, avisa que a gente remarca.`;
 }
 
@@ -62,7 +61,7 @@ export function textoAvaliacao(a, urlBase = '') {
   const n = bd.lerNegocio();
   const primeiro = String(a.cliente_nome).split(' ')[0];
   return `${primeiro}, tudo bem? Como foi seu ${a.servico_nome} na ${n.nome}?\n\n` +
-         `Sua opinião leva 10 segundos e ajuda muito a gente 💜\n` +
+         `Sua opinião leva 10 segundos e ajuda muito a gente.\n` +
          (urlBase ? `${urlBase}/avaliar/${a.codigo}` : `Responda com uma nota de 1 a 5.`);
 }
 
@@ -110,7 +109,7 @@ export function notificarRemarcacao(a) {
   bd.enfileirar({
     agendamento_id: a.id, telefone: a.cliente_telefone, nome: a.cliente_nome,
     tipo: 'confirmacao',
-    texto: `Prontinho! Seu horário foi remarcado:\n\n📋 ${a.servico_nome}\n📅 ${ag.dataPorExtenso(a.data)}\n🕐 ${a.hora_inicio}\n\nCódigo: ${a.codigo}`,
+    texto: `Prontinho! Seu horário foi remarcado:\n\n${a.servico_nome}\n${ag.dataPorExtenso(a.data)}, às ${a.hora_inicio}\n\nCódigo: ${a.codigo}`,
     agendado_para: agora()
   });
   notificarAgendamento(a);

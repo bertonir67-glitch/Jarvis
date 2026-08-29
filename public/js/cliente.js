@@ -1,4 +1,4 @@
-/* Portal do cliente — agendamento em 4 toques, assistente e meus horários */
+/* Portal do cliente — agendamento em 4 passos, atendimento e meus horários */
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -32,6 +32,12 @@ const soData = d => { const [a, m, dd] = d.split('-').map(Number); return new Da
 const extenso = d => { const x = soData(d); return `${DIAS[x.getDay()]}, ${x.getDate()} de ${MESES[x.getMonth()]}`; };
 const curta = d => { const x = soData(d); return `${String(x.getDate()).padStart(2, '0')}/${String(x.getMonth() + 1).padStart(2, '0')}`; };
 
+const vazio = (icone, texto, extra = '') => `
+  <div class="vazio">
+    <span class="icone-vazio">${ICONE[icone](26)}</span>${texto}
+    ${extra ? `<div style="margin-top:14px">${extra}</div>` : ''}
+  </div>`;
+
 function mascaraTelefone(v) {
   const n = v.replace(/\D/g, '').slice(0, 11);
   if (n.length <= 2) return n;
@@ -39,11 +45,6 @@ function mascaraTelefone(v) {
   if (n.length <= 10) return `(${n.slice(0, 2)}) ${n.slice(2, 6)}-${n.slice(6)}`;
   return `(${n.slice(0, 2)}) ${n.slice(2, 7)}-${n.slice(7)}`;
 }
-
-const ICONES = {
-  cabelo: '✂️', barba: '🪒', combo: '💈', estetica: '✨',
-  quimica: '🎨', unha: '💅', massagem: '💆', consulta: '🩺', padrao: '📋'
-};
 
 /* ------------------------------------------------------------- ESTADO */
 
@@ -69,7 +70,7 @@ $$('.aba').forEach(b => b.addEventListener('click', () => trocarAba(b.dataset.ab
 function trocarAba(nome) {
   $$('.aba').forEach(b => b.classList.toggle('ativa', b.dataset.aba === nome));
   $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === `painel-${nome}`));
-  if (nome === 'assistente' && !estado.conversaId) iniciarChat();
+  if (nome === 'conversar' && !estado.conversaId) iniciarChat();
   if (nome === 'meus') carregarSessao();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -102,18 +103,25 @@ async function iniciar() {
     $('#nomeNegocio').textContent = negocio.nome;
     $('#subNegocio').textContent = negocio.sobre || negocio.endereco || '';
     $('#rodapeNegocio').textContent = [negocio.endereco, negocio.telefone].filter(Boolean).join(' · ');
-    if (negocio.cor) document.documentElement.style.setProperty('--marca', negocio.cor);
+    if (negocio.cor) document.documentElement.style.setProperty('--acento', negocio.cor);
 
     if (negocio.endereco) {
       const l = $('#linkMapa');
       l.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(negocio.endereco)}`;
+      l.innerHTML = `${ICONE.mapa(15)} Como chegar`;
       l.hidden = false;
     }
     if (negocio.whatsapp) {
       const l = $('#linkZap');
       l.href = `https://wa.me/55${negocio.whatsapp.replace(/\D/g, '')}`;
+      l.innerHTML = `${ICONE.telefone(15)} WhatsApp`;
       l.hidden = false;
     }
+    $('#mesAnterior').innerHTML = ICONE.esquerda(17);
+    $('#mesSeguinte').innerHTML = ICONE.direita(17);
+    $('#btnEnviarChat').innerHTML = ICONE.enviar(17);
+    $('#marcaSucesso').innerHTML = ICONE.check(20);
+    $$('[data-fechar]').forEach(b => { if (!b.textContent.trim()) b.innerHTML = ICONE.fechar(18); });
     desenharServicos();
     carregarSessao();
     conferirLinkDeAvaliacao();
@@ -125,12 +133,11 @@ async function iniciar() {
 function desenharServicos() {
   const alvo = $('#listaServicos');
   if (!estado.servicos.length) {
-    alvo.innerHTML = `<div class="vazio"><span class="icone">📋</span>Nenhum serviço disponível no momento.</div>`;
+    alvo.innerHTML = vazio('vazio', 'Nenhum serviço disponível no momento.');
     return;
   }
   alvo.innerHTML = estado.servicos.map(s => `
     <button class="item-servico" data-id="${s.id}">
-      <span class="icone-servico">${ICONES[s.categoria] || ICONES.padrao}</span>
       <span class="info">
         <strong>${escapar(s.nome)}</strong>
         <small>${escapar(s.descricao || `${s.duracao_min} minutos`)}</small>
@@ -157,7 +164,7 @@ async function escolherServico(id) {
   $('#listaProfissionais').innerHTML = [
     ...equipe.map(p => `
       <button class="item-prof" data-id="${p.id}">
-        <span class="inicial" style="background:${p.cor || 'var(--marca)'}">${iniciais(p.nome)}</span>
+        <span class="inicial" style="background:${p.cor || 'var(--acento)'}">${iniciais(p.nome)}</span>
         <strong>${escapar(p.apelido || p.nome.split(' ')[0])}</strong>
         <small>${escapar(p.nome)}</small>
       </button>`),
@@ -186,7 +193,7 @@ async function abrirCalendario() {
   await desenharCalendario();
 }
 
-async function desenharCalendario() {
+async function desenharCalendario(pulosRestantes = 2) {
   const { ano, mes } = estado.mesVisivel;
   const grade = $('#gradeDias');
   grade.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:22px"><span class="carregando"></span></div>`;
@@ -204,6 +211,12 @@ async function desenharCalendario() {
   try { dias = await api(`/api/dias-com-vaga?${params}`); }
   catch { grade.innerHTML = `<div class="aviso" style="grid-column:1/-1">Não foi possível carregar o calendário.</div>`; return; }
 
+  // Mês inteiro sem vaga (serviço longo, profissional de folga): pula para o próximo
+  if (pulosRestantes > 0 && dias.every(d => d.vagas === 0)) {
+    mudarMes(1, pulosRestantes - 1);
+    return;
+  }
+
   const primeiroDow = new Date(ano, mes - 1, 1).getDay();
   const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
 
@@ -220,18 +233,25 @@ async function desenharCalendario() {
     }).join('');
 
   $$('.dia[data-data]', grade).forEach(b => b.addEventListener('click', () => escolherData(b.dataset.data)));
+
+  const semVaga = dias.every(d => d.vagas === 0);
+  $('.legenda-calendario').textContent = semVaga
+    ? 'Nenhum horário livre neste mês. Use a seta para ver o próximo.'
+    : '';
+  if (!semVaga) $('.legenda-calendario').innerHTML = '<i class="ponto"></i> dias com horário livre';
 }
 
-$('#mesAnterior').addEventListener('click', () => { mudarMes(-1); });
-$('#mesSeguinte').addEventListener('click', () => { mudarMes(1); });
+// Navegação manual não pula meses vazios: o cliente pediu para ver aquele mês
+$('#mesAnterior').addEventListener('click', () => mudarMes(-1, 0));
+$('#mesSeguinte').addEventListener('click', () => mudarMes(1, 0));
 
-function mudarMes(delta) {
+function mudarMes(delta, pulosRestantes = 2) {
   let { ano, mes } = estado.mesVisivel;
   mes += delta;
   if (mes < 1) { mes = 12; ano--; }
   if (mes > 12) { mes = 1; ano++; }
   estado.mesVisivel = { ano, mes };
-  desenharCalendario();
+  desenharCalendario(pulosRestantes);
 }
 
 async function escolherData(data) {
@@ -253,7 +273,7 @@ async function escolherData(data) {
   catch { $('#periodos').innerHTML = `<div class="aviso">Erro ao buscar horários.</div>`; return; }
 
   if (!slots.length) {
-    $('#periodos').innerHTML = `<div class="vazio"><span class="icone">😕</span>Sem horários livres nesse dia. Escolha outro no calendário.</div>`;
+    $('#periodos').innerHTML = vazio('calendario', 'Sem horários livres nesse dia. Escolha outro no calendário.');
     return;
   }
 
@@ -383,12 +403,12 @@ function mostrarMeus({ cliente, agendamentos }) {
       <button class="botao fantasma pequeno" id="btnTrocarCliente">Não sou eu</button>
     </div>
 
-    <h2 style="margin-bottom:12px">Próximos horários</h2>
+    <p class="titulo-secao">Próximos horários</p>
     ${futuros.length ? futuros.map(cartaoReserva).join('')
-      : `<div class="vazio"><span class="icone">📭</span>Você não tem horários marcados.
-           <br><button class="botao pequeno" style="margin-top:14px" onclick="document.querySelector('[data-aba=agendar]').click()">Marcar agora</button></div>`}
+      : vazio('vazio', 'Você não tem horários marcados.',
+              '<button class="botao pequeno" data-ir-agendar>Marcar agora</button>')}
 
-    ${passados.length ? `<h2 style="margin:26px 0 12px">Histórico</h2>${passados.slice(0, 8).map(cartaoReserva).join('')}` : ''}`;
+    ${passados.length ? `<p class="titulo-secao">Histórico</p>${passados.slice(0, 8).map(cartaoReserva).join('')}` : ''}`;
 
   $('#btnTrocarCliente').addEventListener('click', async () => {
     await fetch('/api/sair', { method: 'POST' });
@@ -398,6 +418,7 @@ function mostrarMeus({ cliente, agendamentos }) {
     $('#telConsulta').value = '';
   });
 
+  $$('[data-ir-agendar]').forEach(b => b.addEventListener('click', () => trocarAba('agendar')));
   $$('[data-cancelar]').forEach(b => b.addEventListener('click', () => cancelarReserva(b.dataset.cancelar)));
   $$('[data-avaliar]').forEach(b => b.addEventListener('click', () => abrirAvaliacao(b.dataset.avaliar, b.dataset.servico)));
 }
@@ -424,7 +445,7 @@ function cartaoReserva(a) {
       </div>
       <div class="reserva-acoes">
         ${futuro ? `<button class="botao neutro pequeno" data-cancelar="${a.codigo}">Cancelar</button>` : ''}
-        ${a.status === 'concluido' ? `<button class="botao fantasma pequeno" data-avaliar="${a.codigo}" data-servico="${escapar(a.servico_nome)}">⭐ Avaliar</button>` : ''}
+        ${a.status === 'concluido' ? `<button class="botao neutro pequeno" data-avaliar="${a.codigo}" data-servico="${escapar(a.servico_nome)}">Avaliar</button>` : ''}
       </div>
     </div>`;
 }
@@ -447,8 +468,12 @@ function abrirAvaliacao(codigo, servico) {
   $('#avaliarSub').textContent = servico ? `Sobre o seu ${servico}` : '';
   $('#avComentario').value = '';
   $('#btnEnviarAvaliacao').disabled = true;
-  $('#escolhaEstrelas').innerHTML = [1, 2, 3, 4, 5]
-    .map(n => `<button data-nota="${n}" aria-label="${n} estrelas">⭐</button>`).join('');
+  $('#escolhaEstrelas').innerHTML = [1, 2, 3, 4, 5].map(n =>
+    `<button data-nota="${n}" aria-label="${n} de 5">
+       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+         <path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9L3.5 9.7l5.9-.8z"/>
+       </svg>
+     </button>`).join('');
   $$('#escolhaEstrelas button').forEach(b => b.addEventListener('click', () => {
     estado.notaEscolhida = Number(b.dataset.nota);
     $$('#escolhaEstrelas button').forEach(x => x.classList.toggle('ativa', Number(x.dataset.nota) <= estado.notaEscolhida));
@@ -466,7 +491,7 @@ $('#btnEnviarAvaliacao').addEventListener('click', async () => {
       corpo: { codigo: estado.avaliando, nota: estado.notaEscolhida, comentario: $('#avComentario').value.trim() }
     });
     $('#modalAvaliar').classList.remove('ver');
-    recado('Obrigado pela avaliação! 💜', 'ok');
+    recado('Obrigado pela avaliação.', 'ok');
   } catch (e) { recado(e.message, 'erro'); }
 });
 
@@ -488,7 +513,7 @@ async function iniciarChat() {
     r.mensagens.forEach(m => desenharBalao(m.autor, m.texto));
     mostrarOpcoes(r.mensagens[r.mensagens.length - 1]?.opcoes || []);
   } catch {
-    $('#chatMensagens').innerHTML = `<div class="aviso">Não foi possível abrir o assistente.</div>`;
+    $('#chatMensagens').innerHTML = `<div class="aviso">Não foi possível abrir o atendimento.</div>`;
   }
 }
 
@@ -533,7 +558,7 @@ async function enviarChat(texto) {
     estado.conversaId = r.conversa_id;
     desenharBalao('ia', r.texto);
     mostrarOpcoes(r.opcoes);
-    if (r.acao === 'agendado') recado('Agendamento confirmado! 🎉', 'ok');
+    if (r.acao === 'agendado') recado('Agendamento confirmado.', 'ok');
     if (r.acao === 'cancelado') recado('Horário cancelado.', 'ok');
   } catch (e) {
     espera.remove();

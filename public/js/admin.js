@@ -43,7 +43,7 @@ const telFmt = t => { const n = String(t || '').replace(/\D/g, '');
   return n.length === 11 ? `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`
        : n.length === 10 ? `(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}` : t; };
 const maiuscula = t => String(t || '').charAt(0).toUpperCase() + String(t || '').slice(1);
-const estrelas = n => `<span class="estrelas">${'★'.repeat(n)}<span class="off">${'★'.repeat(5 - n)}</span></span>`;
+const estrelas = n => estrelasSvg(n);
 const desde = ts => {
   const s = Math.floor(Date.now() / 1000) - ts;
   if (s < 60) return 'agora';
@@ -59,8 +59,11 @@ const SELOS = {
 };
 const selo = st => { const [c, r] = SELOS[st] || ['cinza', st]; return `<span class="selo ${c}">${r}</span>`; };
 
-const vazio = (icone, texto, extra = '') =>
-  `<div class="vazio"><span class="icone">${icone}</span>${texto}${extra ? `<div style="margin-top:14px">${extra}</div>` : ''}</div>`;
+const vazio = (icone, texto, extra = '') => `
+  <div class="vazio">
+    <span class="icone-vazio">${ICONE[icone](26)}</span>${texto}
+    ${extra ? `<div style="margin-top:14px">${extra}</div>` : ''}
+  </div>`;
 
 /* ---------------------------------------------------------------- MODAL */
 
@@ -86,6 +89,11 @@ const TITULOS = {
 };
 
 const cache = { servicos: [], equipe: [], negocio: null };
+
+// Ícones do menu e da barra superior
+$$('[data-icone]').forEach(el => el.insertAdjacentHTML('afterbegin', ICONE[el.dataset.icone](17)));
+$('#abrirMenu').innerHTML = ICONE.painel(20);
+$('#modalFechar').innerHTML = ICONE.fechar(18);
 
 $$('.menu-item[data-tela]').forEach(b => b.addEventListener('click', () => abrirTela(b.dataset.tela)));
 
@@ -125,25 +133,20 @@ TELAS.painel = async (alvo) => {
   const i = d.indicadores;
 
   alvo.innerHTML = `
-    <div class="resumo-ia" id="resumoIA">
-      <div class="brilho">✨</div>
-      <div><strong>Resumo do dia</strong><p>Carregando…</p></div>
-    </div>
-
     <div class="indicadores">
       ${cartaoIndicador('Hoje', i.hoje, `${i.proximos_7_dias} nos próximos 7 dias`, '')}
       ${cartaoIndicador('Receita do mês', dinheiro(i.receita_mes), `${dinheiro(i.receita_prevista)} previstos`, 'verde')}
       ${cartaoIndicador('Nota média', i.nota_media || '—', `${i.total_avaliacoes} avaliações`, i.nota_media >= 4 ? 'verde' : 'ambar')}
-      ${cartaoIndicador('Agendado pela IA', `${i.taxa_ia}%`, `${i.agendados_pela_ia} de ${i.total_mes} no mês`, '')}
+      ${cartaoIndicador('Marcados sozinhos', `${i.taxa_ia}%`, `${i.agendados_pela_ia} de ${i.total_mes} no mês`, '')}
       ${cartaoIndicador('Clientes novos', i.clientes_novos_mes, 'neste mês', '')}
       ${cartaoIndicador('Faltas e cancelamentos', i.faltas_mes + i.cancelados_mes, `${i.faltas_mes} faltas · ${i.cancelados_mes} cancelados`, (i.faltas_mes + i.cancelados_mes) > 6 ? 'vermelho' : 'ambar')}
     </div>
 
     ${(!d.integracoes.ia || !d.integracoes.whatsapp) ? `
-      <div class="aviso info" style="margin-bottom:20px">
-        <strong>Você pode turbinar o assistente.</strong>
-        ${!d.integracoes.ia ? ' Configure <code>GROQ_API_KEY</code> para respostas ainda mais naturais.' : ''}
-        ${!d.integracoes.whatsapp ? ' Configure <code>WHATSAPP_TOKEN</code> para o envio automático — por enquanto as mensagens ficam na Central de Mensagens.' : ''}
+      <div class="aviso info" style="margin-bottom:22px">
+        <strong>Integrações opcionais.</strong>
+        ${!d.integracoes.ia ? ' Defina <code>GROQ_API_KEY</code> para respostas mais naturais no atendimento.' : ''}
+        ${!d.integracoes.whatsapp ? ' Defina <code>WHATSAPP_TOKEN</code> para envio automático — por enquanto as mensagens ficam na Central de Mensagens.' : ''}
       </div>` : ''}
 
     <div class="paineis">
@@ -151,12 +154,12 @@ TELAS.painel = async (alvo) => {
         <div class="bloco">
           <div class="bloco-topo">
             <h3>Agenda de hoje</h3>
-            <button class="botao pequeno" id="btnNovoAgendamento">+ Encaixar</button>
+            <button class="botao pequeno neutro" id="btnNovoAgendamento">Encaixar</button>
           </div>
           <div class="bloco-corpo sem-espaco">
             ${d.agenda_hoje.length
               ? d.agenda_hoje.map(linhaAgenda).join('')
-              : vazio('☕', 'Nenhum atendimento hoje.')}
+              : vazio('vazio', 'Nenhum atendimento hoje.')}
           </div>
         </div>
 
@@ -165,8 +168,8 @@ TELAS.painel = async (alvo) => {
           <div class="bloco-corpo">
             ${grafico(d.serie)}
             <div class="legenda-grafico">
-              <span><i style="background:var(--marca-suave)"></i>Total</span>
-              <span><i style="background:var(--marca)"></i>Marcados pelo assistente</span>
+              <span><i style="background:var(--acento-leve)"></i>Total</span>
+              <span><i style="background:var(--acento)"></i>Pelo atendimento automático</span>
             </div>
           </div>
         </div>
@@ -185,7 +188,7 @@ TELAS.painel = async (alvo) => {
                       <small>${a.hora_inicio} · ${escapar(a.cliente_nome)}</small>
                     </div>
                   </div>`).join('')
-              : vazio('📭', 'Agenda livre pela frente.')}
+              : vazio('calendario', 'Agenda livre pela frente.')}
           </div>
         </div>
 
@@ -201,7 +204,7 @@ TELAS.painel = async (alvo) => {
                   <small>${r.total} atendimento${r.total > 1 ? 's' : ''}</small>
                 </div>
                 <div class="fim"><strong>${dinheiro(r.receita)}</strong></div>
-              </div>`).join('') : vazio('📊', 'Sem dados ainda.')}
+              </div>`).join('') : vazio('painel', 'Sem dados ainda.')}
           </div>
         </div>
 
@@ -228,9 +231,6 @@ TELAS.painel = async (alvo) => {
   $('#btnNovoAgendamento')?.addEventListener('click', () => modalNovoAgendamento());
   ligarAcoesAgenda();
 
-  api('/api/admin/resumo')
-    .then(r => { $('#resumoIA p').textContent = r.texto; })
-    .catch(() => { $('#resumoIA').remove(); });
 };
 
 const cartaoIndicador = (rotulo, valor, nota, cor) => `
@@ -241,10 +241,10 @@ const cartaoIndicador = (rotulo, valor, nota, cor) => `
   </div>`;
 
 function grafico(serie) {
-  if (!serie.length) return vazio('📈', 'Sem movimento registrado ainda.');
+  if (!serie.length) return vazio('painel', 'Sem movimento registrado ainda.');
   const max = Math.max(...serie.map(s => s.total), 1);
   return `<div class="grafico">${serie.map(s => `
-    <div class="coluna" title="${curta(s.data)}: ${s.total} agendamentos (${s.por_ia} pelo assistente)">
+    <div class="coluna" title="${curta(s.data)}: ${s.total} agendamentos, ${s.por_ia} pelo atendimento automático">
       <div class="barra-viz" style="height:${Math.round((s.total / max) * 118)}px">
         <div class="parte-ia" style="height:${Math.round((s.por_ia / Math.max(s.total, 1)) * 100)}%"></div>
       </div>
@@ -255,7 +255,7 @@ function grafico(serie) {
 function linhaAgenda(a) {
   return `
     <div class="linha-lista" data-agendamento="${a.id}">
-      <span class="marca-prof" style="background:${a.profissional_cor || 'var(--marca)'}"></span>
+      <span class="marca-prof" style="background:${a.profissional_cor || 'var(--acento)'}"></span>
       <span class="horario">${a.hora_inicio}</span>
       <div class="principal">
         <strong>${escapar(a.cliente_nome)}</strong>
@@ -281,13 +281,13 @@ TELAS.agenda = async (alvo) => {
   filtroAgenda.ate = filtroAgenda.ate || somarDias(filtroAgenda.de, 13);
   await carregarBase();
 
-  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovo">+ Novo agendamento</button>`;
+  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovo">${ICONE.mais(16)} Novo agendamento</button>`;
   $('#btnNovo').addEventListener('click', () => modalNovoAgendamento());
 
   alvo.innerHTML = `
     <div class="filtros">
       <input type="date" id="fDe" value="${filtroAgenda.de}">
-      <span style="color:var(--apagado)">até</span>
+      <span class="ate">até</span>
       <input type="date" id="fAte" value="${filtroAgenda.ate}">
       <select id="fProf">
         <option value="">Toda a equipe</option>
@@ -325,7 +325,7 @@ async function desenharAgenda() {
 
   const lista = await api(`/api/admin/agenda?${p}`);
   if (!lista.length) {
-    alvo.innerHTML = vazio('📭', 'Nenhum agendamento nesse período.');
+    alvo.innerHTML = vazio('calendario', 'Nenhum agendamento nesse período.');
     return;
   }
 
@@ -359,7 +359,7 @@ async function modalAgendamento(id) {
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Quando</span><strong style="text-transform:capitalize">${extenso(a.data)}, ${a.hora_inicio}</strong></div>
       ${a.profissional_nome ? `<div style="display:flex;justify-content:space-between;padding:3px 0"><span>Profissional</span><strong>${escapar(a.profissional_nome)}</strong></div>` : ''}
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Valor</span><strong>${dinheiro(a.preco)}</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Origem</span><strong>${({ chat: 'Assistente IA', site: 'Site', admin: 'Painel' })[a.origem] || a.origem}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Origem</span><strong>${({ chat: 'Atendimento automático', site: 'Site', admin: 'Painel' })[a.origem] || a.origem}</strong></div>
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Situação</span>${selo(a.status)}</div>
       ${a.observacao ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--linha)"><small>Observação: ${escapar(a.observacao)}</small></div>` : ''}
     </div>
@@ -381,7 +381,7 @@ async function modalAgendamento(id) {
       <p class="dica">Ao remarcar, o cliente recebe uma nova confirmação.</p>
     </div>
 
-    <a class="botao neutro bloco" href="https://wa.me/55${a.cliente_telefone}" target="_blank" rel="noopener">💬 Falar com ${escapar(a.cliente_nome.split(' ')[0])}</a>
+    <a class="botao neutro bloco" href="https://wa.me/55${a.cliente_telefone}" target="_blank" rel="noopener">Falar com ${escapar(a.cliente_nome.split(' ')[0])} no WhatsApp</a>
   `, [
     { rotulo: 'Fechar', classe: 'neutro', aoClicar: fecharModal },
     { rotulo: 'Salvar remarcação', aoClicar: () => salvarRemarcacao(a.id) }
@@ -530,10 +530,10 @@ TELAS.conversas = async (alvo) => {
                 <span class="quando">${desde(c.ultima_em)}</span>
               </div>
               <p>${escapar(c.ultima_msg || 'Sem mensagens')}</p>
-            </div>`).join('') : vazio('💬', 'Nenhuma conversa ainda.')}
+            </div>`).join('') : vazio('conversas', 'Nenhuma conversa ainda.')}
         </div>
         <div class="inbox-conversa" id="inboxConversa">
-          ${vazio('👈', 'Escolha uma conversa para ler.')}
+          ${vazio('conversas', 'Escolha uma conversa para ler.')}
         </div>
       </div>
     </div>`;
@@ -549,14 +549,14 @@ async function abrirConversa(id) {
   alvo.innerHTML = `<div style="text-align:center;padding:50px"><span class="carregando"></span></div>`;
   const c = await api(`/api/admin/conversas/${id}`);
 
-  const AUTOR = { cliente: 'Cliente', ia: 'Assistente IA', humano: 'Você' };
+  const AUTOR = { cliente: 'Cliente', ia: 'Atendimento', humano: 'Você' };
   alvo.innerHTML = `
     <div class="bloco-topo">
       <div>
         <h3>${escapar(c.nome || telFmt(c.telefone) || 'Visitante')}</h3>
         <small style="color:var(--apagado)">${c.telefone ? telFmt(c.telefone) : 'sem telefone'} · canal ${c.canal}</small>
       </div>
-      ${c.telefone ? `<a class="botao pequeno neutro" href="https://wa.me/55${c.telefone}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}
+      ${c.telefone ? `<a class="botao pequeno neutro" href="https://wa.me/55${c.telefone}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
     </div>
     <div class="inbox-msgs" id="msgs">
       ${c.mensagens.map(m => `
@@ -611,7 +611,7 @@ TELAS.mensagens = async (alvo) => {
       </div>
       <div class="bloco-corpo sem-espaco">
         ${aEnviar.length ? aEnviar.map(m => cartaoMensagem(m, TIPOS, ESTADOS)).join('')
-          : vazio('✅', 'Tudo em dia! Nenhuma mensagem pendente.')}
+          : vazio('check', 'Tudo em dia. Nenhuma mensagem pendente.')}
       </div>
     </div>
 
@@ -628,7 +628,7 @@ TELAS.mensagens = async (alvo) => {
               <small>${(TIPOS[m.tipo] || ['', m.tipo])[1]} · ${new Date(m.agendado_para * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</small>
             </div>
             <div class="fim"><span class="selo cinza">Agendada</span></div>
-          </div>`).join('') : vazio('⏰', 'Nada programado.')}
+          </div>`).join('') : vazio('relogio', 'Nada programado.')}
       </div>
     </div>
 
@@ -642,7 +642,7 @@ TELAS.mensagens = async (alvo) => {
               <small>${(TIPOS[m.tipo] || ['', m.tipo])[1]} · ${escapar(m.texto.slice(0, 58))}…</small>
             </div>
             <div class="fim"><span class="selo ${(ESTADOS[m.status] || ['cinza'])[0]}">${(ESTADOS[m.status] || ['', m.status])[1]}</span></div>
-          </div>`).join('') || vazio('📭', 'Sem histórico ainda.')}
+          </div>`).join('') || vazio('vazio', 'Sem histórico ainda.')}
       </div>
     </div>`;
 
@@ -668,7 +668,7 @@ const cartaoMensagem = (m, TIPOS, ESTADOS) => `
     </div>
     <div class="texto">${escapar(m.texto)}</div>
     <div class="msg-fila-acoes">
-      <a class="botao pequeno" href="${m.link}" target="_blank" rel="noopener">💬 Enviar pelo WhatsApp</a>
+      <a class="botao pequeno" href="${m.link}" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
       <button class="botao pequeno neutro" data-enviada="${m.id}">Marcar como enviada</button>
     </div>
   </div>`;
@@ -698,7 +698,7 @@ TELAS.clientes = async (alvo) => {
             <td>${c.ultima_visita ? curta(c.ultima_visita) : '—'}</td>
             <td style="text-align:right"><button class="botao fantasma pequeno" data-cliente="${c.id}">Ver ficha</button></td>
           </tr>`).join('')}</tbody>
-      </table>` : vazio('👥', 'Nenhum cliente encontrado.');
+      </table>` : vazio('clientes', 'Nenhum cliente encontrado.');
 
     $$('[data-cliente]').forEach(b => b.addEventListener('click', () => modalCliente(b.dataset.cliente)));
   };
@@ -725,7 +725,7 @@ async function modalCliente(id) {
       <label>WhatsApp</label>
       <div style="display:flex;gap:8px;align-items:center">
         <strong>${telFmt(c.telefone)}</strong>
-        <a class="botao pequeno neutro" href="https://wa.me/55${c.telefone}" target="_blank" rel="noopener">💬 Chamar</a>
+        <a class="botao pequeno neutro" href="https://wa.me/55${c.telefone}" target="_blank" rel="noopener">Chamar no WhatsApp</a>
       </div>
     </div>
     <div class="campo">
@@ -742,7 +742,7 @@ async function modalCliente(id) {
               <small>${curta(a.data)} · ${a.hora_inicio} · ${dinheiro(a.preco)}</small>
             </div>
             <div class="fim">${selo(a.status)}</div>
-          </div>`).join('') : vazio('📭', 'Sem histórico.')}
+          </div>`).join('') : vazio('vazio', 'Sem histórico.')}
       </div>
     </div>
   `, [
@@ -772,10 +772,10 @@ TELAS.avaliacoes = async (alvo) => {
     <div class="bloco">
       <div class="bloco-topo">
         <h3>Todas as avaliações</h3>
-        <small style="color:var(--apagado)">A IA escreve a resposta — você revisa e publica</small>
+        <small>A resposta é sugerida automaticamente; você revisa e publica</small>
       </div>
       <div class="bloco-corpo sem-espaco">
-        ${lista.length ? lista.map(cartaoAvaliacao).join('') : vazio('⭐', 'Nenhuma avaliação ainda.')}
+        ${lista.length ? lista.map(cartaoAvaliacao).join('') : vazio('estrela', 'Nenhuma avaliação ainda.')}
       </div>
     </div>`;
 
@@ -810,8 +810,8 @@ function cartaoAvaliacao(av) {
           <span class="etiqueta">Sua resposta</span>${escapar(av.resposta)}
         </div>` : ''}
       <div class="avaliacao-acoes">
-        <button class="botao pequeno ${av.resposta ? 'neutro' : ''}" data-gerar="${av.id}">
-          ✨ ${av.resposta ? 'Gerar outra' : 'Gerar resposta com IA'}
+        <button class="botao pequeno neutro" data-gerar="${av.id}">
+          ${av.resposta ? 'Sugerir outra' : 'Sugerir resposta'}
         </button>
         ${av.resposta ? `<button class="botao pequeno neutro" data-editar="${av.id}">Editar</button>` : ''}
         ${av.resposta && !publicada ? `<button class="botao pequeno sucesso" data-publicar="${av.id}">Marcar como publicada</button>` : ''}
@@ -822,10 +822,10 @@ function cartaoAvaliacao(av) {
 async function gerarResposta(id, botao) {
   const original = botao.innerHTML;
   botao.disabled = true;
-  botao.innerHTML = '<span class="carregando"></span> Escrevendo…';
+  botao.innerHTML = '<span class="carregando"></span> Escrevendo';
   try {
     const r = await api('/api/admin/avaliacoes/gerar-resposta', { method: 'POST', corpo: { id } });
-    recado(r.gerado_por_ia ? 'Resposta gerada pela IA.' : 'Resposta gerada (modelo local).');
+    recado('Sugestão de resposta pronta para revisar.');
     abrirTela('avaliacoes');
     setTimeout(() => $(`#av-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
   } catch (e) {
@@ -863,7 +863,7 @@ TELAS.servicos = async (alvo) => {
   const lista = await api('/api/admin/servicos');
   cache.servicos = lista;
 
-  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovoServico">+ Novo serviço</button>`;
+  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovoServico">${ICONE.mais(16)} Novo serviço</button>`;
   $('#btnNovoServico').addEventListener('click', () => modalServico());
 
   alvo.innerHTML = lista.length ? `<div class="grade-cartoes">${lista.map(s => `
@@ -871,8 +871,8 @@ TELAS.servicos = async (alvo) => {
       <h4>${escapar(s.nome)}</h4>
       <p class="desc">${escapar(s.descricao || 'Sem descrição')}</p>
       <div class="metricas">
-        <span>💰 <b>${dinheiro(s.preco)}</b></span>
-        <span>⏱ <b>${s.duracao_min} min</b></span>
+        <span><b>${dinheiro(s.preco)}</b></span>
+        <span><b>${s.duracao_min} min</b></span>
       </div>
       <div class="acoes">
         <button class="botao pequeno neutro" data-editar-servico="${s.id}">Editar</button>
@@ -880,8 +880,9 @@ TELAS.servicos = async (alvo) => {
                   : `<span class="selo cinza">Inativo</span>`}
       </div>
     </div>`).join('')}</div>`
-    : vazio('✂️', 'Nenhum serviço cadastrado.', '<button class="botao" onclick="modalServico()">Criar o primeiro</button>');
+    : vazio('servicos', 'Nenhum serviço cadastrado.', '<button class="botao" data-novo-servico>Criar o primeiro</button>');
 
+  $$('[data-novo-servico]').forEach(b => b.addEventListener('click', () => modalServico()));
   $$('[data-editar-servico]').forEach(b =>
     b.addEventListener('click', () => modalServico(lista.find(s => s.id === b.dataset.editarServico))));
   $$('[data-remover-servico]').forEach(b => b.addEventListener('click', async () => {
@@ -954,7 +955,7 @@ TELAS.equipe = async (alvo) => {
   cache.equipe = lista;
   cache.servicos = servicos;
 
-  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovoProf">+ Adicionar pessoa</button>`;
+  $('#barraAcoes').innerHTML = `<button class="botao" id="btnNovoProf">${ICONE.mais(16)} Adicionar pessoa</button>`;
   $('#btnNovoProf').addEventListener('click', () => modalProfissional());
 
   alvo.innerHTML = lista.length ? `<div class="grade-cartoes">${lista.map(p => `
@@ -968,7 +969,7 @@ TELAS.equipe = async (alvo) => {
                   : `<span class="selo cinza">Inativo</span>`}
       </div>
     </div>`).join('')}</div>`
-    : vazio('🧑‍🔧', 'Nenhuma pessoa na equipe.',
+    : vazio('equipe', 'Nenhuma pessoa na equipe.',
         '<p style="font-size:.85rem">Sem equipe cadastrada o sistema trabalha com uma agenda única.</p>');
 
   $$('[data-editar-prof]').forEach(b =>
@@ -982,7 +983,7 @@ TELAS.equipe = async (alvo) => {
 };
 
 function modalProfissional(p = null) {
-  const cores = ['#6c5ce7', '#00b894', '#e17055', '#0984e3', '#e84393', '#f59f00', '#00838f'];
+  const cores = ['#5f7a6e', '#7d8fa3', '#a08464', '#8a7ba0', '#9b7f7a', '#6f8a84', '#8d9470'];
   let corEscolhida = p?.cor || cores[0];
   abrirModal(p ? 'Editar pessoa' : 'Nova pessoa na equipe', `
     <div class="campo">
@@ -1004,7 +1005,7 @@ function modalProfissional(p = null) {
       <div style="display:flex;gap:8px">
         ${cores.map(c => `
           <button type="button" data-cor="${c}" class="escolha-cor"
-            style="width:32px;height:32px;border-radius:50%;background:${c};border:3px solid ${(p?.cor || cores[0]) === c ? 'var(--tinta)' : 'transparent'};cursor:pointer"></button>`).join('')}
+            style="width:26px;height:26px;border-radius:50%;background:${c};border:2px solid ${(p?.cor || cores[0]) === c ? 'var(--tinta)' : 'var(--linha)'};cursor:pointer"></button>`).join('')}
       </div>
     </div>
     <div class="campo">
@@ -1039,7 +1040,7 @@ function modalProfissional(p = null) {
 
   $$('.escolha-cor').forEach(b => b.addEventListener('click', () => {
     corEscolhida = b.dataset.cor;
-    $$('.escolha-cor').forEach(x => x.style.border = `3px solid ${x.dataset.cor === corEscolhida ? 'var(--tinta)' : 'transparent'}`);
+    $$('.escolha-cor').forEach(x => x.style.border = `2px solid ${x.dataset.cor === corEscolhida ? 'var(--tinta)' : 'var(--linha)'}`);
   }));
 }
 
@@ -1072,7 +1073,7 @@ TELAS.horarios = async (alvo) => {
     <div class="bloco" style="margin-top:16px">
       <div class="bloco-topo">
         <h3>Folgas, férias e feriados</h3>
-        <button class="botao pequeno" id="btnNovoBloqueio">+ Bloquear período</button>
+        <button class="botao pequeno neutro" id="btnNovoBloqueio">Bloquear período</button>
       </div>
       <div class="bloco-corpo sem-espaco">
         ${bloqueios.length ? bloqueios.map(b => `
@@ -1084,7 +1085,7 @@ TELAS.horarios = async (alvo) => {
                 · ${b.profissional_nome ? escapar(b.profissional_nome) : 'toda a equipe'}</small>
             </div>
             <div class="fim"><button class="botao fantasma pequeno" data-remover-bloqueio="${b.id}">Remover</button></div>
-          </div>`).join('') : vazio('🏖️', 'Nenhum período bloqueado.')}
+          </div>`).join('') : vazio('bloqueio', 'Nenhum período bloqueado.')}
       </div>
     </div>`;
 
@@ -1102,7 +1103,7 @@ TELAS.horarios = async (alvo) => {
             ${doDia.length
               ? doDia.map(f => faixaHtml(f.abre, f.fecha)).join('')
               : faixaHtml('09:00', '18:00')}
-            <button type="button" class="botao fantasma pequeno add-faixa">+ intervalo</button>
+            <button type="button" class="botao fantasma pequeno add-faixa">Adicionar intervalo</button>
           </div>
         </div>`;
     }).join('');
@@ -1112,9 +1113,9 @@ TELAS.horarios = async (alvo) => {
   const faixaHtml = (abre, fecha) => `
     <span class="faixa">
       <input type="time" class="abre" value="${abre}">
-      <span style="color:var(--apagado)">–</span>
+      <span class="tracinho">–</span>
       <input type="time" class="fecha" value="${fecha}">
-      <button type="button" class="remover" title="Remover">&times;</button>
+      <button type="button" class="remover" title="Remover" aria-label="Remover">${ICONE.fechar(14)}</button>
     </span>`;
 
   function ligarExpediente() {
@@ -1330,7 +1331,7 @@ async function carregarBase(forcar = false) {
   cache.equipe = equipe;
   cache.negocio = negocio;
   $('#lateralNome').textContent = negocio.nome;
-  if (negocio.cor) document.documentElement.style.setProperty('--marca', negocio.cor);
+  if (negocio.cor) document.documentElement.style.setProperty('--acento', negocio.cor);
 }
 
 async function atualizarContadores() {

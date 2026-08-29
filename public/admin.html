@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Painel · Jarvis</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Painel</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f7a6e' stroke-width='1.5'><rect x='3' y='3' width='7' height='9' rx='1'/><rect x='14' y='3' width='7' height='5' rx='1'/><rect x='14' y='12' width='7' height='9' rx='1'/><rect x='3' y='16' width='7' height='5' rx='1'/></svg>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+<noscript><link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="/css/estilo.css">
 <link rel="stylesheet" href="/css/admin.css">
 </head>
@@ -15,34 +17,31 @@
 
 <aside class="lateral" id="lateral">
   <div class="lateral-topo">
-    <div class="logo">💈</div>
-    <div class="logo-texto">
-      <strong id="lateralNome">Carregando…</strong>
-      <small>Painel do dono</small>
-    </div>
+    <strong id="lateralNome">Carregando…</strong>
+    <small>Painel do negócio</small>
   </div>
 
   <nav class="menu">
     <span class="menu-grupo">Dia a dia</span>
-    <button class="menu-item ativo" data-tela="painel"><i>📊</i> Painel</button>
-    <button class="menu-item" data-tela="agenda"><i>📅</i> Agenda</button>
-    <button class="menu-item" data-tela="conversas"><i>💬</i> Conversas <span class="conta" id="contaConversas"></span></button>
-    <button class="menu-item" data-tela="mensagens"><i>📤</i> Mensagens <span class="conta" id="contaMensagens"></span></button>
+    <button class="menu-item ativo" data-tela="painel" data-icone="painel">Painel</button>
+    <button class="menu-item" data-tela="agenda" data-icone="agenda">Agenda</button>
+    <button class="menu-item" data-tela="conversas" data-icone="conversas">Conversas<span class="conta" id="contaConversas"></span></button>
+    <button class="menu-item" data-tela="mensagens" data-icone="mensagens">Mensagens<span class="conta" id="contaMensagens"></span></button>
 
     <span class="menu-grupo">Relacionamento</span>
-    <button class="menu-item" data-tela="clientes"><i>👥</i> Clientes</button>
-    <button class="menu-item" data-tela="avaliacoes"><i>⭐</i> Avaliações <span class="conta" id="contaAvaliacoes"></span></button>
+    <button class="menu-item" data-tela="clientes" data-icone="clientes">Clientes</button>
+    <button class="menu-item" data-tela="avaliacoes" data-icone="estrela">Avaliações<span class="conta" id="contaAvaliacoes"></span></button>
 
     <span class="menu-grupo">Configuração</span>
-    <button class="menu-item" data-tela="servicos"><i>✂️</i> Serviços</button>
-    <button class="menu-item" data-tela="equipe"><i>🧑‍🔧</i> Equipe</button>
-    <button class="menu-item" data-tela="horarios"><i>🕐</i> Horários</button>
-    <button class="menu-item" data-tela="ajustes"><i>⚙️</i> Ajustes</button>
+    <button class="menu-item" data-tela="servicos" data-icone="servicos">Serviços</button>
+    <button class="menu-item" data-tela="equipe" data-icone="equipe">Equipe</button>
+    <button class="menu-item" data-tela="horarios" data-icone="horarios">Horários</button>
+    <button class="menu-item" data-tela="ajustes" data-icone="ajustes">Ajustes</button>
   </nav>
 
   <div class="lateral-rodape">
-    <a href="/" target="_blank" class="menu-item externo"><i>🔗</i> Ver página do cliente</a>
-    <button class="menu-item" id="btnSair"><i>🚪</i> Sair</button>
+    <a href="/" target="_blank" rel="noopener" class="menu-item" data-icone="externo">Página do cliente</a>
+    <button class="menu-item" id="btnSair" data-icone="sair">Sair</button>
   </div>
 </aside>
 
@@ -50,7 +49,7 @@
 
 <main class="conteudo">
   <header class="barra">
-    <button class="menu-hamburguer" id="abrirMenu" aria-label="Abrir menu">☰</button>
+    <button class="menu-hamburguer" id="abrirMenu" aria-label="Abrir menu"></button>
     <div>
       <h1 id="tituloTela">Painel</h1>
       <p class="data-hoje" id="dataHoje"></p>
@@ -76,12 +75,13 @@
 
 <div class="modal" id="modal">
   <div class="caixa">
-    <div class="topo"><h3 id="modalTitulo"></h3><button class="fechar" id="modalFechar">&times;</button></div>
+    <div class="topo"><h3 id="modalTitulo"></h3><button class="fechar" id="modalFechar" aria-label="Fechar"></button></div>
     <div class="corpo" id="modalCorpo"></div>
     <div class="rodape" id="modalRodape"></div>
   </div>
 </div>
 
+<script src="/js/icones.js"></script>
 <script src="/js/admin.js"></script>
 </body>
 </html>

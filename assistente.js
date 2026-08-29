@@ -128,14 +128,14 @@ async function rotear(conversaId, texto, estado, d, conversa) {
 
 async function menuInicial(estado, prefixo = '') {
   const n = bd.lerNegocio();
-  const boas = n.boas_vindas || `Oi! Sou o assistente da ${n.nome}. Posso te ajudar a marcar um horário agora mesmo.`;
+  const boas = n.boas_vindas || `Olá! Aqui é da ${n.nome}. Posso te ajudar a marcar um horário agora mesmo.`;
   return {
     texto: await ia.humanizar(`${prefixo ? prefixo + ' ' : ''}${boas} O que você precisa?`, { curto: true }),
     opcoes: [
-      { rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' },
-      { rotulo: '🔎 Ver meus horários', valor: 'quero ver meus agendamentos' },
-      { rotulo: '💰 Preços', valor: 'quais são os preços' },
-      { rotulo: '📍 Onde fica', valor: 'onde vocês ficam' }
+      { rotulo: 'Marcar horário', valor: 'quero marcar um horário' },
+      { rotulo: 'Ver meus horários', valor: 'quero ver meus agendamentos' },
+      { rotulo: 'Preços', valor: 'quais são os preços' },
+      { rotulo: 'Onde fica', valor: 'onde vocês ficam' }
     ],
     estadoNovo: { ...estado, etapa: 'inicio' }
   };
@@ -166,7 +166,7 @@ async function horarioFuncionamento(estado) {
     `• ${nome.charAt(0).toUpperCase() + nome.slice(1)}: ${porDia[i] ? porDia[i].join(' e ') : 'fechado'}`).join('\n');
   return {
     texto: await ia.humanizar(`Funcionamos assim:\n\n${linhas}`, { fatos: linhas, curto: false }),
-    opcoes: [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }],
+    opcoes: [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }],
     estadoNovo: { ...estado, etapa: 'inicio' }
   };
 }
@@ -174,13 +174,13 @@ async function horarioFuncionamento(estado) {
 async function ondeFica(estado) {
   const n = bd.lerNegocio();
   const partes = [];
-  if (n.endereco) partes.push(`📍 ${n.endereco}`);
-  if (n.whatsapp || n.telefone) partes.push(`📞 ${n.whatsapp || n.telefone}`);
-  if (n.instagram) partes.push(`📷 ${n.instagram}`);
+  if (n.endereco) partes.push(n.endereco);
+  if (n.whatsapp || n.telefone) partes.push(`Telefone: ${n.whatsapp || n.telefone}`);
+  if (n.instagram) partes.push(`Instagram: ${n.instagram}`);
   const texto = partes.length ? partes.join('\n') : 'Nosso endereço ainda não está cadastrado aqui, mas posso confirmar com a equipe.';
-  const opcoes = [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }];
+  const opcoes = [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }];
   if (n.endereco) {
-    opcoes.unshift({ rotulo: '🗺️ Abrir no mapa', valor: 'mapa', tipo: 'link',
+    opcoes.unshift({ rotulo: 'Abrir no mapa', valor: 'mapa', tipo: 'link',
                      url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(n.endereco)}` });
   }
   return { texto, opcoes, estadoNovo: { ...estado, etapa: 'inicio' } };
@@ -193,7 +193,7 @@ async function falarComHumano(conversaId, estado) {
     texto: `Claro! Já avisei a equipe da ${n.nome} — alguém te responde por aqui.` +
            (n.whatsapp ? `\n\nSe preferir, chama direto no ${n.whatsapp}.` : ''),
     opcoes: n.whatsapp
-      ? [{ rotulo: '💬 Abrir WhatsApp', valor: 'whatsapp', tipo: 'link',
+      ? [{ rotulo: 'Abrir WhatsApp', valor: 'whatsapp', tipo: 'link',
            url: `https://wa.me/55${bd.normalizarTelefone(n.whatsapp)}` }]
       : [],
     estadoNovo: { ...estado, etapa: 'humano', aguardando_humano: true }
@@ -302,14 +302,14 @@ async function pedirData(e, prefixo = '') {
     const n = bd.lerNegocio();
     return {
       texto: `Poxa, não encontrei vagas nos próximos dias. ${n.whatsapp ? `Chama no ${n.whatsapp} que a gente dá um jeito!` : 'Tenta outro serviço ou fala com a equipe.'}`,
-      opcoes: [{ rotulo: '↩️ Escolher outro serviço', valor: 'quero marcar outro serviço' }],
+      opcoes: [{ rotulo: 'Escolher outro serviço', valor: 'quero marcar outro serviço' }],
       estadoNovo: { ...e, etapa: 'escolhendo_servico', servico_id: null }
     };
   }
   return {
     texto: `${prefixo ? prefixo + ' ' : ''}Para que dia você quer?`,
     opcoes: dias.map(d => ({ rotulo: d.rotulo, valor: d.data, tipo: 'data' }))
-      .concat([{ rotulo: '📆 Outra data', valor: 'quero outra data', tipo: 'calendário' }]),
+      .concat([{ rotulo: 'Outra data', valor: 'quero outra data', tipo: 'calendario' }]),
     estadoNovo: { ...e, etapa: 'escolhendo_data' }
   };
 }
@@ -328,7 +328,7 @@ async function pedirHora(e) {
     if (!alternativas.length) {
       return {
         texto: `Não temos horário em ${ag.dataCurta(e.data)} nem nos dias seguintes. Quer tentar outro serviço?`,
-        opcoes: [{ rotulo: '↩️ Recomeçar', valor: 'menu' }],
+        opcoes: [{ rotulo: 'Recomeçar', valor: 'menu' }],
         estadoNovo: { ...e, etapa: 'escolhendo_data', data: null }
       };
     }
@@ -393,8 +393,8 @@ async function confirmar(e) {
   return {
     texto: `Confere pra mim:\n\n${resumo}\n\nPosso confirmar?`,
     opcoes: [
-      { rotulo: '✅ Confirmar', valor: 'sim, confirmar' },
-      { rotulo: '🔄 Trocar horário', valor: 'não, quero outro horário' }
+      { rotulo: 'Confirmar', valor: 'sim, confirmar' },
+      { rotulo: 'Trocar horário', valor: 'não, quero outro horário' }
     ],
     estadoNovo: { ...e, etapa: 'confirmando', profissional_id: prof?.id || null }
   };
@@ -415,7 +415,7 @@ async function gravar(e) {
     notificarAgendamento(agendamento);
 
     const texto =
-      `Pronto, ${String(e.nome).split(' ')[0]}! Seu horário está confirmado. 🎉\n\n` +
+      `Pronto, ${String(e.nome).split(' ')[0]}! Seu horário está confirmado.\n\n` +
       `${agendamento.servico_nome}\n` +
       `${ag.dataPorExtenso(agendamento.data)} às ${agendamento.hora_inicio}\n` +
       (agendamento.profissional_nome ? `com ${agendamento.profissional_nome}\n` : '') +
@@ -425,8 +425,8 @@ async function gravar(e) {
     return {
       texto,
       opcoes: [
-        { rotulo: '📅 Marcar outro', valor: 'quero marcar outro horário' },
-        { rotulo: '🔎 Meus horários', valor: 'ver meus agendamentos' }
+        { rotulo: 'Marcar outro', valor: 'quero marcar outro horário' },
+        { rotulo: 'Meus horários', valor: 'ver meus agendamentos' }
       ],
       estadoNovo: { etapa: 'inicio', nome: e.nome, telefone: e.telefone },
       acao: 'agendado',
@@ -438,7 +438,7 @@ async function gravar(e) {
     }
     return {
       texto: `Ops: ${erro.message}`,
-      opcoes: [{ rotulo: '↩️ Tentar de novo', valor: 'quero marcar um horário' }],
+      opcoes: [{ rotulo: 'Tentar de novo', valor: 'quero marcar um horário' }],
       estadoNovo: { ...e, etapa: 'inicio' }
     };
   }
@@ -469,7 +469,7 @@ async function consultarAgendamentos(estado, d) {
   if (!lista.length) {
     return {
       texto: 'Não encontrei nenhum horário marcado no seu nome. Quer marcar um agora?',
-      opcoes: [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }],
+      opcoes: [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }],
       estadoNovo: { ...estado, etapa: 'inicio' }
     };
   }
@@ -480,8 +480,8 @@ async function consultarAgendamentos(estado, d) {
   return {
     texto: `Você tem ${lista.length === 1 ? 'este horário marcado' : `${lista.length} horários marcados`}:\n\n${linhas}`,
     opcoes: [
-      { rotulo: '📅 Marcar outro', valor: 'quero marcar outro horário' },
-      { rotulo: '❌ Cancelar um', valor: 'quero cancelar' }
+      { rotulo: 'Marcar outro', valor: 'quero marcar outro horário' },
+      { rotulo: 'Cancelar um', valor: 'quero cancelar' }
     ],
     estadoNovo: { ...estado, etapa: 'inicio' }
   };
@@ -501,7 +501,7 @@ async function iniciarCancelamento(estado, d) {
   if (!lista.length) {
     return {
       texto: 'Não achei nenhum horário ativo no seu nome pra cancelar.',
-      opcoes: [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }],
+      opcoes: [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }],
       estadoNovo: { ...estado, etapa: 'inicio' }
     };
   }
@@ -540,8 +540,8 @@ async function efetivarCancelamento(estado, agendamento) {
     notificarCancelamento(agendamento);
     return {
       texto: `Cancelado: ${agendamento.servico_nome} de ${ag.dataCurta(agendamento.data)} às ${agendamento.hora_inicio}. ` +
-             `Quando quiser voltar, é só me chamar. 😉`,
-      opcoes: [{ rotulo: '📅 Marcar outro dia', valor: 'quero marcar um horário' }],
+             `Quando quiser voltar, é só me chamar.`,
+      opcoes: [{ rotulo: 'Marcar outro dia', valor: 'quero marcar um horário' }],
       estadoNovo: { etapa: 'inicio', nome: estado.nome, telefone: estado.telefone },
       acao: 'cancelado',
       agendamento
@@ -549,7 +549,7 @@ async function efetivarCancelamento(estado, agendamento) {
   } catch (erro) {
     return {
       texto: erro.message,
-      opcoes: [{ rotulo: '💬 Falar com a equipe', valor: 'quero falar com um atendente' }],
+      opcoes: [{ rotulo: 'Falar com a equipe', valor: 'quero falar com um atendente' }],
       estadoNovo: { ...estado, etapa: 'inicio' }
     };
   }
@@ -567,7 +567,7 @@ async function iniciarRemarcacao(estado, d) {
   if (!lista.length) {
     return {
       texto: 'Não encontrei horário ativo pra remarcar. Quer marcar um novo?',
-      opcoes: [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }],
+      opcoes: [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }],
       estadoNovo: { ...estado, etapa: 'inicio' }
     };
   }
@@ -589,9 +589,9 @@ async function iniciarAvaliacao(estado, conversa) {
     : null;
   return {
     texto: ultimo
-      ? `Que bom! Como foi seu ${ultimo.servico_nome}? Dá uma nota de 1 a 5. ⭐`
+      ? `Que bom! Como foi seu ${ultimo.servico_nome}? Dá uma nota de 1 a 5.`
       : 'Adoraríamos saber sua opinião! Dê uma nota de 1 a 5 para o seu último atendimento.',
-    opcoes: [1, 2, 3, 4, 5].map(n => ({ rotulo: '⭐'.repeat(n), valor: String(n) })),
+    opcoes: [1, 2, 3, 4, 5].map(n => ({ rotulo: `${n}`, valor: String(n) })),
     estadoNovo: { ...estado, etapa: 'avaliando', agendamento_avaliado: ultimo?.id || null }
   };
 }
@@ -601,8 +601,8 @@ async function passoAvaliar(estado, d, texto) {
     const nota = d.nota;
     if (!nota) {
       return {
-        texto: 'Me dá só um número de 1 a 5, por favor. 🙂',
-        opcoes: [1, 2, 3, 4, 5].map(n => ({ rotulo: '⭐'.repeat(n), valor: String(n) })),
+        texto: 'Me dá só um número de 1 a 5, por favor.',
+        opcoes: [1, 2, 3, 4, 5].map(n => ({ rotulo: `${n}`, valor: String(n) })),
         estadoNovo: estado
       };
     }
@@ -626,9 +626,9 @@ async function passoAvaliar(estado, d, texto) {
   });
   return {
     texto: estado.nota_recebida >= 4
-      ? 'Muito obrigado! Sua avaliação ajuda demais a gente. 💜'
+      ? 'Muito obrigado. Sua avaliação ajuda demais a gente.'
       : 'Obrigado por contar. Vamos levar isso pra equipe e melhorar.',
-    opcoes: [{ rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' }],
+    opcoes: [{ rotulo: 'Marcar horário', valor: 'quero marcar um horário' }],
     estadoNovo: { etapa: 'inicio', nome: estado.nome, telefone: estado.telefone },
     acao: 'avaliado'
   };
@@ -640,12 +640,12 @@ export function saudacaoInicial() {
   const n = bd.lerNegocio();
   return {
     texto: n.boas_vindas ||
-      `Oi! 👋 Sou o assistente da ${n.nome}. Posso marcar seu horário em menos de um minuto. Como posso ajudar?`,
+      `Olá! Aqui é da ${n.nome}. Posso marcar seu horário em menos de um minuto. Como posso ajudar?`,
     opcoes: [
-      { rotulo: '📅 Marcar horário', valor: 'quero marcar um horário' },
-      { rotulo: '🔎 Meus horários', valor: 'quero ver meus agendamentos' },
-      { rotulo: '💰 Preços', valor: 'quais são os preços' },
-      { rotulo: '📍 Onde fica', valor: 'onde vocês ficam' }
+      { rotulo: 'Marcar horário', valor: 'quero marcar um horário' },
+      { rotulo: 'Meus horários', valor: 'quero ver meus agendamentos' },
+      { rotulo: 'Preços', valor: 'quais são os preços' },
+      { rotulo: 'Onde fica', valor: 'onde vocês ficam' }
     ]
   };
 }

@@ -3,51 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entrar no painel</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Entrar</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f7a6e' stroke-width='1.5'><rect x='4' y='10' width='16' height='10' rx='2'/><path d='M8 10V7a4 4 0 0 1 8 0v3'/></svg>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+<noscript><link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="/css/estilo.css">
 <style>
-  body {
-    min-height: 100vh; display: grid; place-items: center; padding: 20px;
-    background: radial-gradient(120% 90% at 12% 0%, #efeaff 0%, var(--fundo) 46%);
+  body { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
+  .entrada { width: 100%; max-width: 340px; }
+  .entrada h1 { font-size: 1.2rem; margin-bottom: 4px; }
+  .entrada .sub { color: var(--apagado); font-size: .85rem; margin-bottom: 26px; }
+  .caixa-login {
+    background: var(--papel); border: 1px solid var(--linha);
+    border-radius: var(--r-g); padding: 24px;
   }
-  .entrada { width: 100%; max-width: 384px; }
-  .simbolo {
-    width: 62px; height: 62px; margin: 0 auto 20px; border-radius: 19px;
-    background: linear-gradient(135deg, var(--marca), #a58ff5);
-    display: grid; place-items: center; font-size: 1.75rem;
-    box-shadow: 0 10px 30px rgba(108, 92, 231, .34);
-  }
-  .entrada h1 { text-align: center; font-size: 1.42rem; margin-bottom: 5px; }
-  .entrada .sub { text-align: center; color: var(--apagado); font-size: .89rem; margin-bottom: 26px; }
-  .caixa-login { background: var(--papel); border-radius: var(--r-xg); padding: 28px 26px; box-shadow: var(--sombra-2); }
-  #alerta { margin-bottom: 15px; display: none; }
-  .voltar-site { text-align: center; margin-top: 20px; font-size: .84rem; }
-  .voltar-site a { color: var(--apagado); font-weight: 600; }
-  .voltar-site a:hover { color: var(--marca); }
+  #alerta { margin-bottom: 16px; display: none; }
+  .voltar-site { margin-top: 20px; font-size: .83rem; }
+  .voltar-site a { color: var(--apagado); font-weight: 400; }
+  .voltar-site a:hover { color: var(--acento-forte); }
 </style>
 </head>
 <body>
   <div class="entrada">
-    <div class="simbolo">🔐</div>
     <h1>Painel do negócio</h1>
-    <p class="sub">Entre para administrar sua agenda</p>
+    <p class="sub">Entre para administrar sua agenda.</p>
 
     <div class="caixa-login">
       <div id="alerta" class="aviso"></div>
       <form id="formLogin">
         <div class="campo">
           <label for="senha">Senha de administrador</label>
-          <input id="senha" type="password" placeholder="••••••••" required autofocus autocomplete="current-password">
+          <input id="senha" type="password" required autofocus autocomplete="current-password">
         </div>
         <button class="botao bloco" type="submit" id="btn">Entrar</button>
       </form>
     </div>
 
-    <p class="voltar-site"><a href="/">← Voltar para a página de agendamento</a></p>
+    <p class="voltar-site"><a href="/">Voltar para a página de agendamento</a></p>
   </div>
 
 <script>
