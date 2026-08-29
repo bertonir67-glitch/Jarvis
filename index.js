@@ -11,6 +11,8 @@ import * as bd from './db.js';
 import * as ag from './agenda.js';
 import * as ia from './ia.js';
 import * as msg from './mensagens.js';
+import * as tema from './tema.js';
+import * as cal from './calendario.js';
 import { conversar, saudacaoInicial } from './assistente.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -92,6 +94,29 @@ const TIPOS = {
   '.ico': 'image/x-icon'
 };
 
+/** Devolve uma imagem guardada como data URI no banco. */
+function imagemDoBanco(res, dataUri, versao) {
+  const m = /^data:([\w./+-]+);base64,(.+)$/s.exec(String(dataUri || ''));
+  if (!m) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Sem imagem');
+  }
+  const corpoImg = Buffer.from(m[2], 'base64');
+  res.writeHead(200, {
+    'Content-Type': m[1],
+    'Content-Length': corpoImg.length,
+    'Cache-Control': 'public, max-age=60',
+    'ETag': `"${versao || 0}"`
+  });
+  res.end(corpoImg);
+}
+
+function texto(res, conteudo, tipo, extras = {}) {
+  const buf = Buffer.from(conteudo, 'utf8');
+  res.writeHead(200, { 'Content-Type': tipo, 'Content-Length': buf.length, ...extras });
+  res.end(buf);
+}
+
 function estatico(res, arquivo, cache = false) {
   if (!existsSync(arquivo) || !statSync(arquivo).isFile()) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -136,6 +161,48 @@ const servidor = http.createServer(async (req, res) => {
       if (!seguro.startsWith(PUBLICO)) return erro(res, 'caminho invalido', 403);
       return estatico(res, seguro, true);
     }
+    /* Folha de estilo gerada a partir dos Ajustes: personaliza as duas telas */
+    if (met === 'GET' && rota === '/tema.css') {
+      return texto(res, tema.gerarCss(), 'text/css; charset=utf-8', { 'Cache-Control': 'no-cache' });
+    }
+    if (met === 'GET' && (rota === '/logo' || rota === '/capa')) {
+      const n = bd.lerNegocio();
+      return imagemDoBanco(res, rota === '/logo' ? n.logo : n.capa, n.atualizado_em);
+    }
+
+    /* Feed privado para o dono assinar no Google, Apple ou Outlook */
+    if (met === 'GET' && (rota === '/agenda.ics' || /^\/agenda\/[\w-]+\.ics$/.test(rota))) {
+      const n = bd.lerNegocio();
+      const tok = q.get('token');
+      if (!n.feed_token || !tok || !igual(tok, n.feed_token)) {
+        return erro(res, 'Link do calendario invalido ou revogado.', 403);
+      }
+      const profId = rota === '/agenda.ics' ? null : rota.slice('/agenda/'.length, -4);
+      const prof = profId ? bd.buscarProfissional(profId) : null;
+      if (profId && !prof) return erro(res, 'Profissional nao encontrado.', 404);
+
+      const hoje = ag.hojeLocal();
+      const lista = bd.listarAgendamentos({
+        de: ag.somarDias(hoje, -60),
+        ate: ag.somarDias(hoje, (n.antecedencia_max_d || 60) + 30),
+        profissional_id: profId,
+        limite: 2000
+      }).filter(a => a.status !== 'cancelado');
+
+      return texto(res,
+        cal.gerarIcs(lista, n, prof ? `${n.nome} — ${prof.nome}` : n.nome),
+        'text/calendar; charset=utf-8',
+        { 'Cache-Control': 'no-cache', 'Content-Disposition': 'inline; filename="agenda.ics"' });
+    }
+
+    /* Um agendamento avulso, para o cliente salvar no celular */
+    if (met === 'GET' && rota === '/agendamento.ics') {
+      const a = bd.buscarAgendamentoPorCodigo(q.get('codigo'));
+      if (!a) return erro(res, 'Agendamento nao encontrado.', 404);
+      return texto(res, cal.gerarIcs([a]), 'text/calendar; charset=utf-8',
+        { 'Content-Disposition': `attachment; filename="${a.codigo}.ics"` });
+    }
+
     if (met === 'GET' && rota === '/saude') {
       return json(res, { ok: true, ia: ia.iaAtiva(), whatsapp: msg.whatsappAtivo(), hoje: ag.hojeLocal() });
     }
@@ -167,6 +234,10 @@ const servidor = http.createServer(async (req, res) => {
         nome: n.nome, sobre: n.sobre, endereco: n.endereco, telefone: n.telefone,
         whatsapp: n.whatsapp, instagram: n.instagram, cor: n.cor, segmento: n.segmento,
         boas_vindas: n.boas_vindas, cancelamento_min_h: n.cancelamento_min_h,
+        titulo_portal: n.titulo_portal, rodape: n.rodape, politica: n.politica,
+        mostrar_precos: n.mostrar_precos, mostrar_equipe: n.mostrar_equipe,
+        tem_logo: Boolean(n.logo), tem_capa: Boolean(n.capa),
+        fonte_url: tema.urlDaFonte(n.fonte), versao: n.atualizado_em,
         horarios: grade
       });
     }
@@ -257,7 +328,8 @@ const servidor = http.createServer(async (req, res) => {
       return json(res, {
         codigo: a.codigo, servico_nome: a.servico_nome, profissional_nome: a.profissional_nome,
         data: a.data, hora_inicio: a.hora_inicio, status: a.status,
-        cliente_nome: a.cliente_nome, ja_avaliado: Boolean(avaliacao)
+        cliente_nome: a.cliente_nome, ja_avaliado: Boolean(avaliacao),
+        link_google: cal.linkGoogle(a)
       });
     }
 
@@ -358,6 +430,49 @@ async function rotasAdmin(req, res, rota, met, q) {
       avaliacoes_pendentes: bd.listarAvaliacoes({ status: 'pendente', limite: 5 }),
       integracoes: { ia: ia.iaAtiva(), whatsapp: msg.whatsappAtivo() }
     });
+  }
+
+  /* Aparencia: catalogo de opcoes para montar a tela */
+  if (met === 'GET' && sub === '/aparencia') {
+    return json(res, { ...tema.opcoesDeAparencia(), negocio: bd.lerNegocio() });
+  }
+
+  /* Logo e capa: chegam como data URI do navegador */
+  if (met === 'POST' && sub === '/imagem') {
+    const { campo, dados } = await corpo(req, 6_000_000);
+    if (!['logo', 'capa'].includes(campo)) return erro(res, 'Campo invalido.');
+    if (dados && !/^data:image\/(png|jpeg|webp|svg\+xml|gif);base64,/.test(dados)) {
+      return erro(res, 'Envie uma imagem PNG, JPG, WEBP ou SVG.');
+    }
+    const limite = campo === 'logo' ? 400_000 : 1_200_000;
+    if (dados && dados.length > limite) {
+      return erro(res, `Imagem grande demais. Limite de ${Math.round(limite / 1000)} KB depois da codificacao.`);
+    }
+    return json(res, { ok: true, negocio: bd.salvarNegocio({ [campo]: dados || null }) });
+  }
+
+  /* Calendario: feeds de saida e de entrada */
+  if (met === 'GET' && sub === '/calendario') {
+    const st = cal.statusCalendario();
+    const base = process.env.URL_PUBLICA || `http://${req.headers.host}`;
+    return json(res, {
+      ...st,
+      feed_negocio: `${base}/agenda.ics?token=${st.feed_token}`,
+      feeds_equipe: st.profissionais.map(p => ({
+        ...p, feed: `${base}/agenda/${p.id}.ics?token=${st.feed_token}`
+      }))
+    });
+  }
+  if (met === 'POST' && sub === '/calendario/sincronizar') {
+    const d = await corpo(req);
+    if (d.profissional_id !== undefined || d.url !== undefined) {
+      const r = await cal.sincronizarUm(d.profissional_id || null, d.url ?? null);
+      return json(res, r, r.ok ? 200 : 400);
+    }
+    return json(res, { resultados: await cal.sincronizarTudo() });
+  }
+  if (met === 'POST' && sub === '/calendario/renovar-token') {
+    return json(res, { feed_token: bd.renovarFeedToken() });
   }
 
   /* Negocio */
@@ -551,6 +666,8 @@ async function rotasAdmin(req, res, rota, met, q) {
 /* ------------------------------------------------------- TAREFAS DE FUNDO */
 
 let ultimoFechamento = '';
+let ultimaSincronia = 0;
+const INTERVALO_SINCRONIA = 15 * 60 * 1000;
 
 async function tarefas() {
   try {
@@ -560,6 +677,12 @@ async function tarefas() {
       ultimoFechamento = hoje;
       const n = ag.fecharDiasAnteriores();
       if (n) console.log(`[tarefas] ${n} atendimento(s) de dias anteriores marcados como concluidos`);
+    }
+    if (Date.now() - ultimaSincronia > INTERVALO_SINCRONIA) {
+      ultimaSincronia = Date.now();
+      const r = await cal.sincronizarTudo();
+      const total = r.reduce((s, x) => s + (x.eventos || 0), 0);
+      if (r.length) console.log(`[calendario] ${r.length} feed(s), ${total} compromisso(s) importado(s)`);
     }
   } catch (e) {
     console.error('[tarefas]', e.message);

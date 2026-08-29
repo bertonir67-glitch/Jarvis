@@ -8,22 +8,29 @@
 <meta name="theme-color" content="#f8f7f4">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f7a6e' stroke-width='1.5'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/></svg>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
-<noscript><link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"></noscript>
+<!-- A fonte escolhida em Ajustes entra aqui pelo JS, sem bloquear a página -->
+<link rel="stylesheet" id="fonteWeb" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="/css/estilo.css">
+<!-- Gerado a partir dos Ajustes do negócio: cores, cantos e fonte -->
+<link rel="stylesheet" href="/tema.css">
 <link rel="stylesheet" href="/css/cliente.css">
 </head>
 <body>
 
 <header class="cabecalho">
+  <div class="capa" id="capaNegocio" hidden></div>
   <div class="cabecalho-conteudo">
-    <h1 id="nomeNegocio">Carregando…</h1>
-    <p id="subNegocio"></p>
+    <div class="identidade">
+      <img class="logo" id="logoNegocio" alt="" hidden>
+      <div class="identidade-texto">
+        <h1 id="nomeNegocio">Carregando…</h1>
+        <p id="subNegocio"></p>
+      </div>
+    </div>
     <div class="cabecalho-links">
       <a id="linkMapa" target="_blank" rel="noopener" hidden></a>
       <a id="linkZap" target="_blank" rel="noopener" hidden></a>
+      <a id="linkInsta" target="_blank" rel="noopener" hidden></a>
     </div>
   </div>
 </header>
@@ -116,6 +123,7 @@
         <h2>Horário confirmado</h2>
         <div class="bilhete" id="bilhete"></div>
         <p class="legenda">Enviamos a confirmação no seu WhatsApp. Guarde o código.</p>
+        <div class="calendario-acoes" id="calendarioAcoes"></div>
         <div class="botoes-linha">
           <button class="botao neutro" id="btnAgendarOutro">Marcar outro</button>
           <button class="botao" id="btnVerMeus">Ver meus horários</button>
@@ -158,6 +166,7 @@
 
 <footer class="rodape">
   <p id="rodapeNegocio"></p>
+  <p id="politicaNegocio" class="politica"></p>
 </footer>
 
 <div id="recado"></div>

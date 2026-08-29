@@ -165,7 +165,64 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_outbox_status ON outbox(status, agendado_para);
 `);
 
+db.exec(`
+  -- Compromissos vindos do calendario pessoal do dono (feed .ics assinado).
+  -- Cache local: e reescrito inteiro a cada sincronizacao.
+  CREATE TABLE IF NOT EXISTS agenda_externa (
+    id              TEXT PRIMARY KEY,
+    profissional_id TEXT REFERENCES profissionais(id) ON DELETE CASCADE,
+    uid             TEXT,
+    titulo          TEXT,
+    data            TEXT NOT NULL,
+    hora_inicio     TEXT,
+    hora_fim        TEXT,
+    dia_inteiro     INTEGER DEFAULT 0,
+    criado_em       INTEGER DEFAULT (unixepoch())
+  );
+  CREATE INDEX IF NOT EXISTS idx_externa_data ON agenda_externa(data);
+
+  -- Historico das sincronizacoes, para o painel mostrar o que aconteceu
+  CREATE TABLE IF NOT EXISTS sincronizacoes (
+    id              TEXT PRIMARY KEY,
+    profissional_id TEXT,
+    url             TEXT,
+    eventos         INTEGER DEFAULT 0,
+    erro            TEXT,
+    criado_em       INTEGER DEFAULT (unixepoch())
+  );
+`);
+
+/** Adiciona colunas novas em bases que ja existem, sem perder dados. */
+function garantirColuna(tabela, coluna, definicao) {
+  const existe = db.prepare(`PRAGMA table_info(${tabela})`).all().some(c => c.name === coluna);
+  if (!existe) db.exec(`ALTER TABLE ${tabela} ADD COLUMN ${coluna} ${definicao}`);
+}
+
+// Aparencia e identidade visual
+garantirColuna('negocio', 'logo',            'TEXT');
+garantirColuna('negocio', 'capa',            'TEXT');
+garantirColuna('negocio', 'base_neutra',     `TEXT DEFAULT 'areia'`);
+garantirColuna('negocio', 'fonte',           `TEXT DEFAULT 'jakarta'`);
+garantirColuna('negocio', 'cantos',          `TEXT DEFAULT 'suave'`);
+garantirColuna('negocio', 'titulo_portal',   'TEXT');
+garantirColuna('negocio', 'rodape',          'TEXT');
+garantirColuna('negocio', 'politica',        'TEXT');
+garantirColuna('negocio', 'mostrar_precos',  'INTEGER DEFAULT 1');
+garantirColuna('negocio', 'mostrar_equipe',  'INTEGER DEFAULT 1');
+
+// Integracao de calendario
+garantirColuna('negocio', 'feed_token',        'TEXT');
+garantirColuna('negocio', 'calendario_url',    'TEXT');
+garantirColuna('negocio', 'calendario_sync_em','INTEGER');
+garantirColuna('profissionais', 'calendario_url', 'TEXT');
+
 db.exec(`INSERT OR IGNORE INTO negocio (id) VALUES (1)`);
+
+// Token do feed privado: gerado uma vez e reutilizado
+if (!db.prepare('SELECT feed_token FROM negocio WHERE id = 1').get()?.feed_token) {
+  db.prepare('UPDATE negocio SET feed_token = ? WHERE id = 1')
+    .run(randomUUID().replace(/-/g, ''));
+}
 
 const id = () => randomUUID();
 const agora = () => Math.floor(Date.now() / 1000);
@@ -188,7 +245,9 @@ export function salvarNegocio(dados) {
     'nome', 'segmento', 'telefone', 'whatsapp', 'endereco', 'instagram', 'cor',
     'sobre', 'boas_vindas', 'personalidade_ia', 'intervalo_slots',
     'antecedencia_min_h', 'antecedencia_max_d', 'cancelamento_min_h',
-    'lembrete_h', 'pedir_avaliacao'
+    'lembrete_h', 'pedir_avaliacao',
+    'logo', 'capa', 'base_neutra', 'fonte', 'cantos', 'titulo_portal',
+    'rodape', 'politica', 'mostrar_precos', 'mostrar_equipe', 'calendario_url'
   ];
   const campos = permitidos.filter(c => dados[c] !== undefined);
   if (!campos.length) return lerNegocio();
@@ -256,12 +315,16 @@ export function salvarProfissional(p) {
   const existe = p.id && db.prepare('SELECT id FROM profissionais WHERE id = ?').get(p.id);
   const pid = p.id || id();
   if (existe) {
-    db.prepare('UPDATE profissionais SET nome=?, apelido=?, telefone=?, cor=?, ativo=? WHERE id=?')
-      .run(p.nome, p.apelido || null, p.telefone || null, p.cor || '#6c5ce7', p.ativo ? 1 : 0, pid);
+    db.prepare(`UPDATE profissionais SET nome=?, apelido=?, telefone=?, cor=?, ativo=?,
+                calendario_url=? WHERE id=?`)
+      .run(p.nome, p.apelido || null, p.telefone || null, p.cor || '#5f7a6e', p.ativo ? 1 : 0,
+           p.calendario_url === undefined ? (buscarProfissional(pid)?.calendario_url || null) : (p.calendario_url || null),
+           pid);
   } else {
-    db.prepare('INSERT INTO profissionais (id, nome, apelido, telefone, cor, ativo) VALUES (?,?,?,?,?,?)')
-      .run(pid, p.nome, p.apelido || null, p.telefone || null, p.cor || '#6c5ce7',
-           p.ativo === undefined ? 1 : (p.ativo ? 1 : 0));
+    db.prepare(`INSERT INTO profissionais (id, nome, apelido, telefone, cor, ativo, calendario_url)
+                VALUES (?,?,?,?,?,?,?)`)
+      .run(pid, p.nome, p.apelido || null, p.telefone || null, p.cor || '#5f7a6e',
+           p.ativo === undefined ? 1 : (p.ativo ? 1 : 0), p.calendario_url || null);
   }
   if (Array.isArray(p.servicos)) {
     db.prepare('DELETE FROM profissional_servico WHERE profissional_id = ?').run(pid);
@@ -601,6 +664,55 @@ export function cancelarOutboxDoAgendamento(agendamentoId, tipos = null) {
     db.prepare(`UPDATE outbox SET status = 'cancelado' WHERE agendamento_id = ? AND status = 'pendente'`)
       .run(agendamentoId);
   }
+}
+
+/* -------------------------------------------------------- AGENDA EXTERNA */
+
+/** Substitui todos os eventos importados de um calendario. */
+export function trocarAgendaExterna(profissionalId, eventos) {
+  const apagar = profissionalId
+    ? db.prepare('DELETE FROM agenda_externa WHERE profissional_id = ?')
+    : db.prepare('DELETE FROM agenda_externa WHERE profissional_id IS NULL');
+  profissionalId ? apagar.run(profissionalId) : apagar.run();
+
+  const ins = db.prepare(`INSERT INTO agenda_externa
+    (id, profissional_id, uid, titulo, data, hora_inicio, hora_fim, dia_inteiro)
+    VALUES (?,?,?,?,?,?,?,?)`);
+  for (const e of eventos) {
+    ins.run(id(), profissionalId || null, e.uid || null, e.titulo || null,
+            e.data, e.hora_inicio || null, e.hora_fim || null, e.dia_inteiro ? 1 : 0);
+  }
+  return eventos.length;
+}
+
+export function eventosExternosNaData(data) {
+  return db.prepare('SELECT * FROM agenda_externa WHERE data = ?').all(data);
+}
+
+export function resumoAgendaExterna() {
+  return db.prepare(`
+    SELECT profissional_id, COUNT(*) total, MIN(data) primeira, MAX(data) ultima
+    FROM agenda_externa GROUP BY profissional_id`).all();
+}
+
+export function registrarSincronizacao(profissionalId, url, eventos, erro = null) {
+  db.prepare(`INSERT INTO sincronizacoes (id, profissional_id, url, eventos, erro)
+              VALUES (?,?,?,?,?)`)
+    .run(id(), profissionalId || null, url || null, eventos || 0, erro);
+  db.prepare('UPDATE negocio SET calendario_sync_em = ? WHERE id = 1').run(agora());
+}
+
+export function ultimasSincronizacoes(limite = 10) {
+  return db.prepare(`SELECT s.*, p.nome AS profissional_nome FROM sincronizacoes s
+                     LEFT JOIN profissionais p ON p.id = s.profissional_id
+                     ORDER BY s.criado_em DESC, s.rowid DESC LIMIT ?`).all(limite);
+}
+
+/** Renova o token do feed privado (invalida os links antigos). */
+export function renovarFeedToken() {
+  const token = randomUUID().replace(/-/g, '');
+  db.prepare('UPDATE negocio SET feed_token = ? WHERE id = 1').run(token);
+  return token;
 }
 
 /* ------------------------------------------------------------ INDICADORES */

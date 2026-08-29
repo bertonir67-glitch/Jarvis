@@ -29,7 +29,13 @@ const TRACOS = {
   relogio:   '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/>',
   info:      '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
   bloqueio:  '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
-  usuario:   '<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>'
+  usuario:   '<circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>',
+  aparencia: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18 2.5 2.5 0 0 0 2.5-2.5c0-1.4-1.1-1.6-1.1-2.6 0-.8.6-1.4 1.4-1.4H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16" cy="10" r="1"/>',
+  sincronizar: '<path d="M20 11a8 8 0 0 0-14-4.5L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4.5L20 15"/><path d="M20 20v-5h-5"/>',
+  copiar:    '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+  baixar:    '<path d="M12 3v12M7 11l5 5 5-5"/><path d="M4 20h16"/>',
+  imagem:    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 16-5-5-5.5 5.5L8 14l-5 5"/>',
+  alerta:    '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>'
 };
 
 const ICONE = new Proxy({}, {

@@ -14,8 +14,9 @@ aberto, sem senha                   protegido por senha
   Conversar e marcar pelo chat        Agenda e encaixes
   Meus horários                       Conversas do atendimento
   Cancelar e avaliar                  Avaliações e respostas
-                                      Clientes e histórico
+  Salvar no próprio calendário        Clientes e histórico
                                       Serviços, equipe, horários
+                                      Aparência e calendário
 ```
 
 ---
@@ -67,9 +68,11 @@ ele já entra identificado.
 | **Clientes** | Ficha com histórico, total gasto, faltas e anotações internas |
 | **Avaliações** | Nota, comentário e resposta sugerida para revisar e publicar |
 | **Serviços** | Nome, preço, duração, categoria e ordem |
+| **Aparência** | Logo, capa, cores, fonte, cantos e textos — com prévia ao vivo |
+| **Calendário** | Assinar a agenda no Google/Apple/Outlook e importar o calendário pessoal |
 | **Equipe** | Quem trabalha, quais serviços cada um faz, cor na agenda |
 | **Horários** | Expediente por dia (com intervalo de almoço), grade individual, férias e feriados |
-| **Ajustes** | Identidade do negócio, jeito do assistente falar e regras da agenda |
+| **Ajustes** | Contato do negócio, jeito do atendimento falar e regras da agenda |
 
 ---
 
@@ -114,7 +117,7 @@ Copie `.env.exemplo` para `.env` (ou use os *Secrets* do Replit):
 | `GROQ_API_KEY` | respostas mais naturais ([grátis no console.groq.com](https://console.groq.com)) | modo local por regras |
 | `GROQ_MODELO` | modelo usado | `llama-3.3-70b-versatile` |
 | `WHATSAPP_TOKEN` + `WHATSAPP_PHONE_ID` | envio automático pelo WhatsApp Cloud API | mensagens ficam na Central para envio com 1 clique |
-| `URL_PUBLICA` | link de avaliação enviado ao cliente | o pedido vai sem link |
+| `URL_PUBLICA` | links de calendário e de avaliação | usa o endereço da requisição |
 | `TZ_NEGOCIO` | fuso do negócio | `America/Sao_Paulo` |
 | `PORT` | porta do servidor | `3000` |
 
@@ -144,6 +147,8 @@ interpretar.js    português do dia a dia: datas, horas, intenções
 ia.js             camada de linguagem (Groq) com plano B local
 assistente.js     máquina de estados da conversa
 mensagens.js      confirmações, lembretes e integração WhatsApp
+tema.js           aparência: transforma os Ajustes em CSS
+calendario.js     geração e leitura de .ics, sincronização
 seed.js           negócio de demonstração
 testes/           testes do núcleo — node --test "testes/*.test.js"
 public/           portal do cliente, painel, login e ícones SVG
@@ -155,9 +160,11 @@ public/           portal do cliente, painel, login e ícones SVG
 node --test "testes/*.test.js"
 ```
 
-21 testes cobrem a interpretação de português, o motor de horários
-(conflito, duração, bloqueio, antecedência, cancelar, remarcar) e o
-fluxo completo da conversa até o horário confirmado.
+38 testes cobrem a interpretação de português, o motor de horários
+(conflito, duração, bloqueio, antecedência, cancelar, remarcar), o
+fluxo completo da conversa até o horário confirmado, a geração e a
+leitura de arquivos `.ics` (fuso, dia inteiro, repetição, escape) e o
+motor de aparência, incluindo a correção automática de contraste.
 
 ---
 
@@ -165,18 +172,86 @@ fluxo completo da conversa até o horário confirmado.
 
 Nada é fixo no código. Pelo painel:
 
-1. **Ajustes** — nome, endereço, WhatsApp, cor da marca e jeito de falar.
-2. **Serviços** — apague os da demonstração e crie os seus.
-3. **Equipe** — cadastre quem atende e marque os serviços de cada um.
+1. **Ajustes** — nome, endereço, WhatsApp e as regras da agenda.
+2. **Aparência** — logo, cores, fonte e os textos da página do cliente.
+3. **Serviços** — apague os da demonstração e crie os seus, com seus preços.
+4. **Equipe** — cadastre quem atende e marque os serviços de cada um.
    Sem equipe cadastrada, o sistema trabalha com agenda única.
-4. **Horários** — expediente de cada dia, com quantos intervalos precisar.
+5. **Horários** — expediente de cada dia, com quantos intervalos precisar.
+6. **Calendário** — assine a agenda no seu celular e conecte o calendário pessoal.
 
 Serve para barbearia, salão, clínica, estúdio de tatuagem, oficina,
 petshop, consultório — qualquer negócio que trabalhe com hora marcada.
 
 ---
 
-## Aparência
+## Personalização
+
+Tudo o que dá a cara do negócio se muda pelo painel, sem tocar em código.
+
+**Aparência** (`/admin#aparencia`) tem uma prévia ao vivo da página do cliente
+ao lado dos controles — cada vez que você salva, a prévia recarrega:
+
+| O que | Opções |
+|-------|--------|
+| Logotipo e capa | Envio direto pelo painel (PNG, JPG, WEBP ou SVG) |
+| Cor da marca | 12 sugestões ou qualquer código hexadecimal |
+| Base de cores | Areia, Neve, Linho ou Noite (tema escuro) |
+| Fonte | Do sistema, Plus Jakarta Sans, Inter, DM Sans, Lora ou Poppins |
+| Cantos | Retos, suaves ou arredondados |
+| Textos | Título da página, rodapé e política de cancelamento |
+| O que o cliente vê | Mostrar preços; deixar escolher o profissional |
+
+**Preços e serviços** ficam em *Serviços*: nome, descrição, duração, valor,
+categoria e ordem de exibição, com ativar/desativar sem perder o histórico.
+
+Nos bastidores, `tema.js` transforma essas escolhas em variáveis CSS servidas
+em `/tema.css`, e as duas interfaces leem dessas variáveis. Duas garantias
+embutidas: uma cor clara demais é **escurecida automaticamente** até o texto
+branco passar de 4,5:1 de contraste, e as cores de estado são derivadas do
+fundo com `color-mix`, então continuam legíveis no tema escuro.
+
+---
+
+## Calendário
+
+Vai nos dois sentidos, e funciona com qualquer aplicativo — não exige conta
+Google nem autorização de app.
+
+### A sua agenda, dentro do seu calendário
+
+O painel gera um link privado `.ics` (completo e um por profissional). Você
+assina uma vez e todo agendamento novo aparece lá sozinho, com cliente,
+telefone, valor e código:
+
+- **Google Agenda:** Outras agendas → De URL
+- **iPhone / Mac:** Ajustes → Calendário → Adicionar calendário assinado
+- **Outlook:** Adicionar calendário → Assinar da Web
+
+O link é secreto; se vazar, o botão *Gerar um link novo* revoga o antigo.
+
+### Os seus compromissos, dentro da agenda
+
+Cole o **endereço secreto no formato iCal** do seu calendário pessoal (o
+Google mostra em Configurações da agenda). A cada 15 minutos o sistema lê esse
+feed e transforma o que estiver marcado lá em horário indisponível — o cliente
+simplesmente não vê aquela vaga, e não vê o que é o compromisso. Dá para
+configurar um calendário para o negócio inteiro e um para cada profissional.
+
+O leitor entende fuso horário (`TZID`), eventos de dia inteiro, eventos que
+viram a noite e repetições (`RRULE` diária, semanal com `BYDAY`, e mensal).
+Ignora o que está cancelado e o que está marcado como *disponível*. Se o feed
+cair, a falha fica registrada e **a agenda continua com os horários que tinha** —
+nunca zera por causa de um erro de rede.
+
+### Para o cliente
+
+Na confirmação e em *Meus horários* aparecem os botões **Google Agenda** e
+**Baixar (.ics)**, para o cliente guardar o horário no celular dele.
+
+---
+
+## Aparência do código
 
 Visual minimalista: tons neutros quentes, um único acento verde-sálvia
 dessaturado, linhas de 1px no lugar de sombras e nenhum emoji — os ícones

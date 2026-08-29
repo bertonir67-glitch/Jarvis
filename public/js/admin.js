@@ -85,7 +85,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(
 const TITULOS = {
   painel: 'Painel', agenda: 'Agenda', conversas: 'Conversas', mensagens: 'Central de mensagens',
   clientes: 'Clientes', avaliacoes: 'Avaliações', servicos: 'Serviços', equipe: 'Equipe',
-  horarios: 'Horários de atendimento', ajustes: 'Ajustes do negócio'
+  horarios: 'Horários de atendimento', ajustes: 'Ajustes do negócio',
+  aparencia: 'Aparência', calendario: 'Calendário'
 };
 
 const cache = { servicos: [], equipe: [], negocio: null };
@@ -1207,6 +1208,392 @@ function modalBloqueio() {
   ]);
 }
 
+/* ============================================================= APARÊNCIA */
+
+TELAS.aparencia = async (alvo) => {
+  const op = await api('/api/admin/aparencia');
+  const n = op.negocio;
+
+  alvo.innerHTML = `
+    <div class="aparencia">
+      <div class="aparencia-controles">
+
+        <div class="bloco">
+          <div class="bloco-topo"><h3>Identidade</h3></div>
+          <div class="bloco-corpo">
+            <div class="duas-colunas">
+              ${campoImagem('logo', 'Logotipo', 'Quadrado, PNG ou SVG. Até 400 KB.', n.logo)}
+              ${campoImagem('capa', 'Imagem de capa', 'Faixa no topo da página. Até 1,2 MB.', n.capa)}
+            </div>
+            <div class="campo">
+              <label for="apTitulo">Título da página do cliente</label>
+              <input id="apTitulo" type="text" value="${escapar(n.titulo_portal || '')}"
+                     placeholder="${escapar(n.nome)}">
+              <p class="dica">Deixe em branco para usar o nome do negócio.</p>
+            </div>
+            <div class="campo">
+              <label for="apRodape">Rodapé</label>
+              <input id="apRodape" type="text" value="${escapar(n.rodape || '')}"
+                     placeholder="Endereço e telefone">
+            </div>
+            <div class="campo">
+              <label for="apPolitica">Política de cancelamento</label>
+              <textarea id="apPolitica" placeholder="Ex: cancele com até 3h de antecedência."
+                        style="min-height:70px">${escapar(n.politica || '')}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <div class="bloco-topo"><h3>Cor da marca</h3></div>
+          <div class="bloco-corpo">
+            <div class="paleta">
+              ${op.paleta.map(c => `
+                <button class="amostra-cor ${c.toLowerCase() === String(n.cor).toLowerCase() ? 'ativa' : ''}"
+                        data-cor="${c}" style="background:${c}" title="${c}" aria-label="Cor ${c}"></button>`).join('')}
+            </div>
+            <div class="cor-livre">
+              <input type="color" id="apCor" value="${n.cor || '#5f7a6e'}">
+              <input type="text" id="apCorHex" value="${n.cor || '#5f7a6e'}" maxlength="7" spellcheck="false">
+              <span class="dica">Cores muito claras são escurecidas para o texto continuar legível.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <div class="bloco-topo"><h3>Base de cores</h3></div>
+          <div class="bloco-corpo">
+            <div class="opcoes-base">
+              ${op.bases.map(b => `
+                <button class="opcao-base ${n.base_neutra === b.id ? 'ativa' : ''}" data-base="${b.id}">
+                  <span class="tiras">${b.amostra.map(c => `<i style="background:${c}"></i>`).join('')}</span>
+                  <strong>${b.nome}</strong>
+                  <small>${b.descricao}</small>
+                </button>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <div class="bloco-topo"><h3>Tipografia e cantos</h3></div>
+          <div class="bloco-corpo">
+            <div class="duas-colunas">
+              <div class="campo">
+                <label for="apFonte">Fonte</label>
+                <select id="apFonte">
+                  ${op.fontes.map(f => `<option value="${f.id}" ${n.fonte === f.id ? 'selected' : ''}>${f.nome}</option>`).join('')}
+                </select>
+              </div>
+              <div class="campo">
+                <label for="apCantos">Cantos</label>
+                <select id="apCantos">
+                  ${op.cantos.map(c => `<option value="${c.id}" ${n.cantos === c.id ? 'selected' : ''}>${c.nome}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco">
+          <div class="bloco-topo"><h3>O que o cliente vê</h3></div>
+          <div class="bloco-corpo">
+            <label class="marcador">
+              <input type="checkbox" id="apPrecos" ${n.mostrar_precos ? 'checked' : ''}>
+              Mostrar os preços na página de agendamento
+            </label>
+            <label class="marcador">
+              <input type="checkbox" id="apEquipe" ${n.mostrar_equipe ? 'checked' : ''}>
+              Deixar o cliente escolher o profissional
+            </label>
+          </div>
+        </div>
+
+        <div class="barra-salvar">
+          <button class="botao" id="btnSalvarAparencia">Salvar aparência</button>
+          <button class="botao neutro" id="btnPrevia">Atualizar prévia</button>
+        </div>
+      </div>
+
+      <div class="aparencia-previa">
+        <div class="previa-moldura">
+          <div class="previa-topo">
+            <span></span><span></span><span></span>
+            <small>página do cliente</small>
+          </div>
+          <iframe id="previa" src="/" title="Prévia da página do cliente" loading="lazy"></iframe>
+        </div>
+        <p class="dica" style="text-align:center">A prévia recarrega a cada vez que você salva.</p>
+      </div>
+    </div>`;
+
+  let cor = n.cor || '#5f7a6e';
+  let base = n.base_neutra || 'areia';
+
+  const pintarCor = (valor) => {
+    cor = valor;
+    $('#apCor').value = valor;
+    $('#apCorHex').value = valor;
+    $$('.amostra-cor').forEach(b => b.classList.toggle('ativa', b.dataset.cor.toLowerCase() === valor.toLowerCase()));
+  };
+
+  $$('.amostra-cor').forEach(b => b.addEventListener('click', () => pintarCor(b.dataset.cor)));
+  $('#apCor').addEventListener('input', e => pintarCor(e.target.value));
+  $('#apCorHex').addEventListener('change', e => {
+    const v = e.target.value.trim();
+    if (/^#?[0-9a-fA-F]{6}$/.test(v)) pintarCor(v.startsWith('#') ? v : '#' + v);
+    else { recado('Use um código de cor como #5f7a6e.', 'erro'); e.target.value = cor; }
+  });
+  $$('.opcao-base').forEach(b => b.addEventListener('click', () => {
+    base = b.dataset.base;
+    $$('.opcao-base').forEach(x => x.classList.toggle('ativa', x === b));
+  }));
+
+  $$('[data-imagem]').forEach(entrada => entrada.addEventListener('change', async e => {
+    const arquivo = e.target.files?.[0];
+    if (!arquivo) return;
+    const campo = e.target.dataset.imagem;
+    try {
+      const dados = await lerComoDataUri(arquivo);
+      await api('/api/admin/imagem', { method: 'POST', corpo: { campo, dados } });
+      recado('Imagem salva.');
+      abrirTela('aparencia');
+    } catch (err) { recado(err.message, 'erro'); }
+  }));
+
+  $$('[data-remover-imagem]').forEach(b => b.addEventListener('click', async () => {
+    await api('/api/admin/imagem', { method: 'POST', corpo: { campo: b.dataset.removerImagem, dados: null } });
+    recado('Imagem removida.');
+    abrirTela('aparencia');
+  }));
+
+  $('#btnPrevia').addEventListener('click', () => recarregarPrevia());
+
+  $('#btnSalvarAparencia').addEventListener('click', async () => {
+    await api('/api/admin/negocio', { method: 'POST', corpo: {
+      cor, base_neutra: base,
+      fonte: $('#apFonte').value, cantos: $('#apCantos').value,
+      titulo_portal: $('#apTitulo').value.trim(),
+      rodape: $('#apRodape').value.trim(),
+      politica: $('#apPolitica').value.trim(),
+      mostrar_precos: $('#apPrecos').checked ? 1 : 0,
+      mostrar_equipe: $('#apEquipe').checked ? 1 : 0
+    } });
+    recado('Aparência salva.');
+    aplicarTema();
+    recarregarPrevia();
+    await carregarBase(true);
+  });
+};
+
+const campoImagem = (campo, rotulo, dica, atual) => `
+  <div class="campo">
+    <label>${rotulo}</label>
+    <div class="caixa-imagem ${atual ? 'tem' : ''}">
+      ${atual ? `<img src="/${campo}?v=${Date.now()}" alt="">`
+              : `<span class="sem-imagem">${ICONE.imagem(22)}</span>`}
+      <div class="caixa-imagem-acoes">
+        <label class="botao pequeno neutro">
+          ${atual ? 'Trocar' : 'Enviar'}
+          <input type="file" accept="image/*" data-imagem="${campo}" hidden>
+        </label>
+        ${atual ? `<button class="botao pequeno fantasma" data-remover-imagem="${campo}">Remover</button>` : ''}
+      </div>
+    </div>
+    <p class="dica">${dica}</p>
+  </div>`;
+
+function lerComoDataUri(arquivo) {
+  return new Promise((ok, falha) => {
+    const leitor = new FileReader();
+    leitor.onload = () => ok(leitor.result);
+    leitor.onerror = () => falha(new Error('Não consegui ler o arquivo.'));
+    leitor.readAsDataURL(arquivo);
+  });
+}
+
+/** Recarrega a folha /tema.css sem recarregar a página inteira. */
+function aplicarTema() {
+  const link = document.querySelector('link[href^="/tema.css"]');
+  if (link) link.href = `/tema.css?v=${Date.now()}`;
+}
+
+function recarregarPrevia() {
+  const f = $('#previa');
+  if (f) f.src = `/?previa=${Date.now()}`;
+}
+
+/* ============================================================ CALENDÁRIO */
+
+TELAS.calendario = async (alvo) => {
+  const c = await api('/api/admin/calendario');
+  const quando = c.sincronizado_em
+    ? new Date(c.sincronizado_em * 1000).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : 'ainda não sincronizado';
+
+  alvo.innerHTML = `
+    <div class="bloco">
+      <div class="bloco-topo">
+        <h3>Ver a agenda no seu calendário</h3>
+        <small>funciona no Google, Apple e Outlook</small>
+      </div>
+      <div class="bloco-corpo">
+        <p class="dica" style="margin-bottom:14px">
+          Assine o link abaixo no seu calendário. Todo agendamento novo aparece lá
+          sozinho, com cliente, telefone e valor — sem precisar exportar nada.
+        </p>
+        ${linhaFeed('Agenda completa', c.feed_negocio)}
+        ${c.feeds_equipe.length > 1
+          ? `<p class="titulo-campo">Por profissional</p>` +
+            c.feeds_equipe.map(p => linhaFeed(p.nome, p.feed)).join('')
+          : ''}
+
+        <details class="ajuda">
+          <summary>Como assinar</summary>
+          <ul>
+            <li><strong>Google Agenda:</strong> menu lateral, <em>Outras agendas</em> →
+                <em>De URL</em>, cole o link e confirme.</li>
+            <li><strong>iPhone / Mac:</strong> Ajustes → Calendário → Contas →
+                Adicionar conta → Outra → Adicionar calendário assinado.</li>
+            <li><strong>Outlook:</strong> Adicionar calendário → Assinar da Web.</li>
+          </ul>
+          <p>O link é privado: quem tiver ele vê sua agenda. Se vazar, gere um novo.</p>
+        </details>
+
+        <button class="botao neutro pequeno" id="btnRenovarToken" style="margin-top:14px">
+          Gerar um link novo e revogar o atual
+        </button>
+      </div>
+    </div>
+
+    <div class="bloco" style="margin-top:16px">
+      <div class="bloco-topo">
+        <h3>Trazer seus compromissos para cá</h3>
+        <small>última sincronização: ${quando}</small>
+      </div>
+      <div class="bloco-corpo">
+        <p class="dica" style="margin-bottom:16px">
+          Cole o endereço secreto do seu calendário pessoal. O que estiver marcado lá
+          deixa de aparecer como horário livre para os clientes — sem que eles vejam
+          o que é.
+        </p>
+
+        ${campoImportacao('Negócio inteiro', '', c.negocio_url, c.importados.negocio)}
+        ${c.profissionais.map(p =>
+          campoImportacao(p.nome, p.id, p.calendario_url, c.importados[p.id])).join('')}
+
+        <details class="ajuda">
+          <summary>Onde achar esse endereço</summary>
+          <ul>
+            <li><strong>Google Agenda:</strong> Configurações da agenda →
+                <em>Endereço secreto no formato iCal</em>.</li>
+            <li><strong>iCloud:</strong> compartilhe o calendário como público e copie o link
+                (troque <code>webcal://</code> por <code>https://</code> — nós fazemos isso sozinhos).</li>
+            <li><strong>Outlook:</strong> Configurações → Calendários compartilhados →
+                Publicar → link ICS.</li>
+          </ul>
+          <p>Atualizamos a cada 15 minutos. Eventos marcados como “disponível” e
+             convites recusados não bloqueiam nada.</p>
+        </details>
+
+        <button class="botao" id="btnSincronizarTudo" style="margin-top:16px">
+          ${ICONE.sincronizar(16)} Sincronizar agora
+        </button>
+      </div>
+    </div>
+
+    ${c.historico.length ? `
+      <div class="bloco" style="margin-top:16px">
+        <div class="bloco-topo"><h3>Últimas sincronizações</h3></div>
+        <div class="bloco-corpo sem-espaco">
+          ${c.historico.map(h => `
+            <div class="linha-lista">
+              <div class="principal">
+                <strong>${escapar(h.profissional_nome || 'Negócio inteiro')}</strong>
+                <small>${new Date(h.criado_em * 1000).toLocaleString('pt-BR')}
+                  ${h.erro ? `· ${escapar(h.erro)}` : `· ${h.eventos} compromisso(s)`}</small>
+              </div>
+              <div class="fim">
+                <span class="selo ${h.erro ? 'vermelho' : 'verde'}">${h.erro ? 'Falhou' : 'Ok'}</span>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}`;
+
+  $$('[data-copiar]').forEach(b => b.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(b.dataset.copiar);
+      recado('Link copiado.');
+    } catch {
+      const campo = b.closest('.linha-feed')?.querySelector('input');
+      campo?.select();
+      recado('Selecione e copie o link.', 'erro');
+    }
+  }));
+
+  $$('[data-salvar-cal]').forEach(b => b.addEventListener('click', async () => {
+    const id = b.dataset.salvarCal;
+    const url = $(`#cal-${id || 'negocio'}`).value.trim();
+    b.disabled = true;
+    b.innerHTML = '<span class="carregando"></span>';
+    try {
+      if (id) await api('/api/admin/profissionais', {
+        method: 'POST', corpo: { ...cache.equipe.find(p => p.id === id), calendario_url: url }
+      });
+      else await api('/api/admin/negocio', { method: 'POST', corpo: { calendario_url: url } });
+
+      const r = await api('/api/admin/calendario/sincronizar', {
+        method: 'POST', corpo: { profissional_id: id || null, url }
+      });
+      recado(url ? `${r.eventos} compromisso(s) importado(s).` : 'Calendário desconectado.');
+      abrirTela('calendario');
+    } catch (e) {
+      recado(e.message, 'erro');
+      b.disabled = false;
+      b.textContent = 'Conectar';
+    }
+  }));
+
+  $('#btnSincronizarTudo').addEventListener('click', async e => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="carregando"></span> Sincronizando';
+    try {
+      const r = await api('/api/admin/calendario/sincronizar', { method: 'POST', corpo: {} });
+      const falhas = r.resultados.filter(x => !x.ok);
+      recado(falhas.length ? `${falhas.length} calendário(s) falharam.` : 'Calendários atualizados.',
+             falhas.length ? 'erro' : 'ok');
+      abrirTela('calendario');
+    } catch (err) { recado(err.message, 'erro'); btn.disabled = false; }
+  });
+
+  $('#btnRenovarToken').addEventListener('click', async () => {
+    if (!confirm('Os links atuais param de funcionar e você precisará assinar de novo. Continuar?')) return;
+    await api('/api/admin/calendario/renovar-token', { method: 'POST' });
+    recado('Link novo gerado.');
+    abrirTela('calendario');
+  });
+};
+
+const linhaFeed = (rotulo, url) => `
+  <div class="linha-feed">
+    <span class="rotulo-feed">${escapar(rotulo)}</span>
+    <input type="text" readonly value="${escapar(url)}" spellcheck="false" onclick="this.select()">
+    <button class="botao pequeno neutro" data-copiar="${escapar(url)}">${ICONE.copiar(14)} Copiar</button>
+  </div>`;
+
+const campoImportacao = (rotulo, id, url, importados) => `
+  <div class="campo">
+    <label for="cal-${id || 'negocio'}">${escapar(rotulo)}</label>
+    <div class="linha-feed">
+      <input id="cal-${id || 'negocio'}" type="url" value="${escapar(url || '')}" spellcheck="false"
+             placeholder="https://calendar.google.com/calendar/ical/.../basic.ics">
+      <button class="botao pequeno" data-salvar-cal="${id}">Conectar</button>
+    </div>
+    ${importados
+      ? `<p class="dica">${importados.total} compromisso(s) importado(s), de ${curta(importados.primeira)} a ${curta(importados.ultima)}.</p>`
+      : '<p class="dica">Nenhum compromisso importado ainda.</p>'}
+  </div>`;
+
 /* =============================================================== AJUSTES */
 
 TELAS.ajustes = async (alvo) => {
@@ -1226,11 +1613,14 @@ TELAS.ajustes = async (alvo) => {
             <div class="campo"><label for="aTelefone">Telefone</label><input id="aTelefone" type="tel" value="${escapar(n.telefone || '')}"></div>
             <div class="campo"><label for="aWhatsapp">WhatsApp</label><input id="aWhatsapp" type="tel" value="${escapar(n.whatsapp || '')}"></div>
           </div>
-          <div class="duas-colunas">
-            <div class="campo"><label for="aInstagram">Instagram</label><input id="aInstagram" type="text" value="${escapar(n.instagram || '')}"></div>
-            <div class="campo"><label for="aCor">Cor da marca</label>
-              <input id="aCor" type="color" value="${n.cor || '#6c5ce7'}" style="height:44px;padding:4px"></div>
+          <div class="campo">
+            <label for="aInstagram">Instagram</label>
+            <input id="aInstagram" type="text" value="${escapar(n.instagram || '')}" placeholder="@seunegocio">
           </div>
+          <p class="dica">
+            Logotipo, cores, fonte e textos da página do cliente ficam em
+            <a href="#aparencia" data-ir="aparencia">Aparência</a>.
+          </p>
         </div>
       </div>
 
@@ -1301,12 +1691,17 @@ TELAS.ajustes = async (alvo) => {
 
     <button class="botao" id="btnSalvarAjustes" style="margin-top:18px">Salvar tudo</button>`;
 
+  $$('[data-ir]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    abrirTela(a.dataset.ir);
+  }));
+
   $('#btnSalvarAjustes').addEventListener('click', async () => {
     await api('/api/admin/negocio', { method: 'POST', corpo: {
       nome: $('#aNome').value.trim(), sobre: $('#aSobre').value.trim(),
       endereco: $('#aEndereco').value.trim(), telefone: $('#aTelefone').value.trim(),
       whatsapp: $('#aWhatsapp').value.trim(), instagram: $('#aInstagram').value.trim(),
-      cor: $('#aCor').value, personalidade_ia: $('#aPersonalidade').value,
+      personalidade_ia: $('#aPersonalidade').value,
       boas_vindas: $('#aBoasVindas').value.trim(),
       intervalo_slots: Number($('#aIntervalo').value),
       antecedencia_min_h: Number($('#aAntMin').value),
@@ -1331,7 +1726,19 @@ async function carregarBase(forcar = false) {
   cache.equipe = equipe;
   cache.negocio = negocio;
   $('#lateralNome').textContent = negocio.nome;
-  if (negocio.cor) document.documentElement.style.setProperty('--acento', negocio.cor);
+  document.title = `Painel · ${negocio.nome}`;
+
+  const logo = $('#lateralLogo');
+  if (negocio.logo) {
+    logo.src = `/logo?v=${negocio.atualizado_em || 0}`;
+    logo.hidden = false;
+  } else {
+    logo.hidden = true;
+  }
+
+  // A fonte definida em Aparência vale também para o painel
+  const fonteUrl = (await api('/api/negocio')).fonte_url;
+  if (fonteUrl && $('#fonteWeb').href !== fonteUrl) $('#fonteWeb').href = fonteUrl;
 }
 
 async function atualizarContadores() {

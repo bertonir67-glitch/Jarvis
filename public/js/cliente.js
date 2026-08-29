@@ -99,11 +99,28 @@ async function iniciar() {
     estado.negocio = negocio;
     estado.servicos = servicos;
 
-    document.title = `${negocio.nome} · Agendar horário`;
-    $('#nomeNegocio').textContent = negocio.nome;
+    const titulo = negocio.titulo_portal || negocio.nome;
+    document.title = `${titulo} · Agendar horário`;
+    $('#nomeNegocio').textContent = titulo;
     $('#subNegocio').textContent = negocio.sobre || negocio.endereco || '';
-    $('#rodapeNegocio').textContent = [negocio.endereco, negocio.telefone].filter(Boolean).join(' · ');
-    if (negocio.cor) document.documentElement.style.setProperty('--acento', negocio.cor);
+    $('#rodapeNegocio').textContent =
+      negocio.rodape || [negocio.endereco, negocio.telefone].filter(Boolean).join(' · ');
+    $('#politicaNegocio').textContent = negocio.politica || '';
+
+    // A fonte escolhida entra depois da primeira pintura, sem travar nada
+    if (negocio.fonte_url) $('#fonteWeb').href = negocio.fonte_url;
+
+    if (negocio.tem_logo) {
+      const img = $('#logoNegocio');
+      img.src = `/logo?v=${negocio.versao || 0}`;
+      img.alt = titulo;
+      img.hidden = false;
+    }
+    if (negocio.tem_capa) {
+      const capa = $('#capaNegocio');
+      capa.style.backgroundImage = `url('/capa?v=${negocio.versao || 0}')`;
+      capa.hidden = false;
+    }
 
     if (negocio.endereco) {
       const l = $('#linkMapa');
@@ -115,6 +132,13 @@ async function iniciar() {
       const l = $('#linkZap');
       l.href = `https://wa.me/55${negocio.whatsapp.replace(/\D/g, '')}`;
       l.innerHTML = `${ICONE.telefone(15)} WhatsApp`;
+      l.hidden = false;
+    }
+    if (negocio.instagram) {
+      const l = $('#linkInsta');
+      const perfil = negocio.instagram.replace(/^@/, '');
+      l.href = `https://instagram.com/${perfil}`;
+      l.innerHTML = `${ICONE.imagem(15)} ${escapar(negocio.instagram)}`;
       l.hidden = false;
     }
     $('#mesAnterior').innerHTML = ICONE.esquerda(17);
@@ -136,13 +160,17 @@ function desenharServicos() {
     alvo.innerHTML = vazio('vazio', 'Nenhum serviço disponível no momento.');
     return;
   }
+  const comPreco = estado.negocio?.mostrar_precos !== 0;
   alvo.innerHTML = estado.servicos.map(s => `
     <button class="item-servico" data-id="${s.id}">
       <span class="info">
         <strong>${escapar(s.nome)}</strong>
         <small>${escapar(s.descricao || `${s.duracao_min} minutos`)}</small>
       </span>
-      <span class="preco"><b>${dinheiro(s.preco)}</b><small>${s.duracao_min} min</small></span>
+      <span class="preco">
+        <b>${comPreco ? dinheiro(s.preco) : 'Sob consulta'}</b>
+        <small>${s.duracao_min} min</small>
+      </span>
     </button>`).join('');
 
   $$('.item-servico', alvo).forEach(b => b.addEventListener('click', () => escolherServico(b.dataset.id)));
@@ -157,8 +185,8 @@ async function escolherServico(id) {
   estado.hora = null;
 
   const equipe = await api(`/api/profissionais?servico=${id}`);
-  if (equipe.length <= 1) {
-    estado.profissional = equipe[0] || null;
+  if (equipe.length <= 1 || estado.negocio?.mostrar_equipe === 0) {
+    estado.profissional = equipe.length === 1 ? equipe[0] : null;
     return abrirCalendario();
   }
   $('#listaProfissionais').innerHTML = [
@@ -311,7 +339,8 @@ function montarResumo() {
     <div class="linha"><span>Quando</span><strong>${extenso(estado.data)}, ${estado.hora}</strong></div>
     ${estado.profissional?.nome ? `<div class="linha"><span>Com</span><strong>${escapar(estado.profissional.nome)}</strong></div>` : ''}
     <div class="linha"><span>Duração</span><strong>${estado.servico.duracao_min} min</strong></div>
-    <div class="linha total"><span>Valor</span><strong>${dinheiro(estado.servico.preco)}</strong></div>`;
+    ${estado.negocio?.mostrar_precos !== 0
+      ? `<div class="linha total"><span>Valor</span><strong>${dinheiro(estado.servico.preco)}</strong></div>` : ''}`;
 
   if (estado.cliente) {
     $('#cNome').value = estado.cliente.nome || '';
@@ -359,8 +388,20 @@ function mostrarBilhete(a) {
     <div class="linha"><span>Data</span><strong>${extenso(a.data)}</strong></div>
     <div class="linha"><span>Horário</span><strong>${a.hora_inicio}</strong></div>
     ${a.profissional_nome ? `<div class="linha"><span>Com</span><strong>${escapar(a.profissional_nome)}</strong></div>` : ''}
-    <div class="linha"><span>Valor</span><strong>${dinheiro(a.preco)}</strong></div>
+    ${estado.negocio?.mostrar_precos !== 0
+      ? `<div class="linha"><span>Valor</span><strong>${dinheiro(a.preco)}</strong></div>` : ''}
     <div class="codigo"><small>Código do agendamento</small><br><b>${a.codigo}</b></div>`;
+
+  // Salvar no calendário do próprio cliente
+  $('#calendarioAcoes').innerHTML = `
+    <span class="titulo-secao" style="margin:0 0 8px">Salvar no seu calendário</span>
+    <div class="botoes-linha">
+      <a class="botao neutro pequeno" id="linkGoogleCal" target="_blank" rel="noopener">Google Agenda</a>
+      <a class="botao neutro pequeno" href="/agendamento.ics?codigo=${a.codigo}" download>Baixar (.ics)</a>
+    </div>`;
+  api(`/api/agendamento?codigo=${a.codigo}`)
+    .then(d => { if (d.link_google) $('#linkGoogleCal').href = d.link_google; })
+    .catch(() => $('#linkGoogleCal')?.remove());
 }
 
 $('#btnAgendarOutro').addEventListener('click', () => {
@@ -439,11 +480,12 @@ function cartaoReserva(a) {
         <div>
           <strong>${escapar(a.servico_nome)}</strong>
           <div class="quando">${extenso(a.data)} · ${a.hora_inicio}</div>
-          <div class="detalhe">${a.profissional_nome ? `com ${escapar(a.profissional_nome)} · ` : ''}${dinheiro(a.preco)} · código ${a.codigo}</div>
+          <div class="detalhe">${a.profissional_nome ? `com ${escapar(a.profissional_nome)} · ` : ''}${estado.negocio?.mostrar_precos !== 0 ? dinheiro(a.preco) + ' · ' : ''}código ${a.codigo}</div>
         </div>
         <span class="selo ${cor}">${rotulo}</span>
       </div>
       <div class="reserva-acoes">
+        ${futuro ? `<a class="botao neutro pequeno" href="/agendamento.ics?codigo=${a.codigo}" download>Salvar no calendário</a>` : ''}
         ${futuro ? `<button class="botao neutro pequeno" data-cancelar="${a.codigo}">Cancelar</button>` : ''}
         ${a.status === 'concluido' ? `<button class="botao neutro pequeno" data-avaliar="${a.codigo}" data-servico="${escapar(a.servico_nome)}">Avaliar</button>` : ''}
       </div>

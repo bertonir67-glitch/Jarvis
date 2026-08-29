@@ -19,6 +19,29 @@ export function horaLocal() {
   }).format(new Date());
 }
 
+/** Converte data+hora do negócio para epoch em segundos (respeita o fuso). */
+export function epochLocal(data, hora = '00:00') {
+  const [a, m, d] = data.split('-').map(Number);
+  const [h, min] = hora.split(':').map(Number);
+  const comoUtc = Date.UTC(a, m - 1, d, h, min);
+  const ref = new Date(comoUtc);
+  const local = new Date(ref.toLocaleString('en-US', { timeZone: TZ }));
+  return Math.floor((comoUtc + (ref.getTime() - local.getTime())) / 1000);
+}
+
+/** Converte um instante (ms) para a data e hora locais do negócio. */
+export function localDe(epochMs) {
+  const partes = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false
+    }).formatToParts(new Date(epochMs)).map(p => [p.type, p.value]));
+  return {
+    data: `${partes.year}-${partes.month}-${partes.day}`,
+    hora: `${partes.hour === '24' ? '00' : partes.hour}:${partes.minute}`
+  };
+}
+
 export function minutos(hhmm) {
   const [h, m] = String(hhmm).split(':').map(Number);
   return h * 60 + (m || 0);
@@ -97,6 +120,14 @@ export function expediente(data, profissionalId = null) {
     const bi = b.hora_inicio ? minutos(b.hora_inicio) : 0;
     const bf = b.hora_fim ? minutos(b.hora_fim) : 24 * 60;
     janelas = subtrair(janelas, bi, bf);
+  }
+
+  // Compromissos do calendário pessoal importado ocupam a agenda igual a um bloqueio
+  for (const e of bd.eventosExternosNaData(data)) {
+    if (e.profissional_id && e.profissional_id !== profissionalId) continue;
+    const ei = e.dia_inteiro || !e.hora_inicio ? 0 : minutos(e.hora_inicio);
+    const ef = e.dia_inteiro || !e.hora_fim ? 24 * 60 : minutos(e.hora_fim);
+    janelas = subtrair(janelas, ei, ef);
   }
   return janelas;
 }

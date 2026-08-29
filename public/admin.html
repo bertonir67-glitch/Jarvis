@@ -6,19 +6,22 @@
 <title>Painel</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f7a6e' stroke-width='1.5'><rect x='3' y='3' width='7' height='9' rx='1'/><rect x='14' y='3' width='7' height='5' rx='1'/><rect x='14' y='12' width='7' height='9' rx='1'/><rect x='3' y='16' width='7' height='5' rx='1'/></svg>">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
-<noscript><link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"></noscript>
+<!-- A fonte escolhida em Ajustes entra aqui pelo JS, sem bloquear a página -->
+<link rel="stylesheet" id="fonteWeb" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="/css/estilo.css">
+<!-- Gerado a partir dos Ajustes do negócio: cores, cantos e fonte -->
+<link rel="stylesheet" href="/tema.css">
 <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
 
 <aside class="lateral" id="lateral">
   <div class="lateral-topo">
-    <strong id="lateralNome">Carregando…</strong>
-    <small>Painel do negócio</small>
+    <img class="lateral-logo" id="lateralLogo" alt="" hidden>
+    <div>
+      <strong id="lateralNome">Carregando…</strong>
+      <small>Painel do negócio</small>
+    </div>
   </div>
 
   <nav class="menu">
@@ -34,6 +37,8 @@
 
     <span class="menu-grupo">Configuração</span>
     <button class="menu-item" data-tela="servicos" data-icone="servicos">Serviços</button>
+    <button class="menu-item" data-tela="aparencia" data-icone="aparencia">Aparência</button>
+    <button class="menu-item" data-tela="calendario" data-icone="calendario">Calendário</button>
     <button class="menu-item" data-tela="equipe" data-icone="equipe">Equipe</button>
     <button class="menu-item" data-tela="horarios" data-icone="horarios">Horários</button>
     <button class="menu-item" data-tela="ajustes" data-icone="ajustes">Ajustes</button>
@@ -65,6 +70,8 @@
     <section class="tela" id="tela-clientes"></section>
     <section class="tela" id="tela-avaliacoes"></section>
     <section class="tela" id="tela-servicos"></section>
+    <section class="tela" id="tela-aparencia"></section>
+    <section class="tela" id="tela-calendario"></section>
     <section class="tela" id="tela-equipe"></section>
     <section class="tela" id="tela-horarios"></section>
     <section class="tela" id="tela-ajustes"></section>

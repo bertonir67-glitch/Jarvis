@@ -13,17 +13,7 @@ export function whatsappAtivo() {
 
 const agora = () => Math.floor(Date.now() / 1000);
 
-/** Converte data+hora do negocio para epoch (aproximado ao fuso configurado). */
-function epochDe(data, hora) {
-  const [a, m, d] = data.split('-').map(Number);
-  const [h, min] = hora.split(':').map(Number);
-  const utc = Date.UTC(a, m - 1, d, h, min);
-  // Diferenca do fuso do negocio em relacao ao UTC, calculada na propria data
-  const ref = new Date(utc);
-  const local = new Date(ref.toLocaleString('en-US', { timeZone: process.env.TZ_NEGOCIO || 'America/Sao_Paulo' }));
-  const offset = ref.getTime() - local.getTime();
-  return Math.floor((utc + offset) / 1000);
-}
+const epochDe = (data, hora) => ag.epochLocal(data, hora);
 
 /* ------------------------------------------------------------- MODELOS */
 

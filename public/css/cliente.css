@@ -5,7 +5,18 @@ body { padding-bottom: 32px; }
 /* -------------------------------------------------------- CABEÇALHO */
 
 .cabecalho { background: var(--papel); border-bottom: 1px solid var(--linha); }
+.cabecalho .capa {
+  height: 150px; background-size: cover; background-position: center;
+  border-bottom: 1px solid var(--linha);
+}
 .cabecalho-conteudo { max-width: 680px; margin: 0 auto; padding: 30px 18px 24px; }
+.identidade { display: flex; align-items: center; gap: 14px; }
+.identidade-texto { min-width: 0; }
+.cabecalho .logo {
+  width: 54px; height: 54px; flex: none; border-radius: var(--r-g);
+  object-fit: contain; background: var(--papel-2); border: 1px solid var(--linha);
+}
+.capa + .cabecalho-conteudo .logo { margin-top: -46px; background: var(--papel); }
 .cabecalho h1 { font-size: 1.32rem; font-weight: 600; }
 .cabecalho p {
   color: var(--apagado); font-size: .86rem; margin-top: 5px;
@@ -298,6 +309,10 @@ body { padding-bottom: 32px; }
   max-width: 680px; margin: 0 auto; padding: 24px 18px;
   border-top: 1px solid var(--linha); color: var(--apagado); font-size: .8rem;
 }
+.rodape .politica { margin-top: 6px; font-size: .78rem; line-height: 1.5; }
+
+.calendario-acoes { margin: 18px 0; text-align: left; }
+.calendario-acoes .titulo-secao { display: block; }
 
 @media (min-width: 640px) {
   .cabecalho-conteudo { padding: 38px 18px 28px; }
