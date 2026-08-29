@@ -8,7 +8,8 @@ import { notificarAgendamento } from './mensagens.js';
 const RESET = process.argv.includes('--reset');
 
 if (RESET) {
-  for (const t of ['outbox', 'mensagens', 'conversas', 'avaliacoes', 'agendamentos',
+  for (const t of ['outbox', 'mensagens', 'conversas', 'avaliacoes', 'lancamentos',
+                   'espera', 'agenda_externa', 'sincronizacoes', 'agendamentos',
                    'clientes', 'bloqueios', 'horarios', 'profissional_servico',
                    'profissionais', 'servicos']) {
     bancoDeDados.exec(`DELETE FROM ${t}`);
@@ -45,6 +46,13 @@ bd.salvarNegocio({
   mostrar_precos: 1,
   mostrar_equipe: 1,
   calendario_url: null,
+  pix_chave: 'contato@navalhadeouro.com.br',
+  pix_nome: 'Navalha de Ouro',
+  pix_cidade: 'Sao Paulo',
+  sinal_ativo: 1,
+  sinal_so_risco: 1,
+  fidelidade_meta: 10,
+  fidelidade_premio: 'um corte grátis',
   intervalo_slots: 30,
   antecedencia_min_h: 1,
   antecedencia_max_d: 45,
@@ -58,10 +66,10 @@ bd.salvarNegocio({
 const servicos = [
   { nome: 'Corte masculino',      descricao: 'Máquina, tesoura e finalização', duracao_min: 30, preco: 45,  categoria: 'cabelo', ordem: 1 },
   { nome: 'Barba completa',       descricao: 'Toalha quente, navalha e balm',  duracao_min: 30, preco: 40,  categoria: 'barba',  ordem: 2 },
-  { nome: 'Corte + Barba',        descricao: 'O combo da casa',                duracao_min: 60, preco: 75,  categoria: 'combo',  ordem: 3 },
+  { nome: 'Corte + Barba',        descricao: 'O combo da casa',                duracao_min: 60, preco: 75,  categoria: 'combo',  ordem: 3, sinal: 20 },
   { nome: 'Pezinho',              descricao: 'Acabamento rápido',              duracao_min: 15, preco: 20,  categoria: 'cabelo', ordem: 4 },
   { nome: 'Sobrancelha na navalha', descricao: 'Design masculino',             duracao_min: 15, preco: 25,  categoria: 'estetica', ordem: 5 },
-  { nome: 'Platinado',            descricao: 'Descoloração e matização',       duracao_min: 120, preco: 220, categoria: 'quimica', ordem: 6 },
+  { nome: 'Platinado',            descricao: 'Descoloração e matização',       duracao_min: 120, preco: 220, categoria: 'quimica', ordem: 6, sinal: 50 },
   { nome: 'Corte infantil',       descricao: 'Até 10 anos, com paciência',     duracao_min: 30, preco: 40,  categoria: 'cabelo', ordem: 7 }
 ].map(s => bd.salvarServico(s));
 
@@ -71,16 +79,16 @@ const porNome = n => servicos.find(s => s.nome === n).id;
 
 const equipe = [
   {
-    nome: 'Rafael Moura', apelido: 'Rafa', telefone: '11991110001', cor: '#5f7a6e',
+    nome: 'Rafael Moura', apelido: 'Rafa', telefone: '11991110001', cor: '#5f7a6e', comissao: 50,
     servicos: servicos.map(s => s.id)
   },
   {
-    nome: 'Diego Nunes', apelido: 'Didi', telefone: '11991110002', cor: '#7d8fa3',
+    nome: 'Diego Nunes', apelido: 'Didi', telefone: '11991110002', cor: '#7d8fa3', comissao: 45,
     servicos: [porNome('Corte masculino'), porNome('Barba completa'), porNome('Corte + Barba'),
                porNome('Pezinho'), porNome('Corte infantil')]
   },
   {
-    nome: 'Camila Prado', apelido: 'Cacau', telefone: '11991110003', cor: '#a08464',
+    nome: 'Camila Prado', apelido: 'Cacau', telefone: '11991110003', cor: '#a08464', comissao: 55,
     servicos: [porNome('Corte masculino'), porNome('Platinado'),
                porNome('Sobrancelha na navalha'), porNome('Corte infantil')]
   }
@@ -199,6 +207,77 @@ for (let offset = 0; offset <= 12; offset++) {
   }
 }
 
+/* --------------------------------------------- CLIENTES QUE JA SUMIRAM */
+
+// Tres clientes com ritmo claro que pararam de vir: alimentam a tela de Retencao
+const sumidos = [
+  ['Vinicius Prado', '11988881001', 21, [140, 119, 98, 77]],
+  ['Otavio Camargo', '11988881002', 30, [190, 160, 130, 100]],
+  ['Henrique Dutra', '11988881003', 14, [96, 82, 68, 54]]
+];
+for (const [nome, tel, ritmo, atras] of sumidos) {
+  const cliente = bd.garantirCliente(nome, tel);
+  const servico = sorteio(servicos);
+  const profissional = sorteio(equipe);
+  for (const dias of atras) {
+    const data = ag.somarDias(hoje, -dias);
+    const janelas = ag.expediente(data, null);
+    if (!janelas.length) continue;
+    const inicio = janelas[0].inicio + 60;
+    bd.criarAgendamento({
+      cliente_id: cliente.id, servico_id: servico.id, profissional_id: profissional.id,
+      data, hora_inicio: ag.hhmm(inicio), hora_fim: ag.hhmm(inicio + servico.duracao_min),
+      preco: servico.preco, status: 'concluido', origem: 'site'
+    });
+  }
+  bancoDeDados.prepare('UPDATE clientes SET total_visitas = ? WHERE id = ?')
+    .run(atras.length, cliente.id);
+}
+
+/* ------------------------------------------------------- CAIXA DE HOJE */
+
+// Alguns atendimentos ja concluidos hoje, para o Caixa nao abrir vazio
+const formas = ['dinheiro', 'pix', 'debito', 'credito'];
+const janelasHoje = ag.expediente(hoje, null);
+if (janelasHoje.length) {
+  let t = janelasHoje[0].inicio;
+  for (let i = 0; i < 5; i++) {
+    const servico = sorteio(servicos.filter(x => x.duracao_min <= 60));
+    const profissional = sorteio(equipe.filter(p => p.servicos.includes(servico.id))) || equipe[0];
+    const pessoa = sorteio(pessoas);
+    const a = bd.criarAgendamento({
+      cliente_id: pessoa.id, servico_id: servico.id, profissional_id: profissional.id,
+      data: hoje, hora_inicio: ag.hhmm(t), hora_fim: ag.hhmm(t + servico.duracao_min),
+      preco: servico.preco, status: 'concluido', origem: sorteio(origens)
+    });
+    bd.atualizarAgendamento(a.id, {
+      forma_pagamento: sorteio(formas),
+      valor_extra: Math.random() < 0.4 ? [15, 25, 40][Math.floor(Math.random() * 3)] : 0
+    });
+    t += servico.duracao_min;
+    if (t > janelasHoje[0].fim - 60) break;
+  }
+  bd.criarLancamento({
+    data: hoje, tipo: 'produto', descricao: 'Pomada modeladora',
+    valor: 45, forma: 'pix', profissional_id: equipe[0].id
+  });
+}
+
+/* ------------------------------------------------------ LISTA DE ESPERA */
+
+const naFila = [
+  ['Fernando Alcantara', '11988882001', 'Corte + Barba', 'manha'],
+  ['Sergio Batista', '11988882002', 'Platinado', null]
+];
+for (const [nome, tel, servicoNome, periodo] of naFila) {
+  const cliente = bd.garantirCliente(nome, tel);
+  const servico = servicos.find(x => x.nome === servicoNome);
+  bd.criarEspera({
+    cliente_id: cliente.id, servico_id: servico.id,
+    data_de: hoje, data_ate: ag.somarDias(hoje, 12), periodos: periodo
+  });
+}
+
 /* ---------------------------------------------------------- AVALIACOES */
 
 const concluidos = bd.listarAgendamentos({ de: ag.somarDias(hoje, -30), ate: ag.somarDias(hoje, -1), status: 'concluido', limite: 60 })
@@ -243,6 +322,9 @@ Dados de demonstração criados:
   Clientes ........ ${pessoas.length}
   Agendamentos .... ${criados}
   Avaliações ...... ${Math.min(concluidos.length, comentarios.length)}
+  Na lista de espera  ${bd.listarEspera('aguardando').length}
+  Para reativar ..... ${bd.clientesParaReativar(hoje).length}
+  Caixa de hoje ..... R$ ${bd.fechamentoDoDia(hoje).total.toFixed(2)}
 
 Rode "node index.js" e acesse:
   Portal do cliente  http://localhost:${process.env.PORT || 3000}/

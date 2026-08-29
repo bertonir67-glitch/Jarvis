@@ -3,6 +3,7 @@
 // senao, tudo fica na Central de Mensagens do painel para envio com 1 clique.
 import * as bd from './db.js';
 import * as ag from './agenda.js';
+import { cobrancaDoAgendamento } from './receita.js';
 
 const TOKEN    = () => process.env.WHATSAPP_TOKEN || '';
 const PHONE_ID = () => process.env.WHATSAPP_PHONE_ID || '';
@@ -20,13 +21,23 @@ const epochDe = (data, hora) => ag.epochLocal(data, hora);
 export function textoConfirmacao(a) {
   const n = bd.lerNegocio();
   const primeiro = String(a.cliente_nome).split(' ')[0];
-  return `Oi, ${primeiro}! Seu horário na ${n.nome} está confirmado.\n\n` +
-         `${a.servico_nome}\n` +
-         `${ag.dataPorExtenso(a.data)}, às ${a.hora_inicio}\n` +
-         (a.profissional_nome ? `com ${a.profissional_nome}\n` : '') +
-         (n.endereco ? `${n.endereco}\n` : '') +
-         `\nCódigo: ${a.codigo}\n` +
-         `Precisa remarcar? É só responder esta mensagem.`;
+  const cobranca = cobrancaDoAgendamento(a, n);
+
+  const base =
+    `Oi, ${primeiro}! Seu horário na ${n.nome} ${cobranca && !cobranca.pago ? 'está reservado' : 'está confirmado'}.\n\n` +
+    `${a.servico_nome}\n` +
+    `${ag.dataPorExtenso(a.data)}, às ${a.hora_inicio}\n` +
+    (a.profissional_nome ? `com ${a.profissional_nome}\n` : '') +
+    (n.endereco ? `${n.endereco}\n` : '') +
+    `\nCódigo: ${a.codigo}\n`;
+
+  if (cobranca && !cobranca.pago) {
+    return base +
+      `\nPara garantir a vaga, falta o sinal de R$ ${cobranca.valor.toFixed(2).replace('.', ',')}.\n` +
+      `PIX copia e cola:\n\n${cobranca.codigo}\n\n` +
+      `Assim que cair, confirmamos com você.`;
+  }
+  return base + `Precisa remarcar? É só responder esta mensagem.`;
 }
 
 export function textoLembrete(a) {
@@ -36,7 +47,10 @@ export function textoLembrete(a) {
          `${a.servico_nome}\n` +
          `${ag.dataCurta(a.data)} às ${a.hora_inicio}\n` +
          (a.profissional_nome ? `com ${a.profissional_nome}\n` : '') +
-         `\nConfirma pra gente? Se não puder vir, avisa que a gente remarca.`;
+         (process.env.URL_PUBLICA
+            ? `\nConfirma aqui: ${process.env.URL_PUBLICA}/confirmar/${a.codigo}\n` +
+              `Se não puder vir, é só avisar que a gente remarca.`
+            : `\nConfirma pra gente? Se não puder vir, avisa que a gente remarca.`);
 }
 
 export function textoCancelamento(a) {

@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- A fonte escolhida em Ajustes entra aqui pelo JS, sem bloquear a página -->
 <link rel="stylesheet" id="fonteWeb" media="print" onload="this.media='all'">
+<link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="/css/estilo.css">
 <!-- Gerado a partir dos Ajustes do negócio: cores, cantos e fonte -->
 <link rel="stylesheet" href="/tema.css">
@@ -86,6 +87,9 @@
         <div class="grade-dias" id="gradeDias"></div>
       </div>
       <p class="legenda-calendario"><i class="ponto"></i> dias com horário livre</p>
+      <button class="chamada-espera" id="btnEsperaGeral">
+        Nenhum horário serve? Avisamos quando abrir vaga.
+      </button>
 
       <div id="blocoHorarios" hidden>
         <h2 id="tituloHorarios">Horários disponíveis</h2>
@@ -120,7 +124,8 @@
     <div class="etapa" data-etapa="5">
       <div class="sucesso">
         <span class="marca-sucesso" id="marcaSucesso"></span>
-        <h2>Horário confirmado</h2>
+        <h2 id="tituloSucesso">Horário confirmado</h2>
+        <p class="legenda" id="subSucesso" hidden></p>
         <div class="bilhete" id="bilhete"></div>
         <p class="legenda">Enviamos a confirmação no seu WhatsApp. Guarde o código.</p>
         <div class="calendario-acoes" id="calendarioAcoes"></div>
@@ -185,6 +190,28 @@
     <div class="rodape">
       <button class="botao neutro" data-fechar>Agora não</button>
       <button class="botao" id="btnEnviarAvaliacao" disabled>Enviar avaliação</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalEspera">
+  <div class="caixa">
+    <div class="topo"><h3>Avise quando abrir vaga</h3><button class="fechar" data-fechar-espera aria-label="Fechar"></button></div>
+    <div class="corpo" id="modalEsperaCorpo"></div>
+    <div class="rodape">
+      <button class="botao neutro" data-fechar-espera>Agora não</button>
+      <button class="botao" id="btnConfirmarEspera">Entrar na lista</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalConfirmar">
+  <div class="caixa">
+    <div class="topo"><h3>Seu horário</h3><button class="fechar" data-fechar-confirmar aria-label="Fechar"></button></div>
+    <div class="corpo" id="modalConfirmarCorpo"></div>
+    <div class="rodape">
+      <button class="botao neutro" data-fechar-confirmar>Fechar</button>
+      <button class="botao" id="btnConfirmarPresenca">Confirmar presença</button>
     </div>
   </div>
 </div>

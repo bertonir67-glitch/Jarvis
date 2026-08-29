@@ -13,6 +13,8 @@ import * as ia from './ia.js';
 import * as msg from './mensagens.js';
 import * as tema from './tema.js';
 import * as cal from './calendario.js';
+import * as rec from './receita.js';
+import * as pix from './pix.js';
 import { conversar, saudacaoInicial } from './assistente.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -144,6 +146,9 @@ const servidor = http.createServer(async (req, res) => {
     if (met === 'GET' && (rota === '/' || rota === '/agendar')) {
       return estatico(res, path.join(PUBLICO, 'cliente.html'));
     }
+    if (met === 'GET' && rota.startsWith('/confirmar/')) {
+      return estatico(res, path.join(PUBLICO, 'cliente.html'));
+    }
     if (met === 'GET' && rota.startsWith('/avaliar/')) {
       // Link enviado no WhatsApp: abre o portal ja com a janela de avaliacao
       return estatico(res, path.join(PUBLICO, 'cliente.html'));
@@ -201,6 +206,24 @@ const servidor = http.createServer(async (req, res) => {
       if (!a) return erro(res, 'Agendamento nao encontrado.', 404);
       return texto(res, cal.gerarIcs([a]), 'text/calendar; charset=utf-8',
         { 'Content-Disposition': `attachment; filename="${a.codigo}.ics"` });
+    }
+
+    /* Instalavel no celular: o dono usa como aplicativo no balcao */
+    if (met === 'GET' && rota === '/manifest.json') {
+      const n = bd.lerNegocio();
+      return texto(res, JSON.stringify({
+        name: n.nome,
+        short_name: (n.nome || 'Agenda').slice(0, 12),
+        description: n.sobre || 'Agende seu horario',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#f8f7f4',
+        theme_color: n.cor || '#5f7a6e',
+        lang: 'pt-BR',
+        icons: n.logo
+          ? [{ src: '/logo', sizes: '512x512', type: 'image/png', purpose: 'any' }]
+          : []
+      }), 'application/manifest+json; charset=utf-8', { 'Cache-Control': 'no-cache' });
     }
 
     if (met === 'GET' && rota === '/saude') {
@@ -286,7 +309,9 @@ const servidor = http.createServer(async (req, res) => {
         `jarvis_cli=${assinarCliente(cliente.telefone)}; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 180}`);
       return json(res, {
         cliente: { nome: cliente.nome, telefone: cliente.telefone },
-        agendamentos: bd.agendamentosDoCliente(cliente.id)
+        agendamentos: bd.agendamentosDoCliente(cliente.id),
+        espera: bd.esperaDoCliente(cliente.id),
+        fidelidade: rec.fidelidade(cliente.id)
       });
     }
 
@@ -295,8 +320,29 @@ const servidor = http.createServer(async (req, res) => {
       if (!cliente) return json(res, { cliente: null, agendamentos: [] });
       return json(res, {
         cliente: { nome: cliente.nome, telefone: cliente.telefone },
-        agendamentos: bd.agendamentosDoCliente(cliente.id)
+        agendamentos: bd.agendamentosDoCliente(cliente.id),
+        espera: bd.esperaDoCliente(cliente.id),
+        fidelidade: rec.fidelidade(cliente.id)
       });
+    }
+
+    /* LGPD: o cliente vê e apaga os proprios dados */
+    if (met === 'GET' && rota === '/api/meus-dados') {
+      const cliente = clienteDaSessao(req);
+      if (!cliente) return erro(res, 'Identifique-se primeiro.', 401);
+      const dados = bd.dadosDoCliente(cliente.id);
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="meus-dados.json"'
+      });
+      return res.end(JSON.stringify(dados, null, 2));
+    }
+    if (met === 'POST' && rota === '/api/meus-dados/excluir') {
+      const cliente = clienteDaSessao(req);
+      if (!cliente) return erro(res, 'Identifique-se primeiro.', 401);
+      bd.anonimizarCliente(cliente.id);
+      res.setHeader('Set-Cookie', 'jarvis_cli=; Path=/; Max-Age=0');
+      return json(res, { ok: true });
     }
 
     if (met === 'POST' && rota === '/api/sair') {
@@ -315,7 +361,11 @@ const servidor = http.createServer(async (req, res) => {
       try {
         ag.cancelar(a.id, 'cliente');
         msg.notificarCancelamento(a);
-        return json(res, { ok: true });
+        const avisados = rec.avisarEspera({
+          data: a.data, hora: a.hora_inicio,
+          servico_id: a.servico_id, profissional_id: a.profissional_id
+        });
+        return json(res, { ok: true, avisados });
       } catch (e) {
         return erro(res, e.message, 400);
       }
@@ -329,8 +379,44 @@ const servidor = http.createServer(async (req, res) => {
         codigo: a.codigo, servico_nome: a.servico_nome, profissional_nome: a.profissional_nome,
         data: a.data, hora_inicio: a.hora_inicio, status: a.status,
         cliente_nome: a.cliente_nome, ja_avaliado: Boolean(avaliacao),
+        confirmado: Boolean(a.confirmado_em),
+        cobranca: rec.cobrancaDoAgendamento(a),
         link_google: cal.linkGoogle(a)
       });
+    }
+
+    /* Confirmação ativa: o cliente diz que vem, e o horário deixa de ser dúvida */
+    if (met === 'POST' && rota === '/api/confirmar') {
+      const { codigo } = await corpo(req);
+      const a = bd.buscarAgendamentoPorCodigo(codigo);
+      if (!a) return erro(res, 'Agendamento nao encontrado.', 404);
+      if (a.status === 'cancelado') return erro(res, 'Este horario foi cancelado.', 409);
+      const atualizado = bd.atualizarAgendamento(a.id, {
+        confirmado_em: Math.floor(Date.now() / 1000),
+        status: a.status === 'pendente' && a.sinal > 0 && !a.sinal_pago ? 'pendente' : 'confirmado'
+      });
+      return json(res, { ok: true, agendamento: atualizado });
+    }
+
+    /* Lista de espera: o dia está cheio, mas o cliente não vai embora */
+    if (met === 'POST' && rota === '/api/espera') {
+      const d = await corpo(req);
+      try {
+        const e = rec.entrarNaEspera(d);
+        res.setHeader('Set-Cookie',
+          `jarvis_cli=${assinarCliente(e.cliente_telefone)}; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 180}`);
+        return json(res, { ok: true, espera: e });
+      } catch (e) {
+        return erro(res, e.message, 400);
+      }
+    }
+    if (met === 'POST' && rota === '/api/espera/sair') {
+      const { id: eid } = await corpo(req);
+      const e = bd.buscarEspera(eid);
+      const sessao = clienteDaSessao(req);
+      if (!e || !sessao || e.cliente_id !== sessao.id) return erro(res, 'Nao encontrado.', 404);
+      bd.atualizarEspera(eid, { status: 'cancelado' });
+      return json(res, { ok: true });
     }
 
     if (met === 'POST' && rota === '/api/avaliar') {
@@ -428,8 +514,83 @@ async function rotasAdmin(req, res, rota, met, q) {
       serie: bd.serieAgendamentos(13, hoje),
       ranking: bd.rankingServicos(hoje.slice(0, 8) + '01'),
       avaliacoes_pendentes: bd.listarAvaliacoes({ status: 'pendente', limite: 5 }),
-      integracoes: { ia: ia.iaAtiva(), whatsapp: msg.whatsappAtivo() }
+      pulso: rec.pulso(),
+      integracoes: { ia: ia.iaAtiva(), whatsapp: msg.whatsappAtivo(),
+                     pix: Boolean(bd.lerNegocio().pix_chave) }
     });
+  }
+
+  /* Pulso: os numeros que decidem o dia */
+  if (met === 'GET' && sub === '/pulso') {
+    return json(res, rec.pulso());
+  }
+
+  /* Lista de espera */
+  if (met === 'GET' && sub === '/espera') {
+    return json(res, { fila: bd.listarEspera(q.get('status') || null), buracos: rec.buracosDaAgenda(7) });
+  }
+  if (met === 'POST' && partes[0] === 'espera' && partes[1] && partes[2] === 'status') {
+    const { status } = await corpo(req);
+    if (!['aguardando', 'avisado', 'atendido', 'cancelado'].includes(status)) {
+      return erro(res, 'Situacao invalida.');
+    }
+    return json(res, bd.atualizarEspera(partes[1], { status }));
+  }
+  if (met === 'POST' && partes[0] === 'espera' && partes[1] && partes[2] === 'agendar') {
+    const { data, hora } = await corpo(req);
+    const e = bd.buscarEspera(partes[1]);
+    if (!e) return erro(res, 'Nao encontrado.', 404);
+    try {
+      const a = ag.agendar({
+        nome: e.cliente_nome, telefone: e.cliente_telefone,
+        servico_id: e.servico_id, profissional_id: e.profissional_id,
+        data, hora, origem: 'admin', observacao: 'Veio da lista de espera'
+      });
+      msg.notificarAgendamento(a);
+      bd.atualizarEspera(e.id, { status: 'atendido' });
+      return json(res, { ok: true, agendamento: a });
+    } catch (err) {
+      return erro(res, err.message, 409);
+    }
+  }
+
+  /* Reativacao de clientes que sumiram */
+  if (met === 'GET' && sub === '/reativar') {
+    return json(res, rec.paraReativar());
+  }
+  if (met === 'POST' && sub === '/reativar') {
+    const { clientes } = await corpo(req);
+    if (!Array.isArray(clientes) || !clientes.length) return erro(res, 'Escolha ao menos um cliente.');
+    return json(res, { enviados: rec.dispararReativacao(clientes) });
+  }
+
+  /* Caixa do dia */
+  if (met === 'GET' && sub === '/caixa') {
+    return json(res, bd.fechamentoDoDia(q.get('data') || ag.hojeLocal()));
+  }
+  if (met === 'POST' && sub === '/lancamentos') {
+    const d = await corpo(req);
+    if (!d.descricao || !(Number(d.valor) > 0)) return erro(res, 'Informe a descricao e o valor.');
+    return json(res, bd.criarLancamento({ ...d, data: d.data || ag.hojeLocal() }));
+  }
+  if (met === 'DELETE' && partes[0] === 'lancamentos' && partes[1]) {
+    return json(res, bd.removerLancamento(partes[1]));
+  }
+
+  /* PIX: confere a chave e mostra um codigo de exemplo */
+  if (met === 'POST' && sub === '/pix/testar') {
+    const { chave, nome, cidade } = await corpo(req);
+    const v = pix.validarChave(chave);
+    if (!v.ok) return erro(res, v.erro);
+    try {
+      return json(res, {
+        ok: true, tipo: v.tipo,
+        exemplo: pix.gerarCodigo({ chave, nome: nome || 'TESTE', cidade: cidade || 'BRASIL',
+                                   valor: 1, txid: 'TESTE' })
+      });
+    } catch (e) {
+      return erro(res, e.message);
+    }
   }
 
   /* Aparencia: catalogo de opcoes para montar a tela */
@@ -582,13 +743,19 @@ async function rotasAdmin(req, res, rota, met, q) {
         }
       }
       const a = bd.atualizarAgendamento(aid, d);
-      if (d.status === 'cancelado') msg.notificarCancelamento(a);
+      if (d.status === 'cancelado') {
+        msg.notificarCancelamento(a);
+        rec.avisarEspera({ data: a.data, hora: a.hora_inicio,
+                           servico_id: a.servico_id, profissional_id: a.profissional_id });
+      }
       return json(res, { ok: true, agendamento: a });
     }
     if (met === 'DELETE') {
       const a = ag.cancelar(aid, 'admin');
       msg.notificarCancelamento(a);
-      return json(res, { ok: true });
+      const avisados = rec.avisarEspera({ data: a.data, hora: a.hora_inicio,
+                                          servico_id: a.servico_id, profissional_id: a.profissional_id });
+      return json(res, { ok: true, avisados });
     }
   }
 
@@ -599,7 +766,12 @@ async function rotasAdmin(req, res, rota, met, q) {
   if (met === 'GET' && partes[0] === 'clientes' && partes[1]) {
     const c = bd.buscarCliente(partes[1]);
     if (!c) return erro(res, 'Cliente nao encontrado.', 404);
-    return json(res, { ...c, agendamentos: bd.agendamentosDoCliente(c.id) });
+    return json(res, {
+      ...c,
+      agendamentos: bd.agendamentosDoCliente(c.id),
+      risco: rec.riscoDeFalta(c),
+      fidelidade: rec.fidelidade(c.id)
+    });
   }
   if (met === 'POST' && partes[0] === 'clientes' && partes[1] && partes[2] === 'notas') {
     const { notas } = await corpo(req);

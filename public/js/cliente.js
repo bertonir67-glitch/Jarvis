@@ -270,6 +270,11 @@ async function desenharCalendario(pulosRestantes = 2) {
 }
 
 // Navegação manual não pula meses vazios: o cliente pediu para ver aquele mês
+$('#btnEsperaGeral').addEventListener('click', () => {
+  if (!estado.servico) return recado('Escolha o serviço primeiro.', 'erro');
+  abrirModalEspera(estado.data || hojeISO());
+});
+
 $('#mesAnterior').addEventListener('click', () => mudarMes(-1, 0));
 $('#mesSeguinte').addEventListener('click', () => mudarMes(1, 0));
 
@@ -301,7 +306,14 @@ async function escolherData(data) {
   catch { $('#periodos').innerHTML = `<div class="aviso">Erro ao buscar horários.</div>`; return; }
 
   if (!slots.length) {
-    $('#periodos').innerHTML = vazio('calendario', 'Sem horários livres nesse dia. Escolha outro no calendário.');
+    $('#periodos').innerHTML = `
+      ${vazio('calendario', 'Sem horários livres nesse dia.')}
+      <div class="oferta-espera">
+        <strong>Quer que a gente te avise?</strong>
+        <p>Entramos em contato assim que alguém desmarcar nesse período — por ordem de chegada.</p>
+        <button class="botao" id="btnEntrarEspera">Entrar na lista de espera</button>
+      </div>`;
+    $('#btnEntrarEspera').addEventListener('click', () => abrirModalEspera(data));
     return;
   }
 
@@ -400,11 +412,24 @@ function mostrarBilhete(a) {
       <a class="botao neutro pequeno" href="/agendamento.ics?codigo=${a.codigo}" download>Baixar (.ics)</a>
     </div>`;
   api(`/api/agendamento?codigo=${a.codigo}`)
-    .then(d => { if (d.link_google) $('#linkGoogleCal').href = d.link_google; })
+    .then(d => {
+      if (d.link_google) $('#linkGoogleCal').href = d.link_google;
+      if (d.cobranca && !d.cobranca.pago) {
+        $('#tituloSucesso').textContent = 'Horário reservado';
+        const sub = $('#subSucesso');
+        sub.textContent = 'Ele fica guardado assim que o sinal cair.';
+        sub.hidden = false;
+        $('#bilhete').insertAdjacentHTML('afterend', blocoPix(d.cobranca));
+        ligarCopiaPix();
+      }
+    })
     .catch(() => $('#linkGoogleCal')?.remove());
 }
 
 $('#btnAgendarOutro').addEventListener('click', () => {
+  $('#tituloSucesso').textContent = 'Horário confirmado';
+  $('#subSucesso').hidden = true;
+  $('.bloco-pix')?.remove();
   estado.servico = estado.profissional = estado.data = estado.hora = null;
   $('#formReserva').reset();
   $('#blocoHorarios').hidden = true;
@@ -431,7 +456,7 @@ $('#formConsulta').addEventListener('submit', async e => {
   } catch (erro) { recado(erro.message, 'erro'); }
 });
 
-function mostrarMeus({ cliente, agendamentos }) {
+function mostrarMeus({ cliente, agendamentos, espera = [], fidelidade = null }) {
   $('#buscaMeus').hidden = true;
   const hoje = new Date().toISOString().slice(0, 10);
   const futuros = agendamentos.filter(a => a.data >= hoje && ['confirmado', 'pendente'].includes(a.status));
@@ -443,6 +468,40 @@ function mostrarMeus({ cliente, agendamentos }) {
         <small>${mascaraTelefone(cliente.telefone)}</small></div>
       <button class="botao fantasma pequeno" id="btnTrocarCliente">Não sou eu</button>
     </div>
+
+    ${fidelidade ? `
+      <div class="cartao-fidelidade">
+        <div>
+          <strong>Cartão fidelidade</strong>
+          <small>${fidelidade.premios_disponiveis
+            ? `Você já tem ${fidelidade.premios_disponiveis} ${fidelidade.premio} para usar!`
+            : `Faltam ${fidelidade.faltam} para ganhar ${escapar(fidelidade.premio)}`}</small>
+        </div>
+        <div class="selos-fidelidade">
+          ${Array.from({ length: fidelidade.meta }, (_, i) =>
+            `<i class="${i < fidelidade.feitos ? 'cheio' : ''}"></i>`).join('')}
+        </div>
+      </div>` : ''}
+
+    ${espera.length ? `
+      <p class="titulo-secao">Na lista de espera</p>
+      ${espera.map(e => `
+        <div class="reserva">
+          <div class="reserva-topo">
+            <div>
+              <strong>${escapar(e.servico_nome)}</strong>
+              <div class="quando">${extenso(e.data_de)} a ${extenso(e.data_ate)}</div>
+              <div class="detalhe">${e.status === 'avisado'
+                ? `Abriu vaga em ${extenso(e.vaga_data)} às ${e.vaga_hora} — corre!`
+                : 'Avisamos assim que abrir uma vaga'}</div>
+            </div>
+            <span class="selo ${e.status === 'avisado' ? 'verde' : 'ambar'}">
+              ${e.status === 'avisado' ? 'Vaga aberta' : 'Aguardando'}</span>
+          </div>
+          <div class="reserva-acoes">
+            <button class="botao neutro pequeno" data-sair-espera="${e.id}">Sair da lista</button>
+          </div>
+        </div>`).join('')}` : ''}
 
     <p class="titulo-secao">Próximos horários</p>
     ${futuros.length ? futuros.map(cartaoReserva).join('')
@@ -459,13 +518,39 @@ function mostrarMeus({ cliente, agendamentos }) {
     $('#telConsulta').value = '';
   });
 
+  $('#resultadoMeus').insertAdjacentHTML('beforeend', `
+    <details class="privacidade">
+      <summary>Meus dados e privacidade</summary>
+      <p>Guardamos seu nome, telefone e histórico de atendimentos para poder te
+         atender. Você pode levar tudo embora ou apagar quando quiser.</p>
+      <div class="botoes-linha">
+        <a class="botao neutro pequeno" href="/api/meus-dados" download>Baixar meus dados</a>
+        <button class="botao neutro pequeno" id="btnApagarDados">Apagar meus dados</button>
+      </div>
+    </details>`);
+
+  $('#btnApagarDados')?.addEventListener('click', async () => {
+    if (!confirm('Isso apaga seu nome e telefone do sistema e não dá para desfazer. Continuar?')) return;
+    await api('/api/meus-dados/excluir', { method: 'POST' });
+    estado.cliente = null;
+    $('#buscaMeus').hidden = false;
+    $('#resultadoMeus').innerHTML = '';
+    recado('Seus dados foram apagados.', 'ok');
+  });
+
   $$('[data-ir-agendar]').forEach(b => b.addEventListener('click', () => trocarAba('agendar')));
+  $$('[data-sair-espera]').forEach(b => b.addEventListener('click', async () => {
+    await api('/api/espera/sair', { method: 'POST', corpo: { id: b.dataset.sairEspera } });
+    recado('Removido da lista.', 'ok');
+    carregarSessao();
+  }));
+  $$('[data-confirmar]').forEach(b => b.addEventListener('click', () => abrirConfirmacao(b.dataset.confirmar)));
   $$('[data-cancelar]').forEach(b => b.addEventListener('click', () => cancelarReserva(b.dataset.cancelar)));
   $$('[data-avaliar]').forEach(b => b.addEventListener('click', () => abrirAvaliacao(b.dataset.avaliar, b.dataset.servico)));
 }
 
 const SELOS = {
-  confirmado: ['verde', 'Confirmado'], pendente: ['ambar', 'Pendente'],
+  confirmado: ['verde', 'Confirmado'], pendente: ['ambar', 'Aguardando sinal'],
   concluido: ['cinza', 'Concluído'], cancelado: ['vermelho', 'Cancelado'],
   faltou: ['vermelho', 'Não compareceu']
 };
@@ -485,6 +570,9 @@ function cartaoReserva(a) {
         <span class="selo ${cor}">${rotulo}</span>
       </div>
       <div class="reserva-acoes">
+        ${futuro ? `<button class="botao ${a.sinal > 0 && !a.sinal_pago ? '' : 'neutro'} pequeno" data-confirmar="${a.codigo}">
+            ${a.sinal > 0 && !a.sinal_pago ? 'Pagar sinal' : (a.confirmado_em ? 'Ver detalhes' : 'Confirmar presença')}
+          </button>` : ''}
         ${futuro ? `<a class="botao neutro pequeno" href="/agendamento.ics?codigo=${a.codigo}" download>Salvar no calendário</a>` : ''}
         ${futuro ? `<button class="botao neutro pequeno" data-cancelar="${a.codigo}">Cancelar</button>` : ''}
         ${a.status === 'concluido' ? `<button class="botao neutro pequeno" data-avaliar="${a.codigo}" data-servico="${escapar(a.servico_nome)}">Avaliar</button>` : ''}
@@ -525,6 +613,8 @@ function abrirAvaliacao(codigo, servico) {
 }
 
 $$('#modalAvaliar [data-fechar]').forEach(b => b.addEventListener('click', () => $('#modalAvaliar').classList.remove('ver')));
+$$('[data-fechar-espera]').forEach(b => b.addEventListener('click', () => $('#modalEspera').classList.remove('ver')));
+$$('[data-fechar-confirmar]').forEach(b => b.addEventListener('click', () => $('#modalConfirmar').classList.remove('ver')));
 
 $('#btnEnviarAvaliacao').addEventListener('click', async () => {
   try {
@@ -538,10 +628,133 @@ $('#btnEnviarAvaliacao').addEventListener('click', async () => {
 });
 
 function conferirLinkDeAvaliacao() {
-  const m = location.pathname.match(/^\/avaliar\/([A-Z0-9]{6})$/i);
-  if (!m) return;
+  const avaliar = location.pathname.match(/^\/avaliar\/([A-Z0-9]{6})$/i);
+  if (avaliar) {
+    trocarAba('meus');
+    return abrirAvaliacao(avaliar[1].toUpperCase(), '');
+  }
+  const confirmar = location.pathname.match(/^\/confirmar\/([A-Z0-9]{6})$/i);
+  if (confirmar) abrirConfirmacao(confirmar[1].toUpperCase());
+}
+
+/* --------------------------------------------------- LISTA DE ESPERA */
+
+function abrirModalEspera(dataAlvo) {
+  const fim = somarDiasISO(dataAlvo, 14);
+  $('#modalEsperaCorpo').innerHTML = `
+    <p class="legenda">
+      ${escapar(estado.servico.nome)} · a partir de ${extenso(dataAlvo)}
+    </p>
+    <div class="campo">
+      <label for="eNome">Seu nome</label>
+      <input id="eNome" type="text" value="${escapar(estado.cliente?.nome || '')}" placeholder="Como podemos te chamar?">
+    </div>
+    <div class="campo">
+      <label for="eTel">WhatsApp com DDD</label>
+      <input id="eTel" type="tel" value="${estado.cliente ? mascaraTelefone(estado.cliente.telefone) : ''}"
+             placeholder="(11) 98765-4321" inputmode="numeric">
+    </div>
+    <div class="campo">
+      <label>Até quando você pode esperar</label>
+      <input id="eAte" type="date" value="${fim}" min="${dataAlvo}">
+    </div>
+    <div class="campo">
+      <label>Melhores períodos <span class="opcional">opcional</span></label>
+      <div class="periodos-escolha">
+        ${[['manha', 'Manhã'], ['tarde', 'Tarde'], ['noite', 'Noite']].map(([v, r]) =>
+          `<label class="marcador-periodo"><input type="checkbox" value="${v}" class="periodo-espera"> ${r}</label>`).join('')}
+      </div>
+    </div>`;
+  $('#eTel').addEventListener('input', e => e.target.value = mascaraTelefone(e.target.value));
+  $('#modalEspera').classList.add('ver');
+  $('#btnConfirmarEspera').onclick = () => enviarEspera(dataAlvo);
+}
+
+async function enviarEspera(dataAlvo) {
+  const btn = $('#btnConfirmarEspera');
+  btn.disabled = true;
+  try {
+    await api('/api/espera', { method: 'POST', corpo: {
+      nome: $('#eNome').value.trim(),
+      telefone: $('#eTel').value,
+      servico_id: estado.servico.id,
+      profissional_id: estado.profissional?.id || null,
+      data_de: dataAlvo,
+      data_ate: $('#eAte').value || somarDiasISO(dataAlvo, 14),
+      periodos: $$('.periodo-espera:checked').map(c => c.value)
+    } });
+    $('#modalEspera').classList.remove('ver');
+    recado('Pronto! Avisamos assim que abrir vaga.', 'ok');
+  } catch (e) {
+    recado(e.message, 'erro');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+const hojeISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const somarDiasISO = (data, n) => {
+  const d = soData(data);
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+/* ----------------------------------------------------- CONFIRMAR / PIX */
+
+async function abrirConfirmacao(codigo) {
   trocarAba('meus');
-  abrirAvaliacao(m[1].toUpperCase(), '');
+  try {
+    const a = await api(`/api/agendamento?codigo=${codigo}`);
+    const cobrar = a.cobranca && !a.cobranca.pago;
+
+    $('#modalConfirmarCorpo').innerHTML = `
+      <div class="bilhete" style="margin:0 0 16px">
+        <div class="linha"><span>Serviço</span><strong>${escapar(a.servico_nome)}</strong></div>
+        <div class="linha"><span>Quando</span><strong>${extenso(a.data)}, ${a.hora_inicio}</strong></div>
+        ${a.profissional_nome ? `<div class="linha"><span>Com</span><strong>${escapar(a.profissional_nome)}</strong></div>` : ''}
+      </div>
+      ${cobrar ? blocoPix(a.cobranca) : ''}
+      ${a.confirmado ? '<div class="aviso ok">Presença já confirmada. Até lá!</div>' : ''}`;
+
+    $('#btnConfirmarPresenca').hidden = Boolean(a.confirmado);
+    $('#btnConfirmarPresenca').onclick = async () => {
+      try {
+        await api('/api/confirmar', { method: 'POST', corpo: { codigo } });
+        $('#modalConfirmar').classList.remove('ver');
+        recado('Presença confirmada. Obrigado!', 'ok');
+        carregarSessao();
+      } catch (e) { recado(e.message, 'erro'); }
+    };
+    $('#modalConfirmar').classList.add('ver');
+    ligarCopiaPix();
+  } catch (e) {
+    recado(e.message, 'erro');
+  }
+}
+
+const blocoPix = (c) => `
+  <div class="bloco-pix">
+    <strong>Falta o sinal de ${dinheiro(c.valor)}</strong>
+    <p>Copie o código abaixo e cole no seu banco, na opção PIX copia e cola.</p>
+    <code class="codigo-pix" id="codigoPix">${escapar(c.codigo)}</code>
+    <button class="botao bloco" data-copiar-pix="${escapar(c.codigo)}">Copiar código PIX</button>
+  </div>`;
+
+function ligarCopiaPix() {
+  $$('[data-copiar-pix]').forEach(b => b.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(b.dataset.copiarPix);
+      recado('Código copiado. Cole no app do seu banco.', 'ok');
+    } catch {
+      const el = $('#codigoPix');
+      if (el) { const r = document.createRange(); r.selectNode(el); getSelection().removeAllRanges(); getSelection().addRange(r); }
+      recado('Selecione e copie o código.', 'erro');
+    }
+  }));
 }
 
 /* -------------------------------------------------------------- CHAT */

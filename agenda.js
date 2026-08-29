@@ -1,5 +1,6 @@
 // Motor de disponibilidade: calcula horarios livres, valida e grava agendamentos.
 import * as bd from './db.js';
+import { sinalDevido } from './risco.js';
 
 const TZ = process.env.TZ_NEGOCIO || 'America/Sao_Paulo';
 
@@ -263,7 +264,11 @@ export function agendar({ nome, telefone, email, servico_id, profissional_id, da
   if (!escolhido) throw new ErroAgenda('Profissional indisponível nesse horário.', 'profissional');
 
   const cliente = bd.garantirCliente(nome.trim(), tel, email);
-  const ag = bd.criarAgendamento({
+
+  // Sinal por PIX: quando exigido, o horário fica reservado mas pendente
+  const sinal = origem === 'admin' ? 0 : sinalDevido(servico, cliente);
+
+  return bd.criarAgendamento({
     cliente_id: cliente.id,
     servico_id,
     profissional_id: escolhido.id,
@@ -271,11 +276,11 @@ export function agendar({ nome, telefone, email, servico_id, profissional_id, da
     hora_inicio: hora,
     hora_fim: hhmm(minutos(hora) + servico.duracao_min),
     preco: servico.preco,
-    status: 'confirmado',
+    status: sinal > 0 ? 'pendente' : 'confirmado',
     origem,
-    observacao: observacao || null
+    observacao: observacao || null,
+    sinal
   });
-  return ag;
 }
 
 export function cancelar(agendamentoId, porQuem = 'cliente') {

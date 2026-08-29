@@ -192,6 +192,41 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  -- Fila de quem quer um horario que ainda nao existe.
+  -- Quando alguem cancela, esta lista vira receita de volta.
+  CREATE TABLE IF NOT EXISTS espera (
+    id              TEXT PRIMARY KEY,
+    cliente_id      TEXT NOT NULL REFERENCES clientes(id) ON DELETE CASCADE,
+    servico_id      TEXT NOT NULL REFERENCES servicos(id),
+    profissional_id TEXT REFERENCES profissionais(id) ON DELETE SET NULL,
+    data_de         TEXT NOT NULL,
+    data_ate        TEXT NOT NULL,
+    periodos        TEXT,
+    observacao      TEXT,
+    status          TEXT DEFAULT 'aguardando',
+    avisado_em      INTEGER,
+    vaga_data       TEXT,
+    vaga_hora       TEXT,
+    criado_em       INTEGER DEFAULT (unixepoch())
+  );
+  CREATE INDEX IF NOT EXISTS idx_espera_status ON espera(status, data_de);
+
+  -- Cada movimento de dinheiro do dia (atendimento, produto, ajuste)
+  CREATE TABLE IF NOT EXISTS lancamentos (
+    id              TEXT PRIMARY KEY,
+    agendamento_id  TEXT REFERENCES agendamentos(id) ON DELETE SET NULL,
+    profissional_id TEXT REFERENCES profissionais(id) ON DELETE SET NULL,
+    data            TEXT NOT NULL,
+    tipo            TEXT NOT NULL DEFAULT 'servico',
+    descricao       TEXT,
+    valor           REAL NOT NULL DEFAULT 0,
+    forma           TEXT,
+    criado_em       INTEGER DEFAULT (unixepoch())
+  );
+  CREATE INDEX IF NOT EXISTS idx_lanc_data ON lancamentos(data);
+`);
+
 /** Adiciona colunas novas em bases que ja existem, sem perder dados. */
 function garantirColuna(tabela, coluna, definicao) {
   const existe = db.prepare(`PRAGMA table_info(${tabela})`).all().some(c => c.name === coluna);
@@ -209,6 +244,27 @@ garantirColuna('negocio', 'rodape',          'TEXT');
 garantirColuna('negocio', 'politica',        'TEXT');
 garantirColuna('negocio', 'mostrar_precos',  'INTEGER DEFAULT 1');
 garantirColuna('negocio', 'mostrar_equipe',  'INTEGER DEFAULT 1');
+
+// Sinal por PIX: evita a falta sem depender de gateway de pagamento
+garantirColuna('negocio', 'pix_chave',   'TEXT');
+garantirColuna('negocio', 'pix_nome',    'TEXT');
+garantirColuna('negocio', 'pix_cidade',  'TEXT');
+garantirColuna('negocio', 'sinal_ativo',   'INTEGER DEFAULT 0');
+garantirColuna('negocio', 'sinal_so_risco','INTEGER DEFAULT 1');
+garantirColuna('servicos', 'sinal', 'REAL DEFAULT 0');
+garantirColuna('agendamentos', 'sinal',      'REAL DEFAULT 0');
+garantirColuna('agendamentos', 'sinal_pago', 'INTEGER DEFAULT 0');
+
+// Confirmacao ativa do cliente
+garantirColuna('agendamentos', 'confirmado_em', 'INTEGER');
+garantirColuna('agendamentos', 'valor_extra',   'REAL DEFAULT 0');
+garantirColuna('agendamentos', 'forma_pagamento', 'TEXT');
+
+// Comissao da equipe e fidelidade
+garantirColuna('profissionais', 'comissao', 'REAL DEFAULT 0');
+garantirColuna('negocio', 'fidelidade_meta',   'INTEGER DEFAULT 0');
+garantirColuna('negocio', 'fidelidade_premio', 'TEXT');
+garantirColuna('clientes', 'fidelidade_usada', 'INTEGER DEFAULT 0');
 
 // Integracao de calendario
 garantirColuna('negocio', 'feed_token',        'TEXT');
@@ -247,7 +303,9 @@ export function salvarNegocio(dados) {
     'antecedencia_min_h', 'antecedencia_max_d', 'cancelamento_min_h',
     'lembrete_h', 'pedir_avaliacao',
     'logo', 'capa', 'base_neutra', 'fonte', 'cantos', 'titulo_portal',
-    'rodape', 'politica', 'mostrar_precos', 'mostrar_equipe', 'calendario_url'
+    'rodape', 'politica', 'mostrar_precos', 'mostrar_equipe', 'calendario_url',
+    'pix_chave', 'pix_nome', 'pix_cidade', 'sinal_ativo', 'sinal_so_risco',
+    'fidelidade_meta', 'fidelidade_premio'
   ];
   const campos = permitidos.filter(c => dados[c] !== undefined);
   if (!campos.length) return lerNegocio();
@@ -273,16 +331,18 @@ export function buscarServico(servicoId) {
 export function salvarServico(s) {
   if (s.id && buscarServico(s.id)) {
     db.prepare(`UPDATE servicos SET nome=?, descricao=?, duracao_min=?, preco=?,
-                categoria=?, ordem=?, ativo=? WHERE id=?`)
+                categoria=?, ordem=?, ativo=?, sinal=? WHERE id=?`)
       .run(s.nome, s.descricao || null, Number(s.duracao_min) || 30, Number(s.preco) || 0,
-           s.categoria || null, Number(s.ordem) || 0, s.ativo ? 1 : 0, s.id);
+           s.categoria || null, Number(s.ordem) || 0, s.ativo ? 1 : 0,
+           Number(s.sinal) || 0, s.id);
     return buscarServico(s.id);
   }
   const novo = s.id || id();
-  db.prepare(`INSERT INTO servicos (id, nome, descricao, duracao_min, preco, categoria, ordem, ativo)
-              VALUES (?,?,?,?,?,?,?,?)`)
+  db.prepare(`INSERT INTO servicos (id, nome, descricao, duracao_min, preco, categoria, ordem, ativo, sinal)
+              VALUES (?,?,?,?,?,?,?,?,?)`)
     .run(novo, s.nome, s.descricao || null, Number(s.duracao_min) || 30, Number(s.preco) || 0,
-         s.categoria || null, Number(s.ordem) || 0, s.ativo === undefined ? 1 : (s.ativo ? 1 : 0));
+         s.categoria || null, Number(s.ordem) || 0, s.ativo === undefined ? 1 : (s.ativo ? 1 : 0),
+         Number(s.sinal) || 0);
   return buscarServico(novo);
 }
 
@@ -315,16 +375,19 @@ export function salvarProfissional(p) {
   const existe = p.id && db.prepare('SELECT id FROM profissionais WHERE id = ?').get(p.id);
   const pid = p.id || id();
   if (existe) {
+    const anterior = buscarProfissional(pid);
     db.prepare(`UPDATE profissionais SET nome=?, apelido=?, telefone=?, cor=?, ativo=?,
-                calendario_url=? WHERE id=?`)
+                calendario_url=?, comissao=? WHERE id=?`)
       .run(p.nome, p.apelido || null, p.telefone || null, p.cor || '#5f7a6e', p.ativo ? 1 : 0,
-           p.calendario_url === undefined ? (buscarProfissional(pid)?.calendario_url || null) : (p.calendario_url || null),
+           p.calendario_url === undefined ? (anterior?.calendario_url || null) : (p.calendario_url || null),
+           p.comissao === undefined ? (anterior?.comissao || 0) : Number(p.comissao) || 0,
            pid);
   } else {
-    db.prepare(`INSERT INTO profissionais (id, nome, apelido, telefone, cor, ativo, calendario_url)
-                VALUES (?,?,?,?,?,?,?)`)
+    db.prepare(`INSERT INTO profissionais (id, nome, apelido, telefone, cor, ativo, calendario_url, comissao)
+                VALUES (?,?,?,?,?,?,?,?)`)
       .run(pid, p.nome, p.apelido || null, p.telefone || null, p.cor || '#5f7a6e',
-           p.ativo === undefined ? 1 : (p.ativo ? 1 : 0), p.calendario_url || null);
+           p.ativo === undefined ? 1 : (p.ativo ? 1 : 0), p.calendario_url || null,
+           Number(p.comissao) || 0);
   }
   if (Array.isArray(p.servicos)) {
     db.prepare('DELETE FROM profissional_servico WHERE profissional_id = ?').run(pid);
@@ -451,6 +514,42 @@ export function atualizarNotasCliente(cid, notas) {
   return buscarCliente(cid);
 }
 
+/**
+ * LGPD: apaga os dados pessoais do cliente mantendo o histórico contábil.
+ * O agendamento continua existindo para o fechamento do caixa, mas deixa
+ * de apontar para uma pessoa identificável.
+ */
+export function anonimizarCliente(clienteId) {
+  const c = buscarCliente(clienteId);
+  if (!c) return { ok: false };
+  const apelido = `Cliente removido ${String(clienteId).slice(0, 6)}`;
+  db.prepare(`UPDATE clientes SET nome = ?, telefone = ?, email = NULL, notas = NULL
+              WHERE id = ?`).run(apelido, `removido-${clienteId.slice(0, 12)}`, clienteId);
+  db.prepare(`UPDATE conversas SET nome = NULL, telefone = NULL WHERE cliente_id = ?`).run(clienteId);
+  db.prepare(`UPDATE espera SET status = 'cancelado' WHERE cliente_id = ? AND status = 'aguardando'`).run(clienteId);
+  db.prepare(`UPDATE outbox SET status = 'cancelado', telefone = 'removido', nome = NULL
+              WHERE telefone = ? AND status IN ('pendente','aguardando_envio')`).run(c.telefone);
+  db.prepare(`UPDATE avaliacoes SET comentario = comentario WHERE cliente_id = ?`).run(clienteId);
+  return { ok: true };
+}
+
+/** Tudo que o sistema guarda sobre um cliente, para ele levar embora. */
+export function dadosDoCliente(clienteId) {
+  const c = buscarCliente(clienteId);
+  if (!c) return null;
+  return {
+    cliente: { nome: c.nome, telefone: c.telefone, email: c.email, desde: c.criado_em },
+    agendamentos: agendamentosDoCliente(c.id).map(a => ({
+      codigo: a.codigo, servico: a.servico_nome, data: a.data,
+      hora: a.hora_inicio, valor: a.preco, situacao: a.status
+    })),
+    avaliacoes: db.prepare('SELECT nota, comentario, criado_em FROM avaliacoes WHERE cliente_id = ?').all(c.id),
+    lista_de_espera: esperaDoCliente(c.id).map(e => ({
+      servico: e.servico_nome, de: e.data_de, ate: e.data_ate, situacao: e.status
+    }))
+  };
+}
+
 /* ----------------------------------------------------------- AGENDAMENTOS */
 
 const SQL_AGENDA = `
@@ -467,11 +566,12 @@ export function criarAgendamento(a) {
   let codigo = a.codigo || codigoCurto();
   while (db.prepare('SELECT id FROM agendamentos WHERE codigo = ?').get(codigo)) codigo = codigoCurto();
   db.prepare(`INSERT INTO agendamentos
-    (id, codigo, cliente_id, servico_id, profissional_id, data, hora_inicio, hora_fim, preco, status, origem, observacao)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`)
+    (id, codigo, cliente_id, servico_id, profissional_id, data, hora_inicio, hora_fim,
+     preco, status, origem, observacao, sinal)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(aid, codigo, a.cliente_id, a.servico_id, a.profissional_id || null, a.data,
          a.hora_inicio, a.hora_fim, Number(a.preco) || 0, a.status || 'confirmado',
-         a.origem || 'site', a.observacao || null);
+         a.origem || 'site', a.observacao || null, Number(a.sinal) || 0);
   return buscarAgendamento(aid);
 }
 
@@ -507,7 +607,9 @@ export function ocupacaoDoDia(data, profissionalId = null) {
 }
 
 export function atualizarAgendamento(aid, campos) {
-  const permitidos = ['data', 'hora_inicio', 'hora_fim', 'status', 'observacao', 'profissional_id', 'servico_id', 'preco'];
+  const permitidos = ['data', 'hora_inicio', 'hora_fim', 'status', 'observacao',
+    'profissional_id', 'servico_id', 'preco', 'sinal', 'sinal_pago', 'confirmado_em',
+    'valor_extra', 'forma_pagamento'];
   const usar = permitidos.filter(c => campos[c] !== undefined);
   if (!usar.length) return buscarAgendamento(aid);
   const sets = usar.map(c => `${c} = ?`).join(', ');
@@ -664,6 +766,196 @@ export function cancelarOutboxDoAgendamento(agendamentoId, tipos = null) {
     db.prepare(`UPDATE outbox SET status = 'cancelado' WHERE agendamento_id = ? AND status = 'pendente'`)
       .run(agendamentoId);
   }
+}
+
+/* -------------------------------------------------------- LISTA DE ESPERA */
+
+export function criarEspera(e) {
+  const eid = e.id || id();
+  db.prepare(`INSERT INTO espera
+    (id, cliente_id, servico_id, profissional_id, data_de, data_ate, periodos, observacao)
+    VALUES (?,?,?,?,?,?,?,?)`)
+    .run(eid, e.cliente_id, e.servico_id, e.profissional_id || null,
+         e.data_de, e.data_ate, e.periodos || null, e.observacao || null);
+  return buscarEspera(eid);
+}
+
+const SQL_ESPERA = `
+  SELECT e.*, c.nome AS cliente_nome, c.telefone AS cliente_telefone,
+         s.nome AS servico_nome, s.duracao_min, s.preco,
+         p.nome AS profissional_nome
+  FROM espera e
+  JOIN clientes c ON c.id = e.cliente_id
+  JOIN servicos s ON s.id = e.servico_id
+  LEFT JOIN profissionais p ON p.id = e.profissional_id`;
+
+export function buscarEspera(eid) {
+  return db.prepare(`${SQL_ESPERA} WHERE e.id = ?`).get(eid);
+}
+
+export function listarEspera(status = null) {
+  const sql = status
+    ? `${SQL_ESPERA} WHERE e.status = ? ORDER BY e.criado_em`
+    : `${SQL_ESPERA} ORDER BY (e.status = 'aguardando') DESC, e.criado_em DESC LIMIT 200`;
+  return status ? db.prepare(sql).all(status) : db.prepare(sql).all();
+}
+
+/** Quem está esperando por uma vaga que acabou de abrir, na ordem da fila. */
+export function esperaCompativel(data, servicoId, profissionalId) {
+  return db.prepare(`${SQL_ESPERA}
+    WHERE e.status = 'aguardando'
+      AND e.servico_id = ?
+      AND e.data_de <= ? AND e.data_ate >= ?
+      AND (e.profissional_id IS NULL OR e.profissional_id = ?)
+    ORDER BY e.criado_em`).all(servicoId, data, data, profissionalId || null);
+}
+
+export function atualizarEspera(eid, campos) {
+  const permitidos = ['status', 'avisado_em', 'vaga_data', 'vaga_hora', 'observacao'];
+  const usar = permitidos.filter(c => campos[c] !== undefined);
+  if (!usar.length) return buscarEspera(eid);
+  db.prepare(`UPDATE espera SET ${usar.map(c => `${c} = ?`).join(', ')} WHERE id = ?`)
+    .run(...usar.map(c => campos[c]), eid);
+  return buscarEspera(eid);
+}
+
+export function esperaDoCliente(clienteId) {
+  return db.prepare(`${SQL_ESPERA} WHERE e.cliente_id = ? AND e.status IN ('aguardando','avisado')
+                     ORDER BY e.criado_em`).all(clienteId);
+}
+
+/* ------------------------------------------------------------- LANÇAMENTOS */
+
+export function criarLancamento(l) {
+  const lid = l.id || id();
+  db.prepare(`INSERT INTO lancamentos
+    (id, agendamento_id, profissional_id, data, tipo, descricao, valor, forma)
+    VALUES (?,?,?,?,?,?,?,?)`)
+    .run(lid, l.agendamento_id || null, l.profissional_id || null, l.data,
+         l.tipo || 'extra', l.descricao || null, Number(l.valor) || 0, l.forma || null);
+  return db.prepare('SELECT * FROM lancamentos WHERE id = ?').get(lid);
+}
+
+export function listarLancamentos(data) {
+  return db.prepare(`SELECT l.*, p.nome AS profissional_nome FROM lancamentos l
+                     LEFT JOIN profissionais p ON p.id = l.profissional_id
+                     WHERE l.data = ? ORDER BY l.criado_em`).all(data);
+}
+
+export function removerLancamento(lid) {
+  db.prepare('DELETE FROM lancamentos WHERE id = ?').run(lid);
+  return { ok: true };
+}
+
+/* ---------------------------------------------------------------- RETENÇÃO */
+
+/**
+ * Clientes que costumavam vir e pararam. O intervalo é o do próprio cliente,
+ * não uma regra fixa: quem vem a cada 15 dias some antes de quem vem a cada 60.
+ */
+export function clientesParaReativar(hoje, folga = 1.5) {
+  return db.prepare(`
+    WITH visitas AS (
+      SELECT a.cliente_id, a.data,
+             LAG(a.data) OVER (PARTITION BY a.cliente_id ORDER BY a.data) AS anterior
+      FROM agendamentos a WHERE a.status = 'concluido'
+    ),
+    ritmo AS (
+      SELECT cliente_id,
+             COUNT(*) AS idas,
+             AVG(julianday(data) - julianday(anterior)) AS media_dias,
+             MAX(data) AS ultima
+      FROM visitas WHERE anterior IS NOT NULL GROUP BY cliente_id
+    )
+    SELECT c.id, c.nome, c.telefone, c.total_visitas, c.total_faltas,
+           r.idas, ROUND(r.media_dias) AS media_dias, r.ultima,
+           CAST(julianday(?) - julianday(r.ultima) AS INTEGER) AS dias_sumido
+    FROM ritmo r JOIN clientes c ON c.id = r.cliente_id
+    WHERE r.idas >= 2
+      AND r.media_dias > 0
+      AND julianday(?) - julianday(r.ultima) > r.media_dias * ?
+      AND NOT EXISTS (
+        SELECT 1 FROM agendamentos f
+        WHERE f.cliente_id = c.id AND f.data >= ? AND f.status IN ('confirmado','pendente'))
+    ORDER BY dias_sumido DESC LIMIT 100`).all(hoje, hoje, folga, hoje);
+}
+
+/** Quantos atendimentos o cliente já fez desde o último prêmio de fidelidade. */
+export function progressoFidelidade(clienteId) {
+  const c = buscarCliente(clienteId);
+  if (!c) return null;
+  const concluidos = db.prepare(
+    `SELECT COUNT(*) n FROM agendamentos WHERE cliente_id = ? AND status = 'concluido'`
+  ).get(clienteId).n;
+  return { concluidos, usados: c.fidelidade_usada || 0, disponivel: concluidos - (c.fidelidade_usada || 0) };
+}
+
+export function marcarPremioUsado(clienteId, meta) {
+  db.prepare('UPDATE clientes SET fidelidade_usada = fidelidade_usada + ? WHERE id = ?')
+    .run(Number(meta) || 0, clienteId);
+  return buscarCliente(clienteId);
+}
+
+/* ------------------------------------------------------------------ CAIXA */
+
+/** Tudo que entrou num dia, por atendimento e por profissional. */
+export function fechamentoDoDia(data) {
+  const atendimentos = db.prepare(`
+    SELECT a.*, c.nome AS cliente_nome, s.nome AS servico_nome,
+           p.nome AS profissional_nome, p.comissao
+    FROM agendamentos a
+    JOIN clientes c ON c.id = a.cliente_id
+    JOIN servicos s ON s.id = a.servico_id
+    LEFT JOIN profissionais p ON p.id = a.profissional_id
+    WHERE a.data = ? AND a.status = 'concluido'
+    ORDER BY a.hora_inicio`).all(data);
+
+  const extras = listarLancamentos(data).filter(l => l.tipo !== 'servico');
+
+  const porProfissional = {};
+  for (const a of atendimentos) {
+    const chave = a.profissional_id || 'sem';
+    const p = (porProfissional[chave] ||= {
+      id: a.profissional_id, nome: a.profissional_nome || 'Sem profissional',
+      comissao: a.comissao || 0, atendimentos: 0, servicos: 0, extras: 0
+    });
+    p.atendimentos++;
+    p.servicos += Number(a.preco) || 0;
+    p.extras += Number(a.valor_extra) || 0;
+  }
+  for (const l of extras) {
+    const chave = l.profissional_id || 'sem';
+    const p = (porProfissional[chave] ||= {
+      id: l.profissional_id, nome: l.profissional_nome || 'Sem profissional',
+      comissao: 0, atendimentos: 0, servicos: 0, extras: 0
+    });
+    p.extras += Number(l.valor) || 0;
+  }
+
+  const equipe = Object.values(porProfissional).map(p => {
+    const bruto = p.servicos + p.extras;
+    return { ...p, bruto, comissao_valor: bruto * (Number(p.comissao) || 0) / 100 };
+  }).sort((a, b) => b.bruto - a.bruto);
+
+  const porForma = {};
+  for (const a of atendimentos) {
+    const f = a.forma_pagamento || 'nao_informado';
+    porForma[f] = (porForma[f] || 0) + Number(a.preco) + Number(a.valor_extra || 0);
+  }
+  for (const l of extras) {
+    const f = l.forma || 'nao_informado';
+    porForma[f] = (porForma[f] || 0) + Number(l.valor);
+  }
+
+  const total = equipe.reduce((s, p) => s + p.bruto, 0);
+  const comissoes = equipe.reduce((s, p) => s + p.comissao_valor, 0);
+
+  return {
+    data, atendimentos, extras, equipe, por_forma: porForma,
+    total, comissoes, liquido: total - comissoes,
+    pendentes: db.prepare(`SELECT COUNT(*) n FROM agendamentos
+                           WHERE data = ? AND status IN ('confirmado','pendente')`).get(data).n
+  };
 }
 
 /* -------------------------------------------------------- AGENDA EXTERNA */

@@ -416,3 +416,25 @@ table.tabela td strong { color: var(--tinta); font-weight: 500; }
   .aparencia-previa { position: static; }
   .previa-moldura iframe { height: 520px; }
 }
+
+/* ---------------------------------------------------------------- PULSO */
+
+.pulso { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.pulso-item {
+  padding: 8px 14px; border-radius: var(--r-m); border: 1px solid var(--linha-2);
+  background: var(--papel); color: var(--texto); font-size: .84rem; font-weight: 500;
+  cursor: pointer; transition: border-color .12s, background .12s;
+}
+.pulso-item:hover { border-color: var(--apagado); }
+.pulso-item::before {
+  content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  margin-right: 8px; vertical-align: 1px; background: var(--apagado);
+}
+.pulso-item.ambar::before    { background: var(--ambar); }
+.pulso-item.verde::before    { background: var(--verde); }
+.pulso-item.vermelho::before { background: var(--vermelho); }
+
+.medidor {
+  width: 74px; height: 5px; border-radius: 3px; background: var(--linha); overflow: hidden;
+}
+.medidor i { display: block; height: 100%; background: var(--acento); }

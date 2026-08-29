@@ -35,7 +35,11 @@ const TRACOS = {
   copiar:    '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
   baixar:    '<path d="M12 3v12M7 11l5 5 5-5"/><path d="M4 20h16"/>',
   imagem:    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 16-5-5-5.5 5.5L8 14l-5 5"/>',
-  alerta:    '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>'
+  alerta:    '<path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17h.01"/>',
+  caixa:     '<rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><circle cx="17" cy="14.5" r="1.2"/>',
+  retencao:  '<path d="M12 20s-7-4.4-7-9.5A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.5c0 5.1-7 9.5-7 9.5z"/>',
+  espera:    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M3.5 8.5 6 7"/>',
+  pix:       '<path d="m12 3 4.5 4.5L12 12 7.5 7.5z"/><path d="m12 12 4.5 4.5L12 21l-4.5-4.5z"/><path d="m3 12 4.5-4.5"/><path d="m21 12-4.5 4.5"/>'
 };
 
 const ICONE = new Proxy({}, {

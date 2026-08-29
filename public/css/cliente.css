@@ -318,3 +318,71 @@ body { padding-bottom: 32px; }
   .cabecalho-conteudo { padding: 38px 18px 28px; }
   .cabecalho h1 { font-size: 1.5rem; }
 }
+
+/* ------------------------------------------------------ LISTA DE ESPERA */
+
+.oferta-espera {
+  border: 1px solid var(--linha); border-radius: var(--r-g);
+  padding: 20px; text-align: center; background: var(--papel);
+}
+.oferta-espera strong { display: block; color: var(--tinta); font-size: .95rem; margin-bottom: 6px; }
+.oferta-espera p { color: var(--apagado); font-size: .85rem; margin-bottom: 16px; line-height: 1.5; }
+
+.periodos-escolha { display: flex; gap: 8px; flex-wrap: wrap; }
+.marcador-periodo {
+  display: flex; align-items: center; gap: 7px; padding: 8px 14px;
+  border: 1px solid var(--linha-2); border-radius: var(--r-m);
+  font-size: .86rem; cursor: pointer; transition: border-color .12s;
+}
+.marcador-periodo:hover { border-color: var(--acento); }
+.marcador-periodo input { width: auto; }
+
+/* -------------------------------------------------------------- PIX */
+
+.bloco-pix {
+  border: 1px solid var(--linha); border-radius: var(--r-g);
+  padding: 18px; margin: 18px 0; background: var(--papel-2); text-align: left;
+}
+.bloco-pix strong { display: block; color: var(--tinta); font-size: .95rem; margin-bottom: 5px; }
+.bloco-pix p { color: var(--apagado); font-size: .84rem; margin-bottom: 12px; line-height: 1.5; }
+.codigo-pix {
+  display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .68rem; line-height: 1.5; color: var(--texto); word-break: break-all;
+  background: var(--papel); border: 1px solid var(--linha);
+  border-radius: var(--r-m); padding: 12px; margin-bottom: 12px;
+  max-height: 120px; overflow-y: auto;
+}
+
+/* -------------------------------------------------------- FIDELIDADE */
+
+.cartao-fidelidade {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap; padding: 16px 18px; margin: 4px 0 8px;
+  border: 1px solid var(--linha); border-radius: var(--r-g); background: var(--papel);
+}
+.cartao-fidelidade strong { display: block; color: var(--tinta); font-size: .9rem; font-weight: 500; }
+.cartao-fidelidade small { color: var(--apagado); font-size: .82rem; }
+.selos-fidelidade { display: flex; gap: 5px; flex-wrap: wrap; }
+.selos-fidelidade i {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1.5px solid var(--linha-2); background: transparent;
+}
+.selos-fidelidade i.cheio { background: var(--acento); border-color: var(--acento); }
+
+.chamada-espera {
+  display: block; width: 100%; margin-top: 10px; padding: 11px 14px;
+  border: 1px dashed var(--linha-2); border-radius: var(--r-m);
+  background: none; color: var(--texto); font-size: .84rem;
+  cursor: pointer; transition: border-color .12s, color .12s;
+}
+.chamada-espera:hover { border-color: var(--acento); color: var(--acento-forte); }
+
+.privacidade { margin-top: 30px; border-top: 1px solid var(--linha); padding-top: 18px; }
+.privacidade summary {
+  cursor: pointer; font-size: .84rem; color: var(--apagado); font-weight: 500;
+  list-style: none; display: flex; align-items: center; gap: 6px;
+}
+.privacidade summary::before { content: '+'; font-size: 1rem; line-height: 1; }
+.privacidade[open] summary::before { content: '–'; }
+.privacidade summary::-webkit-details-marker { display: none; }
+.privacidade p { font-size: .83rem; color: var(--apagado); margin: 12px 0; line-height: 1.6; }

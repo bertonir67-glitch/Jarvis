@@ -67,7 +67,9 @@ ele já entra identificado.
 | **Mensagens** | Confirmações, lembretes e pedidos de avaliação prontos para enviar |
 | **Clientes** | Ficha com histórico, total gasto, faltas e anotações internas |
 | **Avaliações** | Nota, comentário e resposta sugerida para revisar e publicar |
-| **Serviços** | Nome, preço, duração, categoria e ordem |
+| **Caixa** | Fechamento do dia, comissão por profissional, formas de pagamento |
+| **Retenção** | Lista de espera, clientes sumidos e vagas ociosas |
+| **Serviços** | Nome, preço, duração, sinal, categoria e ordem |
 | **Aparência** | Logo, capa, cores, fonte, cantos e textos — com prévia ao vivo |
 | **Calendário** | Assinar a agenda no Google/Apple/Outlook e importar o calendário pessoal |
 | **Equipe** | Quem trabalha, quais serviços cada um faz, cor na agenda |
@@ -149,6 +151,9 @@ assistente.js     máquina de estados da conversa
 mensagens.js      confirmações, lembretes e integração WhatsApp
 tema.js           aparência: transforma os Ajustes em CSS
 calendario.js     geração e leitura de .ics, sincronização
+pix.js            BR Code do Banco Central para o sinal
+risco.js          risco de falta e quando cobrar sinal
+receita.js        lista de espera, reativação e fidelidade
 seed.js           negócio de demonstração
 testes/           testes do núcleo — node --test "testes/*.test.js"
 public/           portal do cliente, painel, login e ícones SVG
@@ -160,11 +165,13 @@ public/           portal do cliente, painel, login e ícones SVG
 node --test "testes/*.test.js"
 ```
 
-38 testes cobrem a interpretação de português, o motor de horários
+59 testes cobrem a interpretação de português, o motor de horários
 (conflito, duração, bloqueio, antecedência, cancelar, remarcar), o
 fluxo completo da conversa até o horário confirmado, a geração e a
-leitura de arquivos `.ics` (fuso, dia inteiro, repetição, escape) e o
-motor de aparência, incluindo a correção automática de contraste.
+leitura de arquivos `.ics` (fuso, dia inteiro, repetição, escape), o
+motor de aparência com a correção automática de contraste, o BR Code do
+PIX contra o vetor canônico do CRC, a lista de espera, a reativação pelo
+ritmo de cada cliente e o fechamento de caixa com comissão.
 
 ---
 
@@ -182,6 +189,22 @@ Nada é fixo no código. Pelo painel:
 
 Serve para barbearia, salão, clínica, estúdio de tatuagem, oficina,
 petshop, consultório — qualquer negócio que trabalhe com hora marcada.
+
+---
+
+## Onde este produto ganha
+
+Marcar horário virou commodity. O que este sistema faz de diferente é
+**proteger e recuperar a receita que a agenda perde**:
+
+| Frente | O que acontece |
+|--------|----------------|
+| **Falta** | Sinal por PIX (BR Code gerado aqui, sem gateway e sem taxa), cobrado só de quem já faltou ou vem pela primeira vez |
+| **Cancelamento** | Lista de espera avisada automaticamente quando a vaga abre, respeitando período e ordem de chegada |
+| **Sumiço** | Reativação pelo ritmo de cada cliente, não por uma regra fixa de dias |
+| **Cegueira** | Caixa do dia com comissão da equipe e formas de pagamento |
+
+A decisão de produto e o que ainda falta estão em [ESTRATEGIA.md](ESTRATEGIA.md).
 
 ---
 

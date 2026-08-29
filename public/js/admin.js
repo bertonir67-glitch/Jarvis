@@ -86,7 +86,8 @@ const TITULOS = {
   painel: 'Painel', agenda: 'Agenda', conversas: 'Conversas', mensagens: 'Central de mensagens',
   clientes: 'Clientes', avaliacoes: 'Avaliações', servicos: 'Serviços', equipe: 'Equipe',
   horarios: 'Horários de atendimento', ajustes: 'Ajustes do negócio',
-  aparencia: 'Aparência', calendario: 'Calendário'
+  aparencia: 'Aparência', calendario: 'Calendário',
+  caixa: 'Caixa do dia', retencao: 'Retenção'
 };
 
 const cache = { servicos: [], equipe: [], negocio: null };
@@ -134,6 +135,8 @@ TELAS.painel = async (alvo) => {
   const i = d.indicadores;
 
   alvo.innerHTML = `
+    ${faixaPulso(d.pulso)}
+
     <div class="indicadores">
       ${cartaoIndicador('Hoje', i.hoje, `${i.proximos_7_dias} nos próximos 7 dias`, '')}
       ${cartaoIndicador('Receita do mês', dinheiro(i.receita_mes), `${dinheiro(i.receita_prevista)} previstos`, 'verde')}
@@ -230,9 +233,24 @@ TELAS.painel = async (alvo) => {
 
   $('#dataHoje').textContent = `${maiuscula(extenso(d.hoje))} · ${d.hora}`;
   $('#btnNovoAgendamento')?.addEventListener('click', () => modalNovoAgendamento());
+  $$('[data-ir]').forEach(b => b.addEventListener('click', () => abrirTela(b.dataset.ir)));
   ligarAcoesAgenda();
 
 };
+
+/** O que exige ação agora. Só aparece o que tem número. */
+function faixaPulso(p) {
+  if (!p) return '';
+  const itens = [
+    p.na_espera && { tela: 'retencao', texto: `${p.na_espera} na lista de espera`, tom: 'ambar' },
+    p.para_reativar && { tela: 'retencao', texto: `${p.para_reativar} cliente(s) sumido(s)`, tom: 'ambar' },
+    p.sinal_pendente && { tela: 'agenda', texto: `${p.sinal_pendente} sinal(is) a receber · ${dinheiro(p.valor_sinal_pendente)}`, tom: 'vermelho' },
+    p.caixa_hoje > 0 && { tela: 'caixa', texto: `${dinheiro(p.caixa_hoje)} no caixa hoje`, tom: 'verde' }
+  ].filter(Boolean);
+  if (!itens.length) return '';
+  return `<div class="pulso">${itens.map(i =>
+    `<button class="pulso-item ${i.tom}" data-ir="${i.tela}">${i.texto}</button>`).join('')}</div>`;
+}
 
 const cartaoIndicador = (rotulo, valor, nota, cor) => `
   <div class="indicador ${cor}">
@@ -362,6 +380,8 @@ async function modalAgendamento(id) {
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Valor</span><strong>${dinheiro(a.preco)}</strong></div>
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Origem</span><strong>${({ chat: 'Atendimento automático', site: 'Site', admin: 'Painel' })[a.origem] || a.origem}</strong></div>
       <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Situação</span>${selo(a.status)}</div>
+      ${a.sinal > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0"><span>Sinal</span><strong>${dinheiro(a.sinal)} ${a.sinal_pago ? '· recebido' : '· a receber'}</strong></div>` : ''}
+      ${a.confirmado_em ? `<div style="display:flex;justify-content:space-between;padding:3px 0"><span>Confirmado pelo cliente</span><strong>sim</strong></div>` : ''}
       ${a.observacao ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--linha)"><small>Observação: ${escapar(a.observacao)}</small></div>` : ''}
     </div>
 
@@ -717,10 +737,15 @@ async function modalCliente(id) {
   const gasto = c.agendamentos.filter(a => a.status === 'concluido').reduce((s, a) => s + Number(a.preco), 0);
 
   abrirModal(c.nome, `
-    <div class="indicadores" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+    <div class="indicadores" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
       ${cartaoIndicador('Visitas', c.total_visitas, '', 'verde')}
       ${cartaoIndicador('Faltas', c.total_faltas, '', c.total_faltas > 2 ? 'vermelho' : '')}
       ${cartaoIndicador('Total gasto', dinheiro(gasto), '', '')}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      ${c.risco ? seloRisco(c.risco) : ''}
+      ${c.fidelidade ? `<span class="selo">Fidelidade: ${c.fidelidade.feitos}/${c.fidelidade.meta}${
+        c.fidelidade.premios_disponiveis ? ` · ${c.fidelidade.premios_disponiveis} prêmio(s) a usar` : ''}</span>` : ''}
     </div>
     <div class="campo">
       <label>WhatsApp</label>
@@ -874,6 +899,7 @@ TELAS.servicos = async (alvo) => {
       <div class="metricas">
         <span><b>${dinheiro(s.preco)}</b></span>
         <span><b>${s.duracao_min} min</b></span>
+        ${s.sinal > 0 ? `<span>sinal <b>${dinheiro(s.sinal)}</b></span>` : ''}
       </div>
       <div class="acoes">
         <button class="botao pequeno neutro" data-editar-servico="${s.id}">Editar</button>
@@ -927,6 +953,11 @@ function modalServico(s = null) {
         <input id="sOrdem" type="number" min="0" value="${s?.ordem || 0}">
       </div>
     </div>
+    <div class="campo">
+      <label for="sSinal">Sinal para reservar (R$)</label>
+      <input id="sSinal" type="number" min="0" step="0.01" value="${s?.sinal || 0}">
+      <p class="dica">Zero = não pede sinal. Ative o PIX em Ajustes para valer.</p>
+    </div>
     <label style="display:flex;align-items:center;gap:9px;font-size:.87rem;cursor:pointer">
       <input type="checkbox" id="sAtivo" ${s?.ativo !== 0 ? 'checked' : ''} style="width:auto">
       Disponível para agendamento
@@ -938,7 +969,8 @@ function modalServico(s = null) {
       await api('/api/admin/servicos', { method: 'POST', corpo: {
         id: s?.id, nome: $('#sNome').value.trim(), descricao: $('#sDesc').value.trim(),
         duracao_min: Number($('#sDuracao').value), preco: Number($('#sPreco').value),
-        categoria: $('#sCategoria').value, ordem: Number($('#sOrdem').value), ativo: $('#sAtivo').checked
+        categoria: $('#sCategoria').value, ordem: Number($('#sOrdem').value),
+        sinal: Number($('#sSinal').value) || 0, ativo: $('#sAtivo').checked
       } });
       recado('Serviço salvo.');
       fecharModal();
@@ -963,7 +995,7 @@ TELAS.equipe = async (alvo) => {
     <div class="cartao-item ${p.ativo ? '' : 'inativo'}">
       <div class="avatar-prof" style="background:${p.cor}">${p.nome.split(' ').slice(0, 2).map(x => x[0]).join('').toUpperCase()}</div>
       <h4>${escapar(p.nome)}</h4>
-      <p class="desc">${p.servicos.length ? `${p.servicos.length} serviços` : 'Atende todos os serviços'}${p.telefone ? ` · ${telFmt(p.telefone)}` : ''}</p>
+      <p class="desc">${p.servicos.length ? `${p.servicos.length} serviços` : 'Atende todos os serviços'}${p.comissao ? ` · ${p.comissao}% de comissão` : ''}</p>
       <div class="acoes">
         <button class="botao pequeno neutro" data-editar-prof="${p.id}">Editar</button>
         ${p.ativo ? `<button class="botao pequeno fantasma" data-remover-prof="${p.id}">Desativar</button>`
@@ -1020,8 +1052,19 @@ function modalProfissional(p = null) {
           </label>`).join('')}
       </div>
     </div>
-    <label style="display:flex;align-items:center;gap:9px;font-size:.87rem;cursor:pointer;margin-top:12px">
-      <input type="checkbox" id="pAtivo" ${p?.ativo !== 0 ? 'checked' : ''} style="width:auto"> Atendendo normalmente
+    <div class="duas-colunas">
+      <div class="campo">
+        <label for="pComissao">Comissão (%)</label>
+        <input id="pComissao" type="number" min="0" max="100" step="1" value="${p?.comissao || 0}">
+        <p class="dica">Usada no fechamento do caixa.</p>
+      </div>
+      <div class="campo">
+        <label for="pCalendario">Calendário pessoal (.ics)</label>
+        <input id="pCalendario" type="url" value="${escapar(p?.calendario_url || '')}" placeholder="opcional">
+      </div>
+    </div>
+    <label class="marcador" style="margin-top:4px">
+      <input type="checkbox" id="pAtivo" ${p?.ativo !== 0 ? 'checked' : ''}> Atendendo normalmente
     </label>
   `, [
     { rotulo: 'Cancelar', classe: 'neutro', aoClicar: fecharModal },
@@ -1031,6 +1074,8 @@ function modalProfissional(p = null) {
         id: p?.id, nome: $('#pNome').value.trim(), apelido: $('#pApelido').value.trim(),
         telefone: $('#pTel').value.trim(), cor: corEscolhida || p?.cor || cores[0],
         ativo: $('#pAtivo').checked,
+        comissao: Number($('#pComissao').value) || 0,
+        calendario_url: $('#pCalendario').value.trim(),
         servicos: $$('.serv-check:checked').map(c => c.value)
       } });
       recado('Equipe atualizada.');
@@ -1206,6 +1251,385 @@ function modalBloqueio() {
       abrirTela('horarios');
     } }
   ]);
+}
+
+/* ================================================================= CAIXA */
+
+let diaCaixa = null;
+
+TELAS.caixa = async (alvo) => {
+  diaCaixa = diaCaixa || hojeISO();
+  await carregarBase();
+  const c = await api(`/api/admin/caixa?data=${diaCaixa}`);
+
+  const FORMAS = { dinheiro: 'Dinheiro', pix: 'PIX', debito: 'Débito',
+                   credito: 'Crédito', nao_informado: 'Não informado' };
+
+  alvo.innerHTML = `
+    <div class="filtros">
+      <input type="date" id="dataCaixa" value="${diaCaixa}">
+      <button class="pilula-filtro" data-pular="-1">Dia anterior</button>
+      <button class="pilula-filtro" data-pular="1">Próximo dia</button>
+      <button class="pilula-filtro ${diaCaixa === hojeISO() ? 'ativa' : ''}" data-hoje>Hoje</button>
+    </div>
+
+    <div class="indicadores">
+      ${cartaoIndicador('Entrou no dia', dinheiro(c.total), `${c.atendimentos.length} atendimento(s)`, 'verde')}
+      ${cartaoIndicador('Comissões', dinheiro(c.comissoes), 'a repassar para a equipe', 'ambar')}
+      ${cartaoIndicador('Fica no caixa', dinheiro(c.liquido), 'depois das comissões', '')}
+      ${cartaoIndicador('Ainda em aberto', c.pendentes, 'atendimentos por concluir', c.pendentes ? 'ambar' : '')}
+    </div>
+
+    <div class="paineis">
+      <div class="bloco">
+        <div class="bloco-topo">
+          <h3>Atendimentos concluídos</h3>
+          <button class="botao pequeno neutro" id="btnLancamento">Lançar avulso</button>
+        </div>
+        <div class="bloco-corpo sem-espaco">
+          ${c.atendimentos.length ? c.atendimentos.map(a => `
+            <div class="linha-lista">
+              <span class="horario">${a.hora_inicio}</span>
+              <div class="principal">
+                <strong>${escapar(a.cliente_nome)}</strong>
+                <small>${escapar(a.servico_nome)}${a.profissional_nome ? ` · ${escapar(a.profissional_nome)}` : ''}
+                  ${a.forma_pagamento ? ` · ${FORMAS[a.forma_pagamento] || a.forma_pagamento}` : ''}</small>
+              </div>
+              <div class="fim">
+                ${a.valor_extra > 0 ? `<span class="selo">+${dinheiro(a.valor_extra)}</span>` : ''}
+                <strong>${dinheiro(Number(a.preco) + Number(a.valor_extra || 0))}</strong>
+                <button class="botao fantasma pequeno" data-fechar-atend="${a.id}">Editar</button>
+              </div>
+            </div>`).join('') : vazio('caixa', 'Nenhum atendimento concluído neste dia.')}
+
+          ${c.extras.length ? c.extras.map(l => `
+            <div class="linha-lista">
+              <span class="horario">—</span>
+              <div class="principal">
+                <strong>${escapar(l.descricao)}</strong>
+                <small>avulso${l.profissional_nome ? ` · ${escapar(l.profissional_nome)}` : ''}${l.forma ? ` · ${FORMAS[l.forma] || l.forma}` : ''}</small>
+              </div>
+              <div class="fim">
+                <strong>${dinheiro(l.valor)}</strong>
+                <button class="botao fantasma pequeno" data-apagar-lanc="${l.id}">Remover</button>
+              </div>
+            </div>`).join('') : ''}
+        </div>
+      </div>
+
+      <div>
+        <div class="bloco">
+          <div class="bloco-topo"><h3>Por profissional</h3></div>
+          <div class="bloco-corpo sem-espaco">
+            ${c.equipe.length ? c.equipe.map(p => `
+              <div class="linha-lista">
+                <div class="principal">
+                  <strong>${escapar(p.nome)}</strong>
+                  <small>${p.atendimentos} atendimento(s)${p.comissao ? ` · ${p.comissao}% de comissão` : ' · sem comissão definida'}</small>
+                </div>
+                <div class="fim" style="text-align:right">
+                  <div><strong>${dinheiro(p.bruto)}</strong>
+                    ${p.comissao_valor > 0 ? `<small style="display:block;color:var(--apagado)">recebe ${dinheiro(p.comissao_valor)}</small>` : ''}
+                  </div>
+                </div>
+              </div>`).join('') : vazio('equipe', 'Sem movimento no dia.')}
+          </div>
+        </div>
+
+        <div class="bloco" style="margin-top:16px">
+          <div class="bloco-topo"><h3>Formas de pagamento</h3></div>
+          <div class="bloco-corpo sem-espaco">
+            ${Object.keys(c.por_forma).length ? Object.entries(c.por_forma)
+              .sort((a, b) => b[1] - a[1]).map(([f, v]) => `
+              <div class="linha-lista">
+                <div class="principal"><strong>${FORMAS[f] || f}</strong></div>
+                <div class="fim"><strong>${dinheiro(v)}</strong></div>
+              </div>`).join('') : vazio('caixa', 'Nada registrado.')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  $('#dataCaixa').addEventListener('change', e => { diaCaixa = e.target.value; abrirTela('caixa'); });
+  $$('[data-pular]').forEach(b => b.addEventListener('click', () => {
+    diaCaixa = somarDias(diaCaixa, Number(b.dataset.pular));
+    abrirTela('caixa');
+  }));
+  $('[data-hoje]').addEventListener('click', () => { diaCaixa = hojeISO(); abrirTela('caixa'); });
+  $('#btnLancamento').addEventListener('click', () => modalLancamento());
+  $$('[data-apagar-lanc]').forEach(b => b.addEventListener('click', async () => {
+    await api(`/api/admin/lancamentos/${b.dataset.apagarLanc}`, { method: 'DELETE' });
+    recado('Lançamento removido.');
+    abrirTela('caixa');
+  }));
+  $$('[data-fechar-atend]').forEach(b =>
+    b.addEventListener('click', () => modalFecharAtendimento(b.dataset.fecharAtend)));
+};
+
+function modalLancamento() {
+  abrirModal('Lançamento avulso', `
+    <p class="dica" style="margin-bottom:14px">
+      Para o que entra fora da agenda: venda de produto, gorjeta, ajuste de caixa.
+    </p>
+    <div class="campo">
+      <label for="lDesc">Descrição</label>
+      <input id="lDesc" type="text" placeholder="Ex: pomada modeladora">
+    </div>
+    <div class="duas-colunas">
+      <div class="campo">
+        <label for="lValor">Valor (R$)</label>
+        <input id="lValor" type="number" min="0" step="0.01" value="0">
+      </div>
+      <div class="campo">
+        <label for="lForma">Forma</label>
+        <select id="lForma">
+          <option value="dinheiro">Dinheiro</option><option value="pix">PIX</option>
+          <option value="debito">Débito</option><option value="credito">Crédito</option>
+        </select>
+      </div>
+    </div>
+    <div class="campo">
+      <label for="lProf">Quem vendeu</label>
+      <select id="lProf"><option value="">Ninguém em especial</option>
+        ${cache.equipe.filter(p => p.ativo).map(p => `<option value="${p.id}">${escapar(p.nome)}</option>`).join('')}</select>
+    </div>`, [
+    { rotulo: 'Cancelar', classe: 'neutro', aoClicar: fecharModal },
+    { rotulo: 'Lançar', aoClicar: async () => {
+      try {
+        await api('/api/admin/lancamentos', { method: 'POST', corpo: {
+          data: diaCaixa, descricao: $('#lDesc').value.trim(), valor: Number($('#lValor').value),
+          forma: $('#lForma').value, profissional_id: $('#lProf').value || null, tipo: 'produto'
+        } });
+        recado('Lançado.');
+        fecharModal();
+        abrirTela('caixa');
+      } catch (e) { recado(e.message, 'erro'); }
+    } }
+  ]);
+}
+
+async function modalFecharAtendimento(id) {
+  const a = await api(`/api/admin/agendamentos/${id}`);
+  abrirModal(`${a.cliente_nome} · ${a.servico_nome}`, `
+    <div class="duas-colunas">
+      <div class="campo">
+        <label for="fExtra">Vendeu algo a mais? (R$)</label>
+        <input id="fExtra" type="number" min="0" step="0.01" value="${a.valor_extra || 0}">
+      </div>
+      <div class="campo">
+        <label for="fForma">Como pagou</label>
+        <select id="fForma">
+          <option value="">Não informado</option>
+          ${['dinheiro', 'pix', 'debito', 'credito'].map(f =>
+            `<option value="${f}" ${a.forma_pagamento === f ? 'selected' : ''}>${
+              ({ dinheiro: 'Dinheiro', pix: 'PIX', debito: 'Débito', credito: 'Crédito' })[f]}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    ${a.sinal > 0 ? `
+      <label class="marcador">
+        <input type="checkbox" id="fSinal" ${a.sinal_pago ? 'checked' : ''}>
+        Sinal de ${dinheiro(a.sinal)} recebido
+      </label>` : ''}`, [
+    { rotulo: 'Cancelar', classe: 'neutro', aoClicar: fecharModal },
+    { rotulo: 'Salvar', aoClicar: async () => {
+      await api(`/api/admin/agendamentos/${id}`, { method: 'PATCH', corpo: {
+        valor_extra: Number($('#fExtra').value) || 0,
+        forma_pagamento: $('#fForma').value || null,
+        ...($('#fSinal') ? { sinal_pago: $('#fSinal').checked ? 1 : 0 } : {})
+      } });
+      recado('Atendimento atualizado.');
+      fecharModal();
+      abrirTela('caixa');
+    } }
+  ]);
+}
+
+/* ============================================================== RETENÇÃO */
+
+TELAS.retencao = async (alvo) => {
+  const [espera, reativar] = await Promise.all([
+    api('/api/admin/espera'), api('/api/admin/reativar')
+  ]);
+  const fila = espera.fila.filter(e => ['aguardando', 'avisado'].includes(e.status));
+
+  alvo.innerHTML = `
+    <div class="indicadores">
+      ${cartaoIndicador('Na lista de espera', fila.length, 'clientes querendo entrar', fila.length ? 'ambar' : '')}
+      ${cartaoIndicador('Sumidos', reativar.length, 'passaram do ritmo habitual', reativar.length ? 'ambar' : '')}
+      ${cartaoIndicador('Vagas ociosas', espera.buracos.reduce((s, b) => s + b.livres, 0), 'nos próximos 7 dias', '')}
+    </div>
+
+    <div class="bloco">
+      <div class="bloco-topo">
+        <h3>Lista de espera</h3>
+        <small>quando alguém cancela, estas pessoas são avisadas sozinhas</small>
+      </div>
+      <div class="bloco-corpo sem-espaco">
+        ${fila.length ? fila.map(e => `
+          <div class="linha-lista">
+            <div class="principal">
+              <strong>${escapar(e.cliente_nome)}</strong>
+              <small>${escapar(e.servico_nome)} · ${curta(e.data_de)} a ${curta(e.data_ate)}
+                ${e.periodos ? ` · ${rotuloPeriodos(e.periodos)}` : ''}
+                ${e.profissional_nome ? ` · com ${escapar(e.profissional_nome)}` : ''}</small>
+            </div>
+            <div class="fim">
+              <span class="selo ${e.status === 'avisado' ? 'verde' : 'ambar'}">
+                ${e.status === 'avisado' ? `Avisado ${e.vaga_data ? curta(e.vaga_data) : ''}` : 'Aguardando'}</span>
+              <button class="botao pequeno neutro" data-encaixar="${e.id}">Encaixar</button>
+              <button class="botao fantasma pequeno" data-sair-espera="${e.id}">Tirar</button>
+            </div>
+          </div>`).join('') : vazio('espera', 'Ninguém na fila. A lista enche sozinha quando um dia lota.')}
+      </div>
+    </div>
+
+    <div class="bloco" style="margin-top:16px">
+      <div class="bloco-topo">
+        <h3>Clientes para trazer de volta</h3>
+        <small>o ritmo é o de cada um, não uma regra fixa</small>
+      </div>
+      <div class="bloco-corpo sem-espaco">
+        ${reativar.length ? `
+          <div class="linha-lista" style="background:var(--papel-2)">
+            <label class="marcador" style="flex:1">
+              <input type="checkbox" id="marcarTodos"> Selecionar todos (${reativar.length})
+            </label>
+            <div class="fim">
+              <button class="botao pequeno" id="btnDisparar" disabled>Preparar mensagens</button>
+            </div>
+          </div>
+          ${reativar.map(c => `
+            <div class="linha-lista">
+              <label class="marcador" style="flex:1;gap:12px">
+                <input type="checkbox" class="alvo-reativar" value="${c.id}">
+                <span class="principal">
+                  <strong>${escapar(c.nome)}</strong>
+                  <small>sumiu há ${c.dias_sumido} dias · costuma vir a cada ${c.media_dias} ·
+                    ${c.total_visitas} visita(s)</small>
+                </span>
+              </label>
+              <div class="fim">
+                ${seloRisco(c.risco)}
+                <button class="botao fantasma pequeno" data-ver-texto="${c.id}">Ver mensagem</button>
+              </div>
+            </div>`).join('')}`
+          : vazio('retencao', 'Ninguém atrasado. Todo mundo está vindo no ritmo de sempre.')}
+      </div>
+    </div>
+
+    ${espera.buracos.length ? `
+      <div class="bloco" style="margin-top:16px">
+        <div class="bloco-topo">
+          <h3>Onde há espaço</h3>
+          <small>dias com mais vaga do que atendimento</small>
+        </div>
+        <div class="bloco-corpo sem-espaco">
+          ${espera.buracos.map(b => `
+            <div class="linha-lista">
+              <div class="principal">
+                <strong style="text-transform:capitalize">${b.rotulo}</strong>
+                <small>${b.ocupados} marcado(s) · ${b.livres} horário(s) livre(s)</small>
+              </div>
+              <div class="fim">
+                <div class="medidor" title="${Math.round(b.ocupados / (b.ocupados + b.livres) * 100)}% ocupado">
+                  <i style="width:${Math.round(b.ocupados / (b.ocupados + b.livres) * 100)}%"></i>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>` : ''}`;
+
+  const marcados = () => $$('.alvo-reativar:checked').map(c => c.value);
+  const atualizarBotao = () => {
+    const n = marcados().length;
+    const b = $('#btnDisparar');
+    if (!b) return;
+    b.disabled = n === 0;
+    b.textContent = n ? `Preparar ${n} mensagem${n > 1 ? 's' : ''}` : 'Preparar mensagens';
+  };
+  $$('.alvo-reativar').forEach(c => c.addEventListener('change', atualizarBotao));
+  $('#marcarTodos')?.addEventListener('change', e => {
+    $$('.alvo-reativar').forEach(c => { c.checked = e.target.checked; });
+    atualizarBotao();
+  });
+
+  $('#btnDisparar')?.addEventListener('click', async () => {
+    const alvos = marcados();
+    if (!alvos.length) return;
+    const r = await api('/api/admin/reativar', { method: 'POST', corpo: { clientes: alvos } });
+    recado(`${r.enviados} mensagem(ns) na Central, prontas para enviar.`);
+    abrirTela('mensagens');
+  });
+
+  $$('[data-ver-texto]').forEach(b => b.addEventListener('click', () => {
+    const c = reativar.find(x => x.id === b.dataset.verTexto);
+    abrirModal(`Mensagem para ${c.nome.split(' ')[0]}`,
+      `<div class="msg-fila"><div class="texto">${escapar(c.texto)}</div></div>
+       <p class="dica">O texto usa o ritmo real do cliente. Você revisa antes de enviar.</p>`,
+      [{ rotulo: 'Fechar', classe: 'neutro', aoClicar: fecharModal }]);
+  }));
+
+  $$('[data-sair-espera]').forEach(b => b.addEventListener('click', async () => {
+    await api(`/api/admin/espera/${b.dataset.sairEspera}/status`, { method: 'POST', corpo: { status: 'cancelado' } });
+    recado('Removido da fila.');
+    abrirTela('retencao');
+  }));
+
+  $$('[data-encaixar]').forEach(b =>
+    b.addEventListener('click', () => modalEncaixar(fila.find(e => e.id === b.dataset.encaixar))));
+
+  atualizarContadores();
+};
+
+const rotuloPeriodos = (p) => String(p || '').split(',').filter(Boolean)
+  .map(x => ({ manha: 'manhã', tarde: 'tarde', noite: 'noite' })[x] || x).join(' e ');
+
+const seloRisco = (r) => {
+  const cores = { alto: 'vermelho', medio: 'ambar', novo: 'cinza', baixo: 'verde' };
+  const nomes = { alto: 'Falta muito', medio: 'Já faltou', novo: 'Cliente novo', baixo: 'Sempre vem' };
+  return `<span class="selo ${cores[r.nivel]}" title="${escapar(r.motivo)}">${nomes[r.nivel]}</span>`;
+};
+
+async function modalEncaixar(e) {
+  if (!e) return;
+  abrirModal(`Encaixar ${e.cliente_nome.split(' ')[0]}`, `
+    <div class="resumo" style="background:var(--papel-2);border:1px solid var(--linha);border-radius:var(--r-m);padding:14px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Serviço</span><strong>${escapar(e.servico_nome)}</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span>Quer entre</span><strong>${curta(e.data_de)} e ${curta(e.data_ate)}</strong></div>
+      ${e.periodos ? `<div style="display:flex;justify-content:space-between;padding:3px 0"><span>Prefere</span><strong>${rotuloPeriodos(e.periodos)}</strong></div>` : ''}
+    </div>
+    <div class="duas-colunas">
+      <div class="campo"><label for="eData">Data</label>
+        <input type="date" id="eData" value="${e.data_de < hojeISO() ? hojeISO() : e.data_de}" min="${hojeISO()}"></div>
+      <div class="campo"><label for="eHora">Horário</label>
+        <select id="eHora"><option>Carregando…</option></select></div>
+    </div>`, [
+    { rotulo: 'Cancelar', classe: 'neutro', aoClicar: fecharModal },
+    { rotulo: 'Confirmar encaixe', aoClicar: async () => {
+      try {
+        await api(`/api/admin/espera/${e.id}/agendar`, {
+          method: 'POST', corpo: { data: $('#eData').value, hora: $('#eHora').value }
+        });
+        recado('Encaixado e avisado.');
+        fecharModal();
+        abrirTela('retencao');
+      } catch (err) { recado(err.message, 'erro'); }
+    } }
+  ]);
+
+  const carregar = async () => {
+    const sel = $('#eHora');
+    sel.innerHTML = '<option>Carregando…</option>';
+    const p = new URLSearchParams({ data: $('#eData').value, servico: e.servico_id });
+    if (e.profissional_id) p.set('profissional', e.profissional_id);
+    const slots = await api(`/api/admin/horarios-livres?${p}`);
+    sel.innerHTML = slots.length
+      ? slots.map(s => `<option value="${s.hora}">${s.hora}</option>`).join('')
+      : '<option value="">Sem vaga nesse dia</option>';
+  };
+  $('#eData').addEventListener('change', carregar);
+  carregar();
 }
 
 /* ============================================================= APARÊNCIA */
@@ -1644,6 +2068,61 @@ TELAS.ajustes = async (alvo) => {
         </div>
 
         <div class="bloco" style="margin-top:16px">
+          <div class="bloco-topo">
+            <h3>Sinal por PIX</h3>
+            <small>reduz falta sem gateway nem taxa</small>
+          </div>
+          <div class="bloco-corpo">
+            <p class="dica" style="margin-bottom:14px">
+              O cliente recebe um PIX copia e cola junto da confirmação e o dinheiro
+              cai direto na sua conta. Defina o valor de cada serviço em Serviços.
+            </p>
+            <div class="campo">
+              <label for="aPixChave">Sua chave PIX</label>
+              <input id="aPixChave" type="text" value="${escapar(n.pix_chave || '')}"
+                     placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória">
+              <p class="dica" id="pixStatus"></p>
+            </div>
+            <div class="duas-colunas">
+              <div class="campo">
+                <label for="aPixNome">Nome do recebedor</label>
+                <input id="aPixNome" type="text" maxlength="25" value="${escapar(n.pix_nome || '')}" placeholder="${escapar(n.nome)}">
+              </div>
+              <div class="campo">
+                <label for="aPixCidade">Cidade</label>
+                <input id="aPixCidade" type="text" maxlength="15" value="${escapar(n.pix_cidade || '')}" placeholder="Sao Paulo">
+              </div>
+            </div>
+            <label class="marcador">
+              <input type="checkbox" id="aSinalAtivo" ${n.sinal_ativo ? 'checked' : ''}>
+              Pedir sinal para reservar
+            </label>
+            <label class="marcador">
+              <input type="checkbox" id="aSinalRisco" ${n.sinal_so_risco ? 'checked' : ''}>
+              Só de quem já faltou ou está vindo pela primeira vez
+            </label>
+            <button class="botao neutro pequeno" id="btnTestarPix" style="margin-top:10px">Testar a chave</button>
+          </div>
+        </div>
+
+        <div class="bloco" style="margin-top:16px">
+          <div class="bloco-topo"><h3>Fidelidade</h3></div>
+          <div class="bloco-corpo">
+            <div class="duas-colunas">
+              <div class="campo">
+                <label for="aFidMeta">A cada quantos atendimentos</label>
+                <input id="aFidMeta" type="number" min="0" max="50" value="${n.fidelidade_meta || 0}">
+                <p class="dica">Zero desliga o programa.</p>
+              </div>
+              <div class="campo">
+                <label for="aFidPremio">O cliente ganha</label>
+                <input id="aFidPremio" type="text" value="${escapar(n.fidelidade_premio || '')}" placeholder="Ex: um corte grátis">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco" style="margin-top:16px">
           <div class="bloco-topo"><h3>Regras da agenda</h3></div>
           <div class="bloco-corpo">
             <div class="duas-colunas">
@@ -1696,6 +2175,23 @@ TELAS.ajustes = async (alvo) => {
     abrirTela(a.dataset.ir);
   }));
 
+  $('#btnTestarPix').addEventListener('click', async () => {
+    const alvoStatus = $('#pixStatus');
+    alvoStatus.textContent = 'Conferindo…';
+    try {
+      const r = await api('/api/admin/pix/testar', { method: 'POST', corpo: {
+        chave: $('#aPixChave').value.trim(),
+        nome: $('#aPixNome').value.trim() || cache.negocio.nome,
+        cidade: $('#aPixCidade').value.trim()
+      } });
+      alvoStatus.innerHTML = `Chave válida (${r.tipo}). Código de exemplo gerado com sucesso.`;
+      alvoStatus.style.color = 'var(--acento-forte)';
+    } catch (e) {
+      alvoStatus.textContent = e.message;
+      alvoStatus.style.color = 'var(--vermelho)';
+    }
+  });
+
   $('#btnSalvarAjustes').addEventListener('click', async () => {
     await api('/api/admin/negocio', { method: 'POST', corpo: {
       nome: $('#aNome').value.trim(), sobre: $('#aSobre').value.trim(),
@@ -1708,7 +2204,14 @@ TELAS.ajustes = async (alvo) => {
       antecedencia_max_d: Number($('#aAntMax').value),
       cancelamento_min_h: Number($('#aCancel').value),
       lembrete_h: Number($('#aLembrete').value),
-      pedir_avaliacao: $('#aAvaliacao').checked ? 1 : 0
+      pedir_avaliacao: $('#aAvaliacao').checked ? 1 : 0,
+      pix_chave: $('#aPixChave').value.trim() || null,
+      pix_nome: $('#aPixNome').value.trim() || null,
+      pix_cidade: $('#aPixCidade').value.trim() || null,
+      sinal_ativo: $('#aSinalAtivo').checked ? 1 : 0,
+      sinal_so_risco: $('#aSinalRisco').checked ? 1 : 0,
+      fidelidade_meta: Number($('#aFidMeta').value) || 0,
+      fidelidade_premio: $('#aFidPremio').value.trim() || null
     } });
     recado('Ajustes salvos!');
     carregarBase(true);
@@ -1755,6 +2258,8 @@ async function atualizarContadores() {
       Date.now() / 1000 - c.ultima_em < 86400).length);
     marcar('#contaAvaliacoes', avaliacoes.length);
     marcar('#contaMensagens', pendentes);
+    const pulso = await api('/api/admin/pulso');
+    marcar('#contaRetencao', pulso.na_espera + pulso.para_reativar);
   } catch { /* silencioso */ }
 }
 

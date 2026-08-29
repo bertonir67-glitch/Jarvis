@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- A fonte escolhida em Ajustes entra aqui pelo JS, sem bloquear a página -->
 <link rel="stylesheet" id="fonteWeb" media="print" onload="this.media='all'">
+<link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="/css/estilo.css">
 <!-- Gerado a partir dos Ajustes do negócio: cores, cantos e fonte -->
 <link rel="stylesheet" href="/tema.css">
@@ -30,9 +31,11 @@
     <button class="menu-item" data-tela="agenda" data-icone="agenda">Agenda</button>
     <button class="menu-item" data-tela="conversas" data-icone="conversas">Conversas<span class="conta" id="contaConversas"></span></button>
     <button class="menu-item" data-tela="mensagens" data-icone="mensagens">Mensagens<span class="conta" id="contaMensagens"></span></button>
+    <button class="menu-item" data-tela="caixa" data-icone="caixa">Caixa</button>
 
     <span class="menu-grupo">Relacionamento</span>
     <button class="menu-item" data-tela="clientes" data-icone="clientes">Clientes</button>
+    <button class="menu-item" data-tela="retencao" data-icone="retencao">Retenção<span class="conta" id="contaRetencao"></span></button>
     <button class="menu-item" data-tela="avaliacoes" data-icone="estrela">Avaliações<span class="conta" id="contaAvaliacoes"></span></button>
 
     <span class="menu-grupo">Configuração</span>
@@ -67,6 +70,8 @@
     <section class="tela" id="tela-agenda"></section>
     <section class="tela" id="tela-conversas"></section>
     <section class="tela" id="tela-mensagens"></section>
+    <section class="tela" id="tela-caixa"></section>
+    <section class="tela" id="tela-retencao"></section>
     <section class="tela" id="tela-clientes"></section>
     <section class="tela" id="tela-avaliacoes"></section>
     <section class="tela" id="tela-servicos"></section>
