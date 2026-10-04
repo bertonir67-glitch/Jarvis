@@ -1,285 +1,123 @@
-# JARVIS
+# CREMA — Massas que acolhem
 
-Assistente pessoal por voz para Android, no espírito do JARVIS dos filmes: fica em espera
-ouvindo o próprio nome, entende o que você pede em português, **age no aparelho de verdade**
-e responde com voz masculina britânica.
+Vitrine e pedido online da CREMA, delivery de massas artesanais em Guarulhos.
+O cliente monta a massa (ou escolhe um prato da casa), junta tudo na sacola e envia
+o pedido pronto pelo WhatsApp. iFood e Rappi ficam como alternativa.
+
+Site estático: HTML, CSS e JavaScript puros, sem build e sem dependências.
 
 ```
-"Jarvis"  →  ele acorda
-"abre o Spotify"                                  →  abre o app
-"manda mensagem pro João dizendo que atraso 10"   →  manda no WhatsApp
-"o que aconteceu na bolsa hoje?"                  →  pesquisa e responde falando
-"aumenta o volume" / "liga a lanterna"            →  controla o celular
-"quanto tem de bateria?"                          →  lê o estado do aparelho
+index.html          página única (conteúdo, SEO e dados estruturados)
+assets/css/         estilos
+assets/js/main.js   sacola, montador, status da cozinha e pedido no WhatsApp
+assets/img/         favicon, ícone do iPhone e imagem de compartilhamento
+robots.txt · sitemap.xml
 ```
 
 ---
 
-## Como funciona
+## Conceito
 
-| Camada | O que usa | Custo |
+**A cozinha à noite.** A CREMA só funciona das 18h às 23h, então a página é escura e
+quente, como uma cozinha acesa à noite. O tom Osso aparece só como papel.
+
+**A assinatura é a comanda.** O papel de pedido que fica pendurado no trilho da cozinha:
+
+- no topo, mostra a situação da cozinha agora (aberta, abre às 18h, fechada);
+- no montador, imprime o prato linha por linha conforme as escolhas e recebe o
+  **lacre CREMA** quando o prato está completo;
+- na sacola, vira o resumo do pedido;
+- é exatamente o texto que chega no WhatsApp da loja.
+
+## Estrutura da página
+
+1. Faixa de status com horário de Guarulhos
+2. Topo com prato em destaque e a comanda pendurada
+3. Pratos da casa: combinações prontas, adicionadas à sacola com um toque no tamanho
+4. Monte sua massa: tamanho, massa, molho e extras, com a comanda ao vivo
+5. Do fogão à sua porta: feita na hora, lacrada, quente na porta
+6. Onde e quando entregamos, com consulta de bairro pelo WhatsApp
+7. Dúvidas frequentes
+8. Fechamento que muda conforme a cozinha está aberta ou fechada
+9. Sacola com finalização do pedido
+
+## Identidade visual
+
+| Papel | Nome | Cor |
 |---|---|---|
-| Palavra de ativação | Reconhecedor do Android (sem chave) ou **Porcupine** | **Grátis.** Sem cadastro nenhum no modo padrão. Com uma chave Picovoice a detecção fica bem mais leve — veja abaixo. |
-| Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | **Grátis.** Já vem no celular e nos aparelhos atuais roda no próprio dispositivo. |
-| Decidir e agir | **Groq** (padrão) ou **Google Gemini**, com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
-| Pesquisar | Busca embutida do cérebro escolhido | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
-| Falar | **Voz do Android** (padrão) ou **ElevenLabs** | **Grátis** nas duas opções — veja abaixo. |
+| Fundo da página | Forno | `#0B0A08` |
+| Painéis | Carvão | `#16130F` |
+| Papel (comanda) e texto | Osso | `#F4EEE2` |
+| Ações e lacre | Pomodoro | `#922A23` |
+| Destaques | Ouro | `#C6A86B` |
+| Cozinha aberta | Oliva | `#5A6B3B` |
 
-### Como ele é ativado
+**Tipografia**
 
-Três modos, e nenhum deles é obrigatório para o app funcionar:
+- **Bodoni Moda**: títulos, nomes dos pratos e a marca. É o tipo italiano de Parma, terra
+  do parmesão e da massa de ovo. Usa tamanho óptico, então os traços finos engrossam
+  sozinhos nos tamanhos pequenos.
+- **Schibsted Grotesk**: textos, botões e formulários. Lê bem no celular.
+- **Courier Prime**: só na comanda, como as impressoras de pedido.
 
-| Modo | Precisa de quê | Bateria | Precisão |
-|---|---|---|---|
-| **Dizer "Jarvis"** (padrão) | Nada | Alta | Boa |
-| **Botão FALAR** | Nada | Nenhuma | Perfeita |
-| **Dizer "Jarvis" com Porcupine** | Chave Picovoice | Baixa | Ótima |
+**Movimento**: a comanda desce do trilho e imprime ao carregar; no montador cada
+escolha imprime uma linha e o lacre é carimbado; ao adicionar, a comanda é destacada e
+vai para a sacola. Nada mais se mexe sozinho. Com "reduzir movimento" ativado no
+aparelho, tudo aparece sem animação.
 
-O modo sem chave roda o reconhecedor de fala do próprio Android num laço, ouvindo trechos
-curtos e checando se você disse "Jarvis". Não exige cadastro nenhum, tudo fica no aparelho
-(`EXTRA_PREFER_OFFLINE`), e ele aceita as confusões comuns do reconhecedor — "jarves",
-"jarvez", "charles" — porque exigir a grafia exata deixaria o assistente praticamente surdo.
-
-O custo honesto: um reconhecedor de fala completo ligado o tempo todo gasta bem mais bateria
-que o Porcupine, que é um detector de uma palavra só. Vem ligado porque um assistente que só
-responde a botão não é o que se espera do JARVIS — se a bateria incomodar, desligue em
-`Configurações → Ativar por voz sem chave` e use o botão FALAR.
-
-Você também pode deixar o JARVIS como **assistente padrão do Android** e chamá-lo segurando o
-botão home: zero bateria e zero cadastro.
-
-### Sobre a voz
-
-Aqui está o único lugar onde grátis custa qualidade, então vale escolher com consciência:
-
-- **Sem chave nenhuma** (padrão): usa o TTS do próprio Android. O app escolhe automaticamente
-  a voz em português de maior qualidade instalada no aparelho — a padrão raramente é a melhor —
-  e você ajusta gravidade e velocidade em `Configurações → Voz`. Grátis, offline, ilimitado, e
-  ainda assim claramente sintético. Não é a voz do filme.
-- **Com chave do ElevenLabs**: voz britânica grave, bem mais próxima do original. O plano
-  gratuito dá cerca de 10 mil caracteres por mês, o que é mais ou menos 100 respostas curtas.
-  Quando a cota acaba, o app **volta sozinho** para a voz do Android — ele nunca fica mudo e
-  nunca gera cobrança.
-
-Ou seja: dá para usar as duas e nunca pagar nada. A voz boa entra enquanto tem cota, a local
-cobre o resto do mês.
-
-### Escolhendo o cérebro
-
-São três, selecionáveis em `Configurações → Cérebro`:
-
-| | Cadastro | Busca web | Custo |
-|---|---|---|---|
-| **Groq** (padrão) | Só e-mail | Sim, via `groq/compound-mini` | Grátis |
-| **Google Gemini** | Conta Google | Sim, via Google Search | Grátis |
-| **Anthropic Claude** | Conta Anthropic | Sim, server-side | **Pago** |
-
-O Groq é o padrão por um motivo prático: o AI Studio do Google fica **bloqueado em contas
-corporativas e escolares** pelo administrador, e a mensagem de erro não explica isso. O
-cadastro do Groq aceita e-mail comum e não esbarra nesse problema.
-
-IDs de modelo no Groq saem de circulação com alguma frequência. Se isso acontecer, o app
-tenta sozinho os substitutos conhecidos em vez de parar de funcionar.
-
-### Trocar para o Claude (opcional, pago)
-
-O app aceita a Claude API como cérebro alternativo — as respostas são melhores em pedidos
-ambíguos ou de várias etapas. É só escolher em `Configurações → Cérebro → Claude` e colar a
-chave. **Só ligue isso se você quiser pagar por uso**; no Gemini o app funciona inteiro sem
-custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos dois.
+Sem números decorativos: preços, gramas e horários aparecem só onde o cliente precisa
+deles para pedir.
 
 ---
 
-## O que você precisa antes de começar
+## Antes de publicar
 
-**Uma chave, gratuita, sem cartão de crédito.**
+Tudo que muda por loja está no topo de `assets/js/main.js`:
 
-| # | Serviço | Onde pegar | Custo |
-|---|---|---|---|
-| 1 | **Groq** — o cérebro | [console.groq.com/keys](https://console.groq.com/keys) → *Create API Key* | Grátis. Cadastro só com e-mail |
-
-**É só isso.** Uma chave, um cadastro, e o app funciona inteiro — inclusive falando e sendo
-ativado por voz.
-
-Alternativa ao Groq, se você preferir: **Google Gemini** em
-[aistudio.google.com/apikey](https://aistudio.google.com/apikey) — também grátis, mas exige
-conta Google pessoal (contas de empresa ou escola costumam ter o acesso bloqueado).
-
-Opcional, também grátis:
-
-| Serviço | Para quê | Custo |
-|---|---|---|
-| **ElevenLabs** | Voz britânica em vez da voz do Android | Grátis até ~10 mil caracteres/mês; depois volta sozinho para a voz local |
-| **Picovoice** | Palavra de ativação mais leve e precisa | Grátis, **mas o plano gratuito exige e-mail corporativo** |
-| **Anthropic** | Cérebro alternativo, melhor em pedidos complexos | **Pago** — só use se quiser |
-
-> **Não é preciso cadastrar cartão em lugar nenhum** para o app funcionar inteiro. Se você
-> estourar a cota diária gratuita, ele avisa por voz e volta a funcionar sozinho depois de
-> alguns minutos — não vira cobrança.
-
----
-
-## Instalação
-
-### Opção A — baixar o APK pronto (recomendado, não precisa instalar nada)
-
-**Link direto, sempre a última versão:**
-
-**https://github.com/bertonir67-glitch/Jarvis/releases/latest/download/jarvis.apk**
-
-Abra esse endereço no navegador **do próprio celular** e o download começa direto. Não precisa
-estar logado no GitHub, e não vem em zip.
-
-1. Baixe o `jarvis.apk` pelo link acima.
-2. Toque no arquivo baixado para instalar (o Android vai pedir para permitir "instalar apps de
-   fontes desconhecidas" — normal para apps fora da Play Store).
-3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Groq e salve —
-   só isso é obrigatório.
-
-Cada push gera um build novo e atualiza esse link. A lista de versões fica em
-[Releases](https://github.com/bertonir67-glitch/Jarvis/releases).
-
-As chaves ficam guardadas no aparelho — **não** vão para o APK nem para o repositório.
-
-### Opção B — compilar no seu computador
-
-Precisa do Android Studio (ou só do SDK do Android) e JDK 17.
-
-```bash
-git clone https://github.com/bertonir67-glitch/Jarvis.git
-cd Jarvis
+```js
+const CONFIG = {
+  whatsapp: '5511999999999',          // DDI + DDD + número, só dígitos
+  ifood: 'https://www.ifood.com.br',  // link direto da loja no iFood
+  rappi: 'https://www.rappi.com.br',  // link direto da loja no Rappi
+  instagram: '',                      // vazio esconde o link
+  openDays: [0, 2, 3, 4, 5, 6],       // domingo = 0
+  opensAt: 18,
+  closesAt: 23,
+};
 ```
 
-Crie um arquivo `local.properties` na raiz (ele já está no `.gitignore`):
+Checklist:
 
-```properties
-sdk.dir=/caminho/para/o/Android/Sdk
+- [ ] Número real do WhatsApp em `CONFIG.whatsapp`
+- [ ] Links diretos da loja no iFood e no Rappi
+- [ ] **Fotos reais dos pratos da CREMA** no lugar das fotos de banco (Unsplash). É o
+      que mais aumenta pedidos. Troque as URLs em `index.html`; use fotos de cima ou a
+      45°, com luz quente, de pelo menos 1800 px na foto do topo.
+- [ ] Domínio final em `canonical`, `og:url`, `og:image`, nos dados estruturados,
+      em `robots.txt` e em `sitemap.xml` (hoje: `https://crema.com.br/`)
+- [ ] Telefone e endereço nos dados estruturados (`application/ld+json`) quando houver
+- [ ] Perfil da empresa no Google com o link do site e o mesmo horário
+- [ ] Avaliações reais (Google ou iFood) quando quiser exibi-las. A página não traz
+      depoimentos inventados.
 
-GROQ_API_KEY=...
+**Preços**: os valores aparecem no HTML (cartões, tamanhos e dúvidas) e são calculados em
+`SIZES` e `EXTRA_PRICE` no `main.js`. Ao mudar um preço, altere os dois.
 
-# Opcionais
-PICOVOICE_ACCESS_KEY=...
-GEMINI_API_KEY=...
-ELEVENLABS_API_KEY=...
-ANTHROPIC_API_KEY=sk-ant-...
-```
+## Publicação
 
-```bash
-./gradlew assembleRelease
-# APK em app/build/outputs/apk/release/
-```
+Qualquer hospedagem estática serve, e todas comprimem e fazem cache sozinhas:
+Netlify, Vercel ou Cloudflare Pages (arraste a pasta ou conecte o repositório).
+O GitHub Pages também funciona, mas em repositório privado exige plano pago.
 
----
+## Qualidade
 
-## Primeira execução
+Medido com Lighthouse num servidor local (sem compressão, e com fotos e fontes externas
+bloqueadas no ambiente de teste):
 
-1. **Permissões.** Ao tocar em ATIVAR, o app pede microfone, contatos, SMS, telefone e
-   notificações. Microfone é obrigatório; os outros só limitam funções específicas se você
-   recusar (sem telefone, por exemplo, ele abre o discador com o número em vez de ligar).
-2. Toque em **ATIVAR**. O reator acende e aparece `EM ESPERA` — pronto, ele está ouvindo.
-3. Diga **"Jarvis"**, espere o reator mudar para `OUVINDO`, e fale o comando. (O botão
-   **FALAR** faz a mesma coisa, se preferir não usar a voz.)
+| | Desempenho | Acessibilidade | Boas práticas | SEO |
+|---|---|---|---|---|
+| Celular | 96 | 100 | 96 | 100 |
+| Computador | 100 | 100 | 96 | 100 |
 
-### Dois ajustes que fazem diferença
-
-**Tirar o app da otimização de bateria.** Sem isso o Android mata o serviço depois de algumas
-horas e ele para de ouvir. O app mantém a CPU acordada (não a tela) para continuar ouvindo com
-o celular no bolso — isso custa bateria, e é o preço de um assistente de prontidão.
-`Configurações → Apps → JARVIS → Bateria → Sem restrições`
-(em Xiaomi/Samsung/Motorola o caminho muda de nome, procure por "bateria" ou "início automático").
-
-**Envio automático de mensagens.** Por padrão o JARVIS abre a conversa com o texto já escrito
-e você toca em enviar — o Android não deixa nenhum app enviar no WhatsApp por conta própria.
-Para o envio ficar realmente sem toque, ligue em `Configurações → Enviar mensagens automaticamente`
-e habilite o serviço de acessibilidade do JARVIS quando ele pedir. SMS já sai direto, sem isso.
-
-> O serviço de acessibilidade só age numa janela de 10 segundos depois que o próprio JARVIS
-> abriu a conversa. Ele não fica clicando em "enviar" sozinho enquanto você escreve à mão.
-
-### Botão home = JARVIS (opcional)
-
-Em `Configurações do Android → Apps → Assistente digital padrão`, escolha JARVIS. Aí segurar o
-botão home chama ele direto, sem precisar falar o nome.
-
----
-
-## Ajustando a voz
-
-Sem chave do ElevenLabs, ele fala com a voz do Android (grátis e ilimitada). Com a chave, a
-voz padrão é a **Daniel** (britânica, grave, tom de locutor). Para trocar:
-
-1. Entre em [elevenlabs.io/voice-library](https://elevenlabs.io/app/voice-lab), escolha ou clone
-   uma voz.
-2. Copie o **Voice ID**.
-3. Cole em `Configurações → ID da voz`.
-
-Para chegar mais perto do original, clonar uma voz a partir de áudios do filme dá o resultado
-mais fiel — mas cuidado, o ElevenLabs não permite clonar a voz de uma pessoa real sem
-autorização dela, e a voz do JARVIS é a do ator Paul Bettany. Uma voz britânica grave da
-biblioteca é a opção segura.
-
-**Latência:** `eleven_multilingual_v2` (padrão) soa melhor; `eleven_turbo_v2_5` responde bem
-mais rápido. Troque em `Configurações → Modelo de voz`.
-
----
-
-## O que ele sabe fazer
-
-| Ferramenta | Exemplos |
-|---|---|
-| `open_app` | "abre o Spotify", "chama o zap", "abre o insta" |
-| `send_message` | "manda mensagem pro João dizendo que atraso 10 minutos", "manda um SMS pra minha mãe avisando que cheguei" |
-| `web_search` | "o que aconteceu na bolsa hoje?", "vai chover amanhã?", "quem ganhou o jogo?" |
-| `open_url` | "abre o site do banco" |
-| `device_action` | "aumenta o volume", "põe o volume em 30%", "liga a lanterna", "abre o wi-fi" |
-| `device_status` | "quanto tem de bateria?", "quanto de espaço sobrou?" |
-| `set_alarm` | "me acorda às sete da manhã", "despertador pras seis e meia" |
-| `set_timer` | "timer de 10 minutos", "me avisa daqui meia hora" |
-| `control_music` | "toca Pink Floyd no Spotify", "pausa", "próxima", "volta a música" |
-| `make_call` | "liga pro João", "liga pra minha mãe" |
-
-Se ele fizer uma pergunta de volta, continua ouvindo sem você precisar dizer "Jarvis" de novo.
-
-**Alarmes e timers** entram no app de relógio que você já usa — o JARVIS não mantém
-agendamento próprio, então eles tocam mesmo se o app for fechado ou o celular reiniciar.
-
-**Play, pausa e próxima** funcionam em qualquer player (Spotify, YouTube Music, Deezer,
-podcast) porque usam as teclas de mídia do Android, não integração app por app. Só "toca tal
-música" precisa escolher um app.
-
----
-
-## Estrutura do código
-
-```
-app/src/main/java/com/jarvis/assistant/
-├── MainActivity.kt              tela principal e permissões
-├── core/
-│   ├── JarvisService.kt         serviço em primeiro plano; ciclo ouvir→pensar→agir→falar
-│   ├── WakeWordDetector.kt      Porcupine ("Jarvis")
-│   ├── SpeechInput.kt           reconhecimento de fala pt-BR
-│   ├── VoiceEngine.kt           ElevenLabs + fallback do Android
-│   └── JarvisState.kt           estado compartilhado com a interface
-├── brain/
-│   ├── ClaudeClient.kt          laço de tool use da Claude API
-│   ├── Tools.kt                 definição das ferramentas
-│   └── SystemPrompt.kt          a personalidade
-├── skills/                      o que ele consegue fazer no aparelho
-├── accessibility/               clique automático em "enviar"
-└── ui/                          HUD (reator arc em Compose)
-```
-
----
-
-## Limites que vale conhecer antes de se frustrar
-
-- **Só WhatsApp/Telegram/SMS.** Instagram, Messenger e afins não têm como receber mensagem
-  de outro app no Android.
-- **O reconhecimento de fala precisa da tela ligada** em muitos aparelhos. A palavra de
-  ativação funciona com a tela apagada; o comando depois dela nem sempre.
-- **Falsos positivos acontecem.** Palavras parecidas com "Jarvis" acordam ele. Baixe a
-  sensibilidade nas configurações se incomodar.
-- **Fabricantes agressivos com bateria** (Xiaomi, Oppo, Vivo) matam serviços em segundo plano
-  mesmo com a otimização desligada. Procure "início automático" nas configurações do fabricante.
-- **Nada de controlar apps por dentro.** Abrir o Spotify sim; mandar o Spotify tocar uma
-  música específica não — isso exigiria a API de cada app.
+Os pontos perdidos em boas práticas vêm só das fotos e fontes que o ambiente de teste
+não conseguiu baixar.
