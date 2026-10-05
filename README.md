@@ -10,6 +10,7 @@ Site estático: HTML, CSS e JavaScript puros, sem build e sem dependências.
 index.html          página única (conteúdo, SEO e dados estruturados)
 assets/css/         estilos
 assets/js/main.js   sacola, montador, status da cozinha e pedido no WhatsApp
+assets/fonts/       fontes (Newsreader, Albert Sans, Courier Prime)
 assets/img/         favicon, ícone do iPhone e imagem de compartilhamento
 robots.txt · sitemap.xml
 ```
@@ -52,13 +53,15 @@ quente, como uma cozinha acesa à noite. O tom Osso aparece só como papel.
 | Destaques | Ouro | `#C6A86B` |
 | Cozinha aberta | Oliva | `#5A6B3B` |
 
-**Tipografia**
+**Tipografia** (servida pelo próprio site, em `assets/fonts/`, licença OFL)
 
-- **Bodoni Moda**: títulos, nomes dos pratos e a marca. É o tipo italiano de Parma, terra
-  do parmesão e da massa de ovo. Usa tamanho óptico, então os traços finos engrossam
-  sozinhos nos tamanhos pequenos.
-- **Schibsted Grotesk**: textos, botões e formulários. Lê bem no celular.
+- **Newsreader**: títulos, nomes dos pratos e a marca. Serifa editorial, usada em peso
+  leve, com itálico em Ouro nas palavras de destaque.
+- **Albert Sans**: textos, botões e formulários. Limpa e legível no celular.
 - **Courier Prime**: só na comanda, como as impressoras de pedido.
+
+**Fotos**: as do topo, da seção "Do fogão à sua porta" e do fechamento são carregadas em
+Full HD (até 2560 px), e o montador mostra a foto de cada massa e molho.
 
 **Movimento**: a comanda desce do trilho e imprime ao carregar; no montador cada
 escolha imprime uma linha e o lacre é carimbado; ao adicionar, a comanda é destacada e
