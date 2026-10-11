@@ -74,23 +74,23 @@
 
     const copy = {
       open: {
-        strip: `Aberto agora · pedidos até as ${until}`,
+        strip: `Aberto agora. Pedidos até ${until}`,
         cozinha: 'aberta', pedidos: `até ${until}`,
-        title: 'A cozinha está <em>acesa.</em>',
+        title: 'A cozinha está acesa.',
         text: `Pedidos até as ${until}. Monte a sua e a massa vai para a panela.`,
         note: '',
       },
       later: {
         strip: `Abrimos hoje às ${h}`,
         cozinha: `abre ${h}`, pedidos: `${h} às ${until}`,
-        title: 'A cozinha já vai <em>acender.</em>',
+        title: 'A cozinha já vai acender.',
         text: `Abrimos hoje às ${h}. Monte a sua agora e envie quando quiser.`,
         note: `Estamos fechados agora. Você pode enviar o pedido e a gente responde a partir das ${h}.`,
       },
       closed: {
-        strip: `Fechado agora · abrimos ${next} às ${h}`,
+        strip: `Fechado agora. Abrimos ${next} às ${h}`,
         cozinha: 'fechada', pedidos: `${next}, ${h}`,
-        title: 'Hoje a cozinha <em>descansa.</em>',
+        title: 'Hoje a cozinha descansa.',
         text: `Abrimos ${next} às ${h}. Deixe a sua montada na sacola.`,
         note: `Estamos fechados agora. Você pode enviar o pedido e a gente responde ${next}, a partir das ${h}.`,
       },
@@ -105,7 +105,7 @@
     set('[data-status-text]', copy.strip);
     set('[data-kitchen-state]', copy.cozinha);
     set('[data-kitchen-until]', copy.pedidos);
-    set('[data-closing-title]', copy.title, true);
+    set('[data-closing-title]', copy.title);
     set('[data-closing-text]', copy.text);
     set('[data-today]', new Intl.DateTimeFormat('pt-BR', { timeZone: CONFIG.timezone, weekday: 'long', day: 'numeric', month: 'short' }).format(new Date()).replace('.', ''));
 
@@ -167,7 +167,7 @@
 
     $$('[data-bag-count]').forEach((el) => { el.textContent = count; el.hidden = count === 0; });
     $$('[data-open-bag].bag-btn').forEach((btn) => btn.setAttribute('aria-label', count ? `Sacola, ${count} ${count === 1 ? 'item' : 'itens'}` : 'Sacola vazia'));
-    $('[data-dock-sum]').textContent = `${count} ${count === 1 ? 'item' : 'itens'} · ${brl(total)}`;
+    $('[data-dock-sum]').textContent = `${count} ${count === 1 ? 'item' : 'itens'}, ${brl(total)}`;
     $('[data-dock-bag]').hidden = count === 0;
     $('[data-dock-build]').hidden = count > 0;
 
@@ -300,7 +300,7 @@
     lines.push(row('ENTREGA', 'a confirmar'));
     lines.push('```', '');
     lines.push(`*Nome:* ${data.nome}`);
-    lines.push(`*Endereço:* ${data.endereco} — ${data.bairro}`);
+    lines.push(`*Endereço:* ${data.endereco}, ${data.bairro}`);
     if (data.complemento) lines.push(`*Complemento:* ${data.complemento}`);
     lines.push(`*Pagamento:* ${data.pagamento}${data.pagamento === 'Dinheiro' && data.troco ? ` (troco para ${data.troco})` : ''}`);
     if (data.obs) lines.push(`*Observações:* ${data.obs}`);

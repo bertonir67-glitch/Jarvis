@@ -1,4 +1,4 @@
-# CREMA — Massas que acolhem
+# CREMA
 
 Vitrine e pedido online da CREMA, delivery de massas artesanais em Guarulhos.
 O cliente monta a massa (ou escolhe um prato da casa), junta tudo na sacola e envia
@@ -10,7 +10,7 @@ Site estático: HTML, CSS e JavaScript puros, sem build e sem dependências.
 index.html          página única (conteúdo, SEO e dados estruturados)
 assets/css/         estilos
 assets/js/main.js   sacola, montador, status da cozinha e pedido no WhatsApp
-assets/fonts/       fontes (Newsreader, Albert Sans, Courier Prime)
+assets/fonts/       fontes (Big Shoulders, Archivo, Martian Mono)
 assets/img/         favicon, ícone do iPhone e imagem de compartilhamento
 robots.txt · sitemap.xml
 ```
@@ -19,8 +19,10 @@ robots.txt · sitemap.xml
 
 ## Conceito
 
-**A cozinha à noite.** A CREMA só funciona das 18h às 23h, então a página é escura e
-quente, como uma cozinha acesa à noite. O tom Osso aparece só como papel.
+**Caixa de entrega.** A página se parece com a embalagem de um delivery, não com um
+template: blocos de cor chapada, cantos retos, filetes grossos e etiquetas impressas,
+como o adesivo colado na caixa. Letras retas e estreitas em caixa alta, de placa de
+cozinha e de embalagem.
 
 **A assinatura é a comanda.** O papel de pedido que fica pendurado no trilho da cozinha:
 
@@ -33,7 +35,7 @@ quente, como uma cozinha acesa à noite. O tom Osso aparece só como papel.
 ## Estrutura da página
 
 1. Faixa de status com horário de Guarulhos
-2. Topo com prato em destaque e a comanda pendurada
+2. Topo em vermelho com o título, a foto do prato, o lacre e a comanda pendurada
 3. Pratos da casa: combinações prontas, adicionadas à sacola com um toque no tamanho
 4. Monte sua massa: tamanho, massa, molho e extras, com a comanda ao vivo
 5. Do fogão à sua porta: feita na hora, lacrada, quente na porta
@@ -44,32 +46,32 @@ quente, como uma cozinha acesa à noite. O tom Osso aparece só como papel.
 
 ## Identidade visual
 
-| Papel | Nome | Cor |
+| Onde aparece | Nome | Cor |
 |---|---|---|
-| Fundo da página | Forno | `#0B0A08` |
-| Painéis | Carvão | `#16130F` |
-| Papel (comanda) e texto | Osso | `#F4EEE2` |
-| Ações e lacre | Pomodoro | `#922A23` |
-| Destaques | Ouro | `#C6A86B` |
-| Cozinha aberta | Oliva | `#5A6B3B` |
+| Topo, "Do fogão à sua porta", botões de pedido e lacre | Pomodoro | `#922A23` |
+| Fundo claro, comanda e texto sobre o preto | Osso | `#F4EEE2` |
+| Montador, fechamento, rodapé e texto sobre o claro | Forno | `#0B0A08` |
+| Cozinha aberta, item escolhido e prato sem carne | Oliva | `#5A6B3B` |
 
 **Tipografia** (servida pelo próprio site, em `assets/fonts/`, licença OFL)
 
-- **Newsreader**: títulos, nomes dos pratos e a marca. Serifa editorial, usada em peso
-  leve, com itálico em Ouro nas palavras de destaque.
-- **Albert Sans**: textos, botões e formulários. Limpa e legível no celular.
-- **Courier Prime**: só na comanda, como as impressoras de pedido.
+- **Big Shoulders**: títulos e a marca. Sempre em caixa alta, pesos 800 e 900.
+- **Archivo**: textos, botões e formulários. Botões em caixa alta, peso 800.
+- **Martian Mono**: comanda, preços, etiquetas e horários, na largura estreita, como
+  a impressora térmica que solta o pedido.
 
 **Fotos**: as do topo, da seção "Do fogão à sua porta" e do fechamento são carregadas em
 Full HD (até 2560 px), e o montador mostra a foto de cada massa e molho.
 
 **Movimento**: a comanda desce do trilho e imprime ao carregar; no montador cada
 escolha imprime uma linha e o lacre é carimbado; ao adicionar, a comanda é destacada e
-vai para a sacola. Nada mais se mexe sozinho. Com "reduzir movimento" ativado no
-aparelho, tudo aparece sem animação.
+vai para a sacola. Ao rolar, cada seção entra com um deslize curto. Com "reduzir
+movimento" ativado no aparelho, tudo aparece sem animação.
 
-Sem números decorativos: preços, gramas e horários aparecem só onde o cliente precisa
-deles para pedir.
+**O que a página evita**, para não parecer feita por IA: degradês, palavras em itálico
+dourado, cantos arredondados, emojis, numeração decorativa (01, 02, 03), travessões no
+texto e depoimentos inventados. Preços, gramas e horários aparecem só onde o cliente
+precisa deles para pedir.
 
 ---
 
@@ -114,13 +116,13 @@ O GitHub Pages também funciona, mas em repositório privado exige plano pago.
 
 ## Qualidade
 
-Medido com Lighthouse num servidor local (sem compressão, e com fotos e fontes externas
-bloqueadas no ambiente de teste):
+Medido com Lighthouse num servidor local (sem compressão, e com fotos externas
+bloqueadas no ambiente de teste). No celular, mediana de três medições.
 
 | | Desempenho | Acessibilidade | Boas práticas | SEO |
 |---|---|---|---|---|
-| Celular | 96 | 100 | 96 | 100 |
+| Celular | 98 | 100 | 96 | 100 |
 | Computador | 100 | 100 | 96 | 100 |
 
-Os pontos perdidos em boas práticas vêm só das fotos e fontes que o ambiente de teste
-não conseguiu baixar.
+Os pontos perdidos em boas práticas vêm só das fotos que o ambiente de teste não
+conseguiu baixar.
