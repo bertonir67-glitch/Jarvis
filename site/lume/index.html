@@ -1,0 +1,1468 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lume — Pizzeria Napoletana d'Autore em São Paulo</title>
+<meta name="description" content="Lume é uma pizzaria napoletana d'autore em São Paulo: massa com 72 horas de fermentação natural, ingredientes DOP e forno a lenha a 485°C. Reserve sua mesa.">
+<meta name="keywords" content="pizzaria premium, pizza napoletana, forno a lenha, pizzaria São Paulo, Vila Madalena, pizza artesanal, fermentação natural">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#F5EEE4">
+<meta name="color-scheme" content="light">
+<link rel="canonical" href="https://www.lumepizzeria.com.br/">
+
+<meta property="og:type" content="restaurant">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Lume Pizzeria">
+<meta property="og:title" content="Lume — A arte lenta de uma pizza perfeita">
+<meta property="og:description" content="Massa de 72 horas, ingredientes DOP e forno a lenha a 485°C. Uma mesa onde o tempo desacelera.">
+<meta property="og:url" content="https://www.lumepizzeria.com.br/">
+<meta property="og:image" content="https://www.lumepizzeria.com.br/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lume — Pizzeria Napoletana d'Autore">
+<meta name="twitter:description" content="Massa de 72 horas, ingredientes DOP e forno a lenha a 485°C.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23D9A05B'/%3E%3Ccircle cx='32' cy='32' r='23' fill='%23B5321C'/%3E%3Ccircle cx='24' cy='26' r='6' fill='%23FBF1DC'/%3E%3Ccircle cx='40' cy='36' r='7' fill='%23FBF1DC'/%3E%3Ccircle cx='28' cy='42' r='4' fill='%233F6B2E'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Lume Pizzeria",
+  "description": "Pizzeria napoletana d'autore com massa de fermentação natural de 72 horas e forno a lenha.",
+  "url": "https://www.lumepizzeria.com.br/",
+  "image": "https://www.lumepizzeria.com.br/og-image.jpg",
+  "telephone": "+55-11-4000-0000",
+  "servesCuisine": ["Pizza", "Italiana", "Napoletana"],
+  "priceRange": "$$$",
+  "acceptsReservations": "True",
+  "menu": "https://www.lumepizzeria.com.br/#cardapio",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Rua Aspicuelta, 214",
+    "addressLocality": "São Paulo",
+    "addressRegion": "SP",
+    "postalCode": "05433-010",
+    "addressCountry": "BR"
+  },
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Sunday"], "opens": "18:00", "closes": "23:30" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Friday","Saturday"], "opens": "18:00", "closes": "00:30" }
+  ],
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "2300" }
+}
+</script>
+
+<style>
+/* ==========================================================================
+   1. TOKENS — identidade visual
+   ========================================================================== */
+:root{
+  --bg:#F5EEE4;            /* creme de farinha — fundo acolhedor */
+  --bg-2:#EDE3D5;          /* aveia */
+  --paper:#FBF7F1;         /* papel de cardápio */
+  --ink:#2B201A;           /* espresso — texto principal */
+  --ink-2:#6B5848;         /* cacau — texto secundário */
+  --ink-3:#9A8674;
+  --line:rgba(43,32,26,.12);
+  --line-2:rgba(43,32,26,.2);
+  --accent:#B9603F;        /* terracota suave — tijolo do forno */
+  --accent-ink:#9E4D30;
+  --accent-soft:#E7B9A3;
+  --sage:#7F8A6E;          /* manjericão desbotado */
+  --gold:#B8925A;          /* borda dourada */
+  --night:#17110D;         /* interior do forno */
+  --on-night:#F3E9DC;
+  --on-night-2:rgba(243,233,220,.62);
+  --ember:#E9814A;
+
+  --ff-display:"Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --ff-body:"Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --radius:22px;
+  --radius-sm:14px;
+  --gutter:clamp(20px, 4.2vw, 64px);
+  --maxw:1360px;
+  --nav-h:76px;
+}
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg)}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--ff-body);font-size:16px;line-height:1.6;font-weight:400;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;transition:color .6s var(--ease);
+}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+::selection{background:var(--accent);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:fixed;left:16px;top:-60px;z-index:200;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;transition:top .3s var(--ease)}
+.skip:focus{top:16px}
+
+/* grão de papel — textura sutil premium */
+body::after{
+  content:"";position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.07;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .15 0 0 0 0 .1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.container{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
+
+/* tipografia */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-2);
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:currentColor;opacity:.6}
+.display{
+  font-family:var(--ff-display);font-weight:300;letter-spacing:-.025em;line-height:.94;margin:0;
+}
+.display em,.h2 em{font-style:italic;font-weight:400;color:var(--accent)}
+.h2{
+  font-family:var(--ff-display);font-weight:300;letter-spacing:-.02em;line-height:1;margin:18px 0 0;
+  font-size:clamp(2.6rem,5.6vw,5.4rem);
+}
+.lead{font-size:clamp(1.02rem,1.25vw,1.16rem);color:var(--ink-2);max-width:46ch;line-height:1.7}
+
+/* máscara de palavras/linhas para reveal */
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.w>span{display:inline-block;will-change:transform}
+.line{display:block;overflow:hidden;padding-bottom:.06em}
+.line>span{display:inline-block;will-change:transform}
+
+/* ==========================================================================
+   3. CANVAS 3D + FALLBACK
+   ========================================================================== */
+#scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;outline:none}
+.pizza-fallback{display:none}
+html.no-webgl #scene{display:none}
+html.no-webgl .pizza-fallback{
+  display:block;position:absolute;right:calc(var(--gutter) * .6);top:50%;translate:0 -50%;
+  width:min(44vw,560px);aspect-ratio:1;border-radius:50%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 34% 38%, #3F6B2E 0 3.2%, transparent 3.6%),
+    radial-gradient(circle at 63% 61%, #3F6B2E 0 2.8%, transparent 3.2%),
+    radial-gradient(circle at 58% 30%, #C4321F 0 4%, transparent 4.4%),
+    radial-gradient(circle at 36% 66%, #C4321F 0 3.6%, transparent 4%),
+    radial-gradient(circle at 42% 42%, #FBF1DC 0 9%, transparent 9.6%),
+    radial-gradient(circle at 64% 44%, #FBF1DC 0 7%, transparent 7.6%),
+    radial-gradient(circle at 50% 66%, #F6E7C8 0 8%, transparent 8.6%),
+    radial-gradient(circle at 30% 54%, #F6E7C8 0 5.5%, transparent 6%),
+    radial-gradient(circle, #B5321C 0 60%, #A12B17 66%, #DDA563 68%, #C88443 78%, #E2B67A 84%, transparent 85%);
+  box-shadow:0 60px 120px -40px rgba(80,40,20,.35);
+  animation:fallback-spin 60s linear infinite;
+}
+@keyframes fallback-spin{to{rotate:360deg}}
+
+/* ==========================================================================
+   4. LOADER
+   ========================================================================== */
+#loader{
+  position:fixed;inset:0;z-index:150;background:var(--bg);display:grid;place-items:center;
+}
+.loader-inner{display:grid;justify-items:center;gap:22px}
+.loader-mark{font-family:var(--ff-display);font-size:clamp(3rem,8vw,5.5rem);font-weight:300;font-style:italic;letter-spacing:-.02em;line-height:1}
+.loader-bar{width:160px;height:1px;background:var(--line-2);overflow:hidden}
+.loader-bar i{display:block;height:100%;width:100%;background:var(--ink);transform-origin:left;transform:scaleX(0)}
+.loader-meta{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3)}
+html.loaded #loader{pointer-events:none}
+
+/* ==========================================================================
+   5. NAV
+   ========================================================================== */
+.progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:120;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:100;height:var(--nav-h);
+  display:flex;align-items:center;transition:transform .6s var(--ease),color .5s var(--ease);
+}
+.nav.is-hidden{transform:translateY(-110%)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%}
+.nav-shell{
+  position:absolute;inset:10px var(--gutter);border-radius:999px;z-index:-1;
+  background:color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);
+  border:1px solid var(--line);opacity:0;transition:opacity .5s var(--ease),background .5s var(--ease);
+}
+.nav.is-scrolled .nav-shell{opacity:1}
+.brand{display:inline-flex;align-items:baseline;gap:10px;padding-left:12px}
+.brand-mark{font-family:var(--ff-display);font-size:30px;font-style:italic;font-weight:400;letter-spacing:-.02em;line-height:1}
+.brand-sub{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-2)}
+.nav-links{display:flex;gap:6px;list-style:none;margin:0;padding:0}
+.nav-links a{
+  position:relative;display:block;padding:10px 16px;border-radius:999px;font-size:14px;color:var(--ink-2);
+  transition:color .3s var(--ease),background .3s var(--ease);
+}
+.nav-links a:hover{color:var(--ink);background:var(--line)}
+.nav-cta{display:flex;align-items:center;gap:10px;padding-right:6px}
+.menu-toggle{display:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line-2);place-items:center}
+.menu-toggle span{display:block;width:16px;height:1px;background:currentColor;box-shadow:0 5px 0 currentColor;translate:0 -2.5px}
+
+html[data-tone="dark"] body{color:var(--on-night)}
+html[data-tone="dark"] .nav-links a,html[data-tone="dark"] .brand-sub{color:var(--on-night-2)}
+html[data-tone="dark"] .nav-links a:hover{color:var(--on-night);background:rgba(243,233,220,.1)}
+html[data-tone="dark"] .nav-shell{background:rgba(23,17,13,.55);border-color:rgba(243,233,220,.1)}
+html[data-tone="dark"] .btn-primary{background:var(--on-night);color:var(--night)}
+
+/* ==========================================================================
+   6. BOTÕES
+   ========================================================================== */
+.btn{
+  --h:52px;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  height:var(--h);padding:0 26px;border-radius:999px;font-size:15px;font-weight:500;letter-spacing:.01em;
+  transition:background .4s var(--ease),color .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease);
+  white-space:nowrap;isolation:isolate;overflow:hidden;
+}
+.btn-sm{--h:44px;padding:0 20px;font-size:14px}
+.btn-primary{background:var(--ink);color:var(--bg)}
+.btn-primary::before{
+  content:"";position:absolute;inset:0;z-index:-1;background:var(--accent);border-radius:inherit;
+  transform:translateY(101%);transition:transform .55s var(--ease);
+}
+.btn-primary:hover::before{transform:translateY(0)}
+.btn-primary:hover{color:#fff;box-shadow:0 18px 40px -18px rgba(185,96,63,.8)}
+.btn-ghost{border:1px solid var(--line-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink);background:rgba(43,32,26,.04)}
+.btn .arrow{display:inline-block;transition:transform .45s var(--ease)}
+.btn:hover .arrow{transform:translateX(4px)}
+.magnetic{will-change:transform}
+
+/* ==========================================================================
+   7. SEÇÕES
+   ========================================================================== */
+main{position:relative;z-index:1}
+section{position:relative}
+
+/* HERO -------------------------------------------------- */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:var(--nav-h)}
+.hero .container{position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;padding-block:40px 32px}
+.hero-copy{max-width:640px;position:relative;z-index:1}
+.hero-title{font-size:clamp(3.5rem,8.4vw,8.6rem);margin:26px 0 0}
+.hero-title .line:nth-child(2){padding-left:.5em}
+.hero .lead{margin:30px 0 0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:38px}
+.hero-foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-top:auto;padding-top:48px;
+  font-size:13px;color:var(--ink-2)
+}
+.rating{display:flex;align-items:center;gap:14px}
+.rating-stars{color:var(--gold);letter-spacing:2px;font-size:13px}
+.rating b{font-weight:600;color:var(--ink)}
+.open-now{display:inline-flex;align-items:center;gap:10px}
+.dot{width:7px;height:7px;border-radius:50%;background:#6E9A5B;box-shadow:0 0 0 0 rgba(110,154,91,.6);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(110,154,91,0)}100%{box-shadow:0 0 0 0 rgba(110,154,91,0)}}
+.scroll-cue{display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.scroll-cue i{position:relative;width:1px;height:52px;background:var(--line-2);overflow:hidden}
+.scroll-cue i::after{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(-100%);animation:cue 2.4s var(--ease-in-out) infinite}
+@keyframes cue{50%{transform:translateY(0)}100%{transform:translateY(100%)}}
+.drag-hint{
+  position:absolute;right:calc(var(--gutter) + 4%);bottom:22%;display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--ink-2);letter-spacing:.06em;opacity:.85
+}
+.drag-hint svg{width:28px;height:28px}
+
+/* MANIFESTO --------------------------------------------- */
+.manifesto{padding:clamp(120px,18vh,220px) 0}
+.manifesto-grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--gutter)}
+.manifesto-body{grid-column:2}
+.manifesto-text{
+  font-family:var(--ff-display);font-weight:300;font-size:clamp(1.9rem,3.5vw,3.4rem);line-height:1.12;
+  letter-spacing:-.015em;margin:26px 0 0;
+}
+.manifesto-text em{font-style:italic;color:var(--accent)}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:72px;padding-top:36px;border-top:1px solid var(--line)}
+.pillar h3{font-family:var(--ff-display);font-weight:500;font-size:1.45rem;line-height:1.15;margin:14px 0 8px;letter-spacing:-.01em}
+.pillar p{margin:0;font-size:14px;color:var(--ink-2)}
+.pillar-n{font-size:12px;color:var(--ink-3);letter-spacing:.14em}
+
+/* FORNO (seção noturna) --------------------------------- */
+.forno{padding:clamp(120px,16vh,200px) 0;color:var(--on-night)}
+.forno .eyebrow{color:var(--on-night-2)}
+.forno .h2 em{color:var(--ember)}
+.forno-grid{display:grid;grid-template-columns:minmax(0,560px) 1fr;gap:var(--gutter)}
+.temp{display:flex;align-items:flex-start;gap:6px;margin-top:40px;font-family:var(--ff-display);font-weight:300;line-height:.8}
+.temp-n{font-size:clamp(6rem,15vw,13rem);letter-spacing:-.04em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,#FFD9B8 0%,#E9814A 55%,#9E3B1C 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.temp-u{font-size:clamp(2rem,4vw,3.4rem);color:var(--ember);margin-top:.3em}
+.temp-cap{font-size:13px;color:var(--on-night-2);letter-spacing:.06em;margin-top:14px}
+.steps{margin:72px 0 0;position:relative}
+.steps-list{list-style:none;margin:0;padding:0}
+.steps::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:rgba(243,233,220,.14)}
+.steps-fill{position:absolute;left:0;top:0;width:1px;height:100%;background:var(--ember);transform-origin:top;transform:scaleY(0)}
+.step{position:relative;padding:34px 0 34px 36px;opacity:.38;transition:opacity .6s var(--ease)}
+.step.is-active{opacity:1}
+.step::before{
+  content:"";position:absolute;left:-4px;top:44px;width:9px;height:9px;border-radius:50%;
+  background:var(--night);border:1px solid rgba(243,233,220,.4);transition:background .5s,border-color .5s,box-shadow .5s
+}
+.step.is-active::before{background:var(--ember);border-color:var(--ember);box-shadow:0 0 18px 2px rgba(233,129,74,.6)}
+.step-n{font-size:12px;letter-spacing:.2em;color:var(--on-night-2)}
+.step h3{font-family:var(--ff-display);font-weight:400;font-size:clamp(1.8rem,2.6vw,2.4rem);margin:8px 0 10px;letter-spacing:-.01em}
+.step p{margin:0;color:var(--on-night-2);max-width:42ch}
+
+/* CARDÁPIO ---------------------------------------------- */
+.cardapio{padding:clamp(120px,16vh,200px) 0 clamp(80px,12vh,140px)}
+.menu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+.tabs{display:inline-flex;padding:5px;border-radius:999px;background:rgba(43,32,26,.05);border:1px solid var(--line);position:relative}
+.tab{position:relative;z-index:1;padding:10px 18px;border-radius:999px;font-size:14px;color:var(--ink-2);transition:color .35s var(--ease)}
+.tab[aria-selected="true"]{color:var(--bg)}
+.tab-pill{position:absolute;z-index:0;top:5px;bottom:5px;left:0;border-radius:999px;background:var(--ink);transition:transform .55s var(--ease),width .55s var(--ease)}
+.menu-layout{display:grid;grid-template-columns:minmax(0,38%) 1fr;gap:var(--gutter);margin-top:64px}
+.menu-aside{position:relative}
+.chef-note{
+  position:sticky;top:calc(100vh - 230px);max-width:300px;font-size:14px;color:var(--ink-2);
+  padding-left:20px;border-left:1px solid var(--accent)
+}
+.chef-note strong{display:block;font-family:var(--ff-display);font-style:italic;font-weight:500;font-size:1.35rem;color:var(--ink);margin-bottom:6px}
+.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dish{
+  position:relative;display:flex;flex-direction:column;gap:14px;padding:28px 26px 24px;border-radius:var(--radius);
+  background:color-mix(in srgb, var(--paper) 78%, transparent);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  transition:transform .6s var(--ease),box-shadow .6s var(--ease),border-color .6s var(--ease),background .6s var(--ease);
+}
+.dish:hover{transform:translateY(-6px);border-color:rgba(185,96,63,.35);background:var(--paper);box-shadow:0 30px 60px -34px rgba(90,50,25,.45)}
+.dish[hidden]{display:none}
+.dish-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.dish h3{font-family:var(--ff-display);font-weight:500;font-size:1.7rem;line-height:1.05;margin:0;letter-spacing:-.01em}
+.price{font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.price small{font-size:11px;color:var(--ink-3);margin-right:3px;font-weight:400}
+.dish p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.6}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.tag{font-size:11px;letter-spacing:.06em;padding:5px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2)}
+.tag.veg{border-color:rgba(127,138,110,.5);color:#5D6B4E}
+.tag.hot{border-color:rgba(185,96,63,.45);color:var(--accent-ink)}
+.tag.sig{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.dish-n{position:absolute;right:24px;bottom:22px;font-family:var(--ff-display);font-style:italic;font-size:1rem;color:var(--ink-3)}
+
+/* NÚMEROS + DEPOIMENTOS --------------------------------- */
+.numeros{padding:clamp(100px,14vh,180px) 0 clamp(260px,40vh,420px);overflow:hidden}
+.numeros-head{text-align:center;max-width:820px;margin-inline:auto}
+.numeros-head .eyebrow{justify-content:center}
+.stats{list-style:none;padding:0;margin-left:0;margin-right:0;display:grid;grid-template-columns:repeat(4,1fr);margin-top:80px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{padding:38px 24px;text-align:center}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat-v{font-family:var(--ff-display);font-weight:300;font-size:clamp(3rem,5.4vw,5rem);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat-v sup{font-size:.42em;vertical-align:top;margin-left:2px;color:var(--accent)}
+.stat-l{font-size:13px;color:var(--ink-2);margin-top:10px}
+.marquee{margin-top:90px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marquee-track{display:flex;gap:18px;width:max-content;animation:marquee 60s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marquee{to{transform:translateX(calc(-50% - 9px))}}
+.quote{
+  width:min(420px,78vw);flex:none;margin:0;padding:28px 28px 24px;border-radius:var(--radius);
+  background:color-mix(in srgb, var(--paper) 90%, transparent);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)
+}
+.quote blockquote{margin:0;font-family:var(--ff-display);font-size:1.4rem;line-height:1.3;font-weight:400}
+.quote figcaption{margin-top:18px;font-size:13px;color:var(--ink-2);display:flex;justify-content:space-between}
+.quote figcaption span{color:var(--gold);letter-spacing:2px}
+
+/* RESERVA ----------------------------------------------- */
+.reserva{padding:clamp(110px,15vh,180px) 0}
+.reserva-grid{display:grid;grid-template-columns:minmax(0,600px) 1fr;gap:var(--gutter)}
+.form-card{
+  margin-top:42px;padding:clamp(24px,3vw,40px);border-radius:28px;background:color-mix(in srgb, var(--paper) 86%, transparent);
+  border:1px solid var(--line);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  box-shadow:0 40px 80px -50px rgba(90,50,25,.45)
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{position:relative;margin-bottom:14px}
+.field input,.field select,.field textarea{
+  width:100%;height:58px;padding:22px 16px 8px;border-radius:var(--radius-sm);border:1px solid var(--line-2);
+  background:rgba(255,255,255,.55);outline:none;appearance:none;-webkit-appearance:none;
+  transition:border-color .3s var(--ease),background .3s var(--ease),box-shadow .3s var(--ease);
+}
+.field textarea{height:96px;resize:vertical;padding-top:26px}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236B5848' stroke-width='1.4'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.field label{position:absolute;left:17px;top:19px;font-size:15px;color:var(--ink-3);pointer-events:none;transform-origin:left top;transition:transform .3s var(--ease),color .3s var(--ease)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(185,96,63,.12)}
+.field input:focus+label,.field input:not(:placeholder-shown)+label,
+.field textarea:focus+label,.field textarea:not(:placeholder-shown)+label,
+.field select+label{transform:translateY(-10px) scale(.76);color:var(--ink-2)}
+.party{border:0;margin:6px 0 18px;padding:0}
+.party legend{font-size:13px;color:var(--ink-2);margin-bottom:10px;padding:0}
+.party-opts{display:flex;gap:8px;flex-wrap:wrap}
+.party input{position:absolute;opacity:0;pointer-events:none}
+.party label{display:inline-flex;align-items:center;height:42px;padding:0 18px;border-radius:999px;border:1px solid var(--line-2);font-size:14px;cursor:pointer;transition:all .3s var(--ease)}
+.party label:hover{border-color:var(--ink)}
+.party input:checked+label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.party input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+.form-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px}
+.form-foot small{color:var(--ink-3);font-size:12px;max-width:30ch}
+.form-success{display:none;text-align:center;padding:30px 10px}
+.form-success h3{font-family:var(--ff-display);font-weight:400;font-size:2.2rem;margin:10px 0}
+.form-success p{color:var(--ink-2);margin:0}
+.form-card.is-sent form{display:none}
+.form-card.is-sent .form-success{display:block}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+.info h4{margin:0 0 6px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.info p{margin:0;font-size:14px;color:var(--ink-2)}
+.info a{border-bottom:1px solid var(--line-2);transition:border-color .3s}
+.info a:hover{border-color:var(--accent)}
+
+/* FOOTER ------------------------------------------------ */
+.footer{position:relative;z-index:1;padding:80px 0 34px;border-top:1px solid var(--line)}
+.footer-word{font-family:var(--ff-display);font-style:italic;font-weight:300;font-size:clamp(7rem,26vw,24rem);line-height:.8;letter-spacing:-.05em;margin:0 0 40px;color:var(--ink);opacity:.92}
+.footer-row{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.footer-row nav{display:flex;gap:22px;flex-wrap:wrap}
+.footer-row a:hover{color:var(--ink)}
+
+/* ==========================================================================
+   8. RESPONSIVO
+   ========================================================================== */
+@media (max-width:1100px){
+  .nav-links{display:none}
+  .manifesto-grid{grid-template-columns:3fr 7fr}
+  .menu-layout{grid-template-columns:1fr}
+  .menu-aside{display:none}
+  .menu-grid{max-width:none}
+}
+@media (max-width:820px){
+  :root{--nav-h:68px}
+  .brand-sub{display:none}
+  .nav-cta .btn-ghost{display:none}
+  .hero{justify-content:flex-end}
+  .hero .container{justify-content:flex-end;padding-top:42vh}
+  .hero-title{font-size:clamp(3rem,13.5vw,5rem)}
+  .hero-title .line:nth-child(2){padding-left:0}
+  .hero-foot .scroll-cue,.drag-hint{display:none}
+  .manifesto{padding-bottom:46vh}
+  .manifesto-grid{grid-template-columns:1fr}
+  .manifesto-body{grid-column:1}
+  .pillars{grid-template-columns:1fr;gap:22px;margin-top:48px}
+  .forno{padding-top:46vh}
+  .forno-grid{grid-template-columns:1fr}
+  .step{padding:26px 22px 26px 30px;margin-bottom:12px;border-radius:18px;background:rgba(23,17,13,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .step::before{top:36px}
+  .cardapio{padding-top:40vh}
+  .menu-head{align-items:flex-start}
+  .tabs{max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .menu-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  .reserva{padding-top:36vh}
+  .reserva-grid{grid-template-columns:1fr}
+  .info{grid-template-columns:1fr;gap:18px}
+}
+@media (max-width:520px){
+  .hide-sm{display:none}
+  .form-row{grid-template-columns:1fr;gap:0}
+  .hero-actions .btn{flex:1}
+  .hero-foot{flex-direction:column;align-items:flex-start;gap:10px}
+  .dish{padding:24px 22px 22px}
+}
+
+/* ==========================================================================
+   9. MOVIMENTO REDUZIDO
+   ========================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .marquee{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
+  .marquee-track{animation:none}
+  .scroll-cue i::after{transform:none}
+}
+</style>
+</head>
+
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- Loader -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-inner">
+    <div class="loader-mark">Lume</div>
+    <div class="loader-bar"><i></i></div>
+    <div class="loader-meta">Acendendo o forno</div>
+  </div>
+</div>
+<script>
+  /* Segurança: se a CDN falhar, o conteúdo nunca fica escondido */
+  (function(){
+    var d=document.documentElement;
+    var mq=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var low=(navigator.connection&&navigator.connection.saveData)||(navigator.deviceMemory&&navigator.deviceMemory<=2);
+    if(low) d.classList.add('no-webgl');
+    setTimeout(function(){
+      if(!window.__lumeReady){
+        d.classList.add('no-webgl','loaded');
+        var l=document.getElementById('loader'); if(l){l.style.transition='opacity .6s';l.style.opacity='0';setTimeout(function(){l.remove()},700);}
+      }
+    }, mq?1500:6000);
+  })();
+</script>
+
+<div class="progress" aria-hidden="true"></div>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<!-- Navegação -->
+<header class="nav" id="nav">
+  <div class="nav-shell" aria-hidden="true"></div>
+  <div class="container nav-inner">
+    <a href="#topo" class="brand" aria-label="Lume Pizzeria — início">
+      <span class="brand-mark">Lume</span>
+      <span class="brand-sub">Pizzeria d'Autore</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav-links">
+        <li><a href="#manifesto">Manifesto</a></li>
+        <li><a href="#forno">O Forno</a></li>
+        <li><a href="#cardapio">Cardápio</a></li>
+        <li><a href="#numeros">A Casa</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a href="tel:+551140000000" class="btn btn-ghost btn-sm">(11) 4000-0000</a>
+      <a href="#reserva" class="btn btn-primary btn-sm magnetic">Reservar</a>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo">
+
+  <!-- HERO -->
+  <section class="hero" id="topo" data-pose="hero" aria-labelledby="hero-title">
+    <div class="pizza-fallback" aria-hidden="true"></div>
+    <div class="container">
+      <div class="hero-copy">
+        <span class="eyebrow hero-in">Pizzeria Napoletana<span class="hide-sm"> · Vila Madalena</span></span>
+        <h1 class="display hero-title" id="hero-title">
+          <span class="line"><span>A arte lenta</span></span>
+          <span class="line"><span>de uma <em>pizza</em></span></span>
+          <span class="line"><span>perfeita.</span></span>
+        </h1>
+        <p class="lead hero-in">Massa de fermentação natural por 72 horas, ingredientes DOP e um forno a lenha que chega a 485°C. Uma mesa onde o tempo desacelera.</p>
+        <div class="hero-actions hero-in">
+          <a href="#reserva" class="btn btn-primary magnetic">Reservar mesa <span class="arrow" aria-hidden="true">→</span></a>
+          <a href="#cardapio" class="btn btn-ghost">Ver cardápio</a>
+        </div>
+      </div>
+      <div class="drag-hint hero-in" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M6 16a10 10 0 0 1 20 0"/><path d="M22 12l4 4 4-4" transform="translate(-4 0)"/><circle cx="16" cy="22" r="2"/></svg>
+        Arraste para girar
+      </div>
+      <div class="hero-foot hero-in">
+        <div class="rating"><span class="rating-stars" aria-hidden="true">★★★★★</span><span><b>4,9</b> · 2.300 avaliações</span></div>
+        <div class="scroll-cue" aria-hidden="true"><i></i>Role</div>
+        <div class="open-now"><span class="dot" aria-hidden="true"></span>Aberto hoje · 18h às 23h30</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" id="manifesto" data-pose="manifesto" aria-labelledby="manifesto-label">
+    <div class="container manifesto-grid">
+      <div class="manifesto-body">
+        <span class="eyebrow" id="manifesto-label" data-reveal>Manifesto</span>
+        <p class="manifesto-text" id="manifesto-text">Acreditamos que uma grande pizza nasce de poucos ingredientes, muito tempo e <em>nenhuma pressa</em>. Cada disco é aberto à mão. Cada borda é um pequeno gesto de paciência — e cada mesa, um convite para ficar.</p>
+        <div class="pillars">
+          <article class="pillar" data-reveal>
+            <span class="pillar-n">01</span>
+            <h3>Farinha moída em pedra</h3>
+            <p>Tipo 00 e integral de pequenos moinhos, para uma massa leve e perfumada.</p>
+          </article>
+          <article class="pillar" data-reveal>
+            <span class="pillar-n">02</span>
+            <h3>San Marzano DOP</h3>
+            <p>Tomates do Vale do Sarno, esmagados à mão, nunca cozidos antes do forno.</p>
+          </article>
+          <article class="pillar" data-reveal>
+            <span class="pillar-n">03</span>
+            <h3>Fior di latte do dia</h3>
+            <p>Mozzarella fresca entregue toda manhã por uma queijaria da Serra da Mantiqueira.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORNO -->
+  <section class="forno" id="forno" data-pose="forno" aria-labelledby="forno-title">
+    <div class="container forno-grid">
+      <div>
+        <span class="eyebrow" data-reveal>O Forno</span>
+        <h2 class="h2 split" id="forno-title">Do fogo, <em>o sabor.</em></h2>
+        <div class="temp" aria-label="Temperatura do forno: 485 graus Celsius">
+          <span class="temp-n" id="temp">485</span><span class="temp-u">°C</span>
+        </div>
+        <div class="temp-cap" data-reveal>Lenha de carvalho · 90 segundos · borda leopardata</div>
+
+        <div class="steps" id="steps">
+          <span class="steps-fill" aria-hidden="true"></span>
+          <ol class="steps-list">
+          <li class="step">
+            <span class="step-n">01 — Farina</span>
+            <h3>A massa</h3>
+            <p>Apenas farinha, água, sal e levain. Sovada devagar, descansada em temperatura controlada.</p>
+          </li>
+          <li class="step">
+            <span class="step-n">02 — Tempo</span>
+            <h3>72 horas</h3>
+            <p>A fermentação longa transforma amido em sabor e deixa a pizza leve, digestiva e aerada.</p>
+          </li>
+          <li class="step">
+            <span class="step-n">03 — Fuoco</span>
+            <h3>485°C</h3>
+            <p>No forno a lenha, noventa segundos bastam: base fina, cornicione alto e manchas de fogo.</p>
+          </li>
+          <li class="step">
+            <span class="step-n">04 — Tavola</span>
+            <h3>À mesa</h3>
+            <p>Sai do forno direto para você, finalizada com azeite extravirgem e manjericão fresco.</p>
+          </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDÁPIO -->
+  <section class="cardapio" id="cardapio" data-pose="cardapio" aria-labelledby="cardapio-title">
+    <div class="container">
+      <div class="menu-head">
+        <div>
+          <span class="eyebrow" data-reveal>Cardápio</span>
+          <h2 class="h2 split" id="cardapio-title">Escolha o seu <em>momento.</em></h2>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Categorias do cardápio" data-reveal>
+          <span class="tab-pill" aria-hidden="true"></span>
+          <button class="tab" role="tab" aria-selected="true" data-filter="all">Todas</button>
+          <button class="tab" role="tab" aria-selected="false" data-filter="classica">Clássicas</button>
+          <button class="tab" role="tab" aria-selected="false" data-filter="autoral">Autorais</button>
+          <button class="tab" role="tab" aria-selected="false" data-filter="doce">Doces</button>
+        </div>
+      </div>
+
+      <div class="menu-layout">
+        <aside class="menu-aside" aria-label="Sugestão do chef">
+          <p class="chef-note"><strong>A fatia que se ergue</strong>é a nossa Margherita DOP — a receita que nos trouxe até aqui e que nunca sai do cardápio.</p>
+        </aside>
+
+        <div class="menu-grid" id="menu-grid">
+          <article class="dish" data-cat="classica">
+            <div class="dish-top"><h3>Margherita DOP</h3><span class="price"><small>R$</small>68</span></div>
+            <p>San Marzano, fior di latte, manjericão fresco e azeite extravirgem da Puglia.</p>
+            <div class="tags"><span class="tag sig">Assinatura</span><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">i.</span>
+          </article>
+          <article class="dish" data-cat="classica">
+            <div class="dish-top"><h3>Marinara</h3><span class="price"><small>R$</small>54</span></div>
+            <p>Tomate, alho laminado, orégano siciliano e azeite. A pizza mais antiga de Nápoles.</p>
+            <div class="tags"><span class="tag veg">Vegana</span></div>
+            <span class="dish-n" aria-hidden="true">ii.</span>
+          </article>
+          <article class="dish" data-cat="classica">
+            <div class="dish-top"><h3>Diavola</h3><span class="price"><small>R$</small>79</span></div>
+            <p>Salame picante calabrês, fior di latte, pimenta fresca e um fio de mel de laranjeira.</p>
+            <div class="tags"><span class="tag hot">Picante</span></div>
+            <span class="dish-n" aria-hidden="true">iii.</span>
+          </article>
+          <article class="dish" data-cat="classica">
+            <div class="dish-top"><h3>Quattro Formaggi</h3><span class="price"><small>R$</small>82</span></div>
+            <p>Fior di latte, gorgonzola dolce, parmigiano 24 meses e taleggio, com nozes tostadas.</p>
+            <div class="tags"><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">iv.</span>
+          </article>
+          <article class="dish" data-cat="autoral">
+            <div class="dish-top"><h3>Lume</h3><span class="price"><small>R$</small>94</span></div>
+            <p>Stracciatella, tomate confit, pesto de pistache e raspas de limão-siciliano.</p>
+            <div class="tags"><span class="tag sig">Da casa</span><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">v.</span>
+          </article>
+          <article class="dish" data-cat="autoral">
+            <div class="dish-top"><h3>Funghi &amp; Tartufo</h3><span class="price"><small>R$</small>112</span></div>
+            <p>Cogumelos do bosque, creme de trufa negra, fior di latte e tomilho.</p>
+            <div class="tags"><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">vi.</span>
+          </article>
+          <article class="dish" data-cat="autoral">
+            <div class="dish-top"><h3>Mortadella e Pistacchio</h3><span class="price"><small>R$</small>96</span></div>
+            <p>Mortadela de Bolonha IGP, burrata, pistache tostado e manjericão.</p>
+            <div class="tags"><span class="tag">Mais pedida</span></div>
+            <span class="dish-n" aria-hidden="true">vii.</span>
+          </article>
+          <article class="dish" data-cat="autoral">
+            <div class="dish-top"><h3>Zucca</h3><span class="price"><small>R$</small>86</span></div>
+            <p>Abóbora cabotiá assada, gorgonzola, sálvia crocante e amêndoas.</p>
+            <div class="tags"><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">viii.</span>
+          </article>
+          <article class="dish" data-cat="doce">
+            <div class="dish-top"><h3>Ricotta, Fico e Miele</h3><span class="price"><small>R$</small>62</span></div>
+            <p>Ricota de búfala, figos frescos, mel silvestre e flor de sal.</p>
+            <div class="tags"><span class="tag veg">Vegetariana</span></div>
+            <span class="dish-n" aria-hidden="true">ix.</span>
+          </article>
+          <article class="dish" data-cat="doce">
+            <div class="dish-top"><h3>Gianduia</h3><span class="price"><small>R$</small>58</span></div>
+            <p>Creme de chocolate e avelã do Piemonte, avelãs caramelizadas e açúcar de confeiteiro.</p>
+            <div class="tags"><span class="tag">Para dividir</span></div>
+            <span class="dish-n" aria-hidden="true">x.</span>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NÚMEROS + DEPOIMENTOS -->
+  <section class="numeros" id="numeros" data-pose="numeros" aria-labelledby="numeros-title">
+    <div class="container">
+      <div class="numeros-head">
+        <span class="eyebrow" data-reveal>A Casa</span>
+        <h2 class="h2 split" id="numeros-title">Feita de tempo, <em>servida com calma.</em></h2>
+      </div>
+      <ul class="stats" role="list">
+        <li class="stat" data-reveal><div class="stat-v"><span data-count="72">72</span><sup>h</sup></div><div class="stat-l">de fermentação natural</div></li>
+        <li class="stat" data-reveal><div class="stat-v"><span data-count="485">485</span><sup>°C</sup></div><div class="stat-l">no forno a lenha</div></li>
+        <li class="stat" data-reveal><div class="stat-v"><span data-count="90">90</span><sup>s</sup></div><div class="stat-l">do forno à perfeição</div></li>
+        <li class="stat" data-reveal><div class="stat-v"><span data-count="12">12</span><sup>DOP</sup></div><div class="stat-l">ingredientes certificados</div></li>
+      </ul>
+    </div>
+
+    <div class="marquee" aria-label="Depoimentos de clientes">
+      <div class="marquee-track">
+        <figure class="quote"><blockquote>“A borda mais leve que já comi fora de Nápoles. O tipo de lugar que você quer guardar só pra você.”</blockquote><figcaption>Marina A. <span aria-label="5 estrelas">★★★★★</span></figcaption></figure>
+        <figure class="quote"><blockquote>“Ambiente acolhedor, luz baixa, atendimento sem pressa. A Lume é um abraço em forma de jantar.”</blockquote><figcaption>Rafael T. <span aria-label="5 estrelas">★★★★★</span></figcaption></figure>
+        <figure class="quote"><blockquote>“A Mortadella e Pistacchio é um daqueles pratos que você pensa nele dias depois.”</blockquote><figcaption>Júlia M. <span aria-label="5 estrelas">★★★★★</span></figcaption></figure>
+        <figure class="quote"><blockquote>“Dá para sentir o tempo na massa. Leve, aerada, perfumada. Voltaremos sempre.”</blockquote><figcaption>Carlos e Ana <span aria-label="5 estrelas">★★★★★</span></figcaption></figure>
+        <figure class="quote" aria-hidden="true"><blockquote>“A borda mais leve que já comi fora de Nápoles. O tipo de lugar que você quer guardar só pra você.”</blockquote><figcaption>Marina A. <span>★★★★★</span></figcaption></figure>
+        <figure class="quote" aria-hidden="true"><blockquote>“Ambiente acolhedor, luz baixa, atendimento sem pressa. A Lume é um abraço em forma de jantar.”</blockquote><figcaption>Rafael T. <span>★★★★★</span></figcaption></figure>
+        <figure class="quote" aria-hidden="true"><blockquote>“A Mortadella e Pistacchio é um daqueles pratos que você pensa nele dias depois.”</blockquote><figcaption>Júlia M. <span>★★★★★</span></figcaption></figure>
+        <figure class="quote" aria-hidden="true"><blockquote>“Dá para sentir o tempo na massa. Leve, aerada, perfumada. Voltaremos sempre.”</blockquote><figcaption>Carlos e Ana <span>★★★★★</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESERVA -->
+  <section class="reserva" id="reserva" data-pose="reserva" aria-labelledby="reserva-title">
+    <div class="container reserva-grid">
+      <div>
+        <span class="eyebrow" data-reveal>Reserva</span>
+        <h2 class="h2 split" id="reserva-title">Sua mesa, <em>à luz do forno.</em></h2>
+
+        <div class="form-card" data-reveal>
+          <form id="reserva-form" novalidate>
+            <div class="form-row">
+              <div class="field"><input id="f-nome" name="nome" type="text" placeholder=" " autocomplete="name" required><label for="f-nome">Nome</label></div>
+              <div class="field"><input id="f-tel" name="telefone" type="tel" placeholder=" " autocomplete="tel" inputmode="tel" required><label for="f-tel">WhatsApp</label></div>
+            </div>
+            <div class="form-row">
+              <div class="field"><input id="f-data" name="data" type="date" placeholder=" " required><label for="f-data">Data</label></div>
+              <div class="field">
+                <select id="f-hora" name="horario" required>
+                  <option>19:00</option><option>19:30</option><option selected>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option><option>22:00</option>
+                </select><label for="f-hora">Horário</label>
+              </div>
+            </div>
+            <fieldset class="party">
+              <legend>Quantas pessoas?</legend>
+              <div class="party-opts">
+                <input type="radio" name="pessoas" id="p2" value="1-2" checked><label for="p2">1–2</label>
+                <input type="radio" name="pessoas" id="p4" value="3-4"><label for="p4">3–4</label>
+                <input type="radio" name="pessoas" id="p6" value="5-6"><label for="p6">5–6</label>
+                <input type="radio" name="pessoas" id="p8" value="7+"><label for="p8">7 ou mais</label>
+              </div>
+            </fieldset>
+            <div class="field"><textarea id="f-obs" name="observacoes" placeholder=" "></textarea><label for="f-obs">Ocasião especial ou restrição alimentar? (opcional)</label></div>
+            <div class="form-foot">
+              <small>Confirmamos sua reserva pelo WhatsApp em até 30 minutos.</small>
+              <button type="submit" class="btn btn-primary magnetic">Solicitar reserva <span class="arrow" aria-hidden="true">→</span></button>
+            </div>
+          </form>
+          <div class="form-success" role="status" aria-live="polite">
+            <span class="eyebrow">Grazie</span>
+            <h3 id="success-title">Pedido recebido.</h3>
+            <p>Em breve enviaremos a confirmação pelo WhatsApp. O forno estará aceso.</p>
+          </div>
+        </div>
+
+        <div class="info">
+          <div data-reveal><h4>Endereço</h4><p><a href="https://maps.google.com/?q=Rua+Aspicuelta+214+São+Paulo" target="_blank" rel="noopener">Rua Aspicuelta, 214<br>Vila Madalena · São Paulo</a></p></div>
+          <div data-reveal><h4>Horários</h4><p>Ter a Qui, Dom · 18h–23h30<br>Sex e Sáb · 18h–00h30</p></div>
+          <div data-reveal><h4>Contato</h4><p><a href="tel:+551140000000">(11) 4000-0000</a><br><a href="https://instagram.com/" target="_blank" rel="noopener">@lumepizzeria</a></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="footer-word" aria-hidden="true">Lume</p>
+    <div class="footer-row">
+      <span>© <span id="year">2026</span> Lume Pizzeria d'Autore. Feito com fogo e paciência.</span>
+      <nav aria-label="Rodapé">
+        <a href="#manifesto">Manifesto</a><a href="#cardapio">Cardápio</a><a href="#reserva">Reservas</a><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<!-- Bibliotecas (defer = executam antes do módulo, na ordem) -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* ==========================================================================
+   AMBIENTE
+   ========================================================================== */
+const root = document.documentElement;
+const gsap = window.gsap;
+const ScrollTrigger = window.ScrollTrigger;
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MOBILE = matchMedia('(max-width: 820px)').matches;
+const COARSE = matchMedia('(pointer: coarse)').matches;
+const LOW = MOBILE || COARSE || (navigator.hardwareConcurrency || 8) <= 4;
+const TAU = Math.PI * 2;
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = t => t * t * (3 - 2 * t);
+function rng(seed) { // mulberry32 — determinístico
+  return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+
+if (gsap && ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ==========================================================================
+   SCROLL SUAVE — Lenis + ScrollTrigger
+   ========================================================================== */
+let lenis = null;
+if (gsap && window.Lenis && !REDUCE) {
+  lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, wheelMultiplier: 0.95 });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+  lenis.stop();
+}
+document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  const id = a.getAttribute('href'); const el = id.length > 1 && document.querySelector(id);
+  if (!el) return; e.preventDefault();
+  if (lenis) lenis.scrollTo(el, { offset: id === '#topo' ? 0 : -40, duration: 1.6 });
+  else el.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth' });
+}));
+
+/* ==========================================================================
+   CENA 3D
+   ========================================================================== */
+const scene3d = (() => {
+  if (root.classList.contains('no-webgl') || !gsap || !ScrollTrigger) return null;
+  const canvas = document.getElementById('scene');
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, alpha: true, powerPreference: 'high-performance' });
+  } catch (e) { root.classList.add('no-webgl'); return null; }
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LOW ? 1.5 : 2));
+  renderer.setSize(innerWidth, innerHeight, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.1, 60);
+  camera.position.set(0, 0, 8);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  /* ---------- Luzes ---------- */
+  const hemi = new THREE.HemisphereLight(0xfff4e6, 0x8a6a50, 0.7);
+  const key = new THREE.DirectionalLight(0xffe2c0, 2.2); key.position.set(3, 5, 4);
+  const rim = new THREE.DirectionalLight(0xffb58a, 1.4); rim.position.set(-4, 2.5, -3);
+  const cursorLight = new THREE.PointLight(0xfff1dc, 5, 9, 1.6); cursorLight.position.set(0, 1, 3);
+  const fire = new THREE.PointLight(0xff6a2a, 0, 10, 1.4); fire.position.set(1.8, -1.6, 1.2);
+  scene.add(hemi, key, rim, cursorLight, fire);
+
+  /* ---------- Texturas procedurais ---------- */
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  function toTex(c) { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = Math.min(8, maxAniso); return t; }
+  function blob(g, x, y, r, rnd, pts = 10) { // contorno orgânico com curvas suaves
+    const P = []; for (let i = 0; i < pts; i++) { const a = i / pts * TAU, rr = r * (0.8 + rnd() * 0.32); P.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]); }
+    const m = i => [(P[i][0] + P[(i + 1) % pts][0]) / 2, (P[i][1] + P[(i + 1) % pts][1]) / 2];
+    g.beginPath(); g.moveTo(...m(pts - 1));
+    for (let i = 0; i < pts; i++) g.quadraticCurveTo(P[i][0], P[i][1], ...m(i));
+    g.closePath();
+  }
+
+  function pizzaTexture(size) {
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const g = c.getContext('2d'), s = size / 1024, cx = size / 2, rnd = rng(7);
+    g.fillStyle = '#e6be86'; g.fillRect(0, 0, size, size);
+    // molho
+    const rs = size * 0.445;
+    g.save(); g.beginPath();
+    for (let i = 0; i <= 160; i++) {
+      const a = i / 160 * TAU, r = rs * (1 + 0.022 * Math.sin(a * 7) + 0.018 * Math.sin(a * 13 + 1.3) + 0.012 * Math.sin(a * 31));
+      i ? g.lineTo(cx + Math.cos(a) * r, cx + Math.sin(a) * r) : g.moveTo(cx + Math.cos(a) * r, cx + Math.sin(a) * r);
+    }
+    g.closePath();
+    const sg = g.createRadialGradient(cx, cx, 0, cx, cx, rs);
+    sg.addColorStop(0, '#b8341c'); sg.addColorStop(.8, '#a92d18'); sg.addColorStop(1, '#8a2412');
+    g.fillStyle = sg; g.fill(); g.clip();
+    for (let i = 0; i < 520; i++) {
+      const a = rnd() * TAU, r = Math.sqrt(rnd()) * rs, x = cx + Math.cos(a) * r, y = cx + Math.sin(a) * r;
+      g.fillStyle = rnd() > .5 ? 'rgba(226,92,48,.10)' : 'rgba(92,16,8,.10)';
+      g.beginPath(); g.arc(x, y, (4 + rnd() * 18) * s, 0, TAU); g.fill();
+    }
+    g.restore();
+    // queijo derretido
+    for (let i = 0; i < 24; i++) {
+      const a = rnd() * TAU, r = Math.sqrt(rnd()) * rs * 0.86, x = cx + Math.cos(a) * r, y = cx + Math.sin(a) * r;
+      const R = (34 + rnd() * 46) * s;
+      const cg = g.createRadialGradient(x, y, 0, x, y, R * 1.1);
+      cg.addColorStop(0, '#fff6e4'); cg.addColorStop(.6, '#f7e6c2'); cg.addColorStop(1, 'rgba(238,208,160,.85)');
+      g.fillStyle = cg; blob(g, x, y, R, rnd); g.fill();
+      if (rnd() > .45) { // gratinado
+        const bx = x + (rnd() - .5) * R, by = y + (rnd() - .5) * R, br = R * (.2 + rnd() * .25);
+        const bg = g.createRadialGradient(bx, by, 0, bx, by, br);
+        bg.addColorStop(0, 'rgba(176,112,52,.55)'); bg.addColorStop(1, 'rgba(176,112,52,0)');
+        g.fillStyle = bg; g.beginPath(); g.arc(bx, by, br, 0, TAU); g.fill();
+      }
+    }
+    // orégano e pimenta
+    for (let i = 0; i < 700; i++) {
+      const a = rnd() * TAU, r = Math.sqrt(rnd()) * rs, x = cx + Math.cos(a) * r, y = cx + Math.sin(a) * r;
+      g.fillStyle = rnd() > .3 ? 'rgba(58,74,30,.55)' : 'rgba(40,20,10,.5)';
+      g.fillRect(x, y, (1 + rnd() * 2.4) * s, (1 + rnd() * 2.4) * s);
+    }
+    // borda tostada
+    for (let i = 0; i < 90; i++) {
+      const a = rnd() * TAU, r = rs * (0.98 + rnd() * 0.12), x = cx + Math.cos(a) * r, y = cx + Math.sin(a) * r, rr = (3 + rnd() * 9) * s;
+      const dg = g.createRadialGradient(x, y, 0, x, y, rr);
+      dg.addColorStop(0, 'rgba(60,30,16,.7)'); dg.addColorStop(1, 'rgba(60,30,16,0)');
+      g.fillStyle = dg; g.beginPath(); g.arc(x, y, rr, 0, TAU); g.fill();
+    }
+    return toTex(c);
+  }
+
+  function crustTexture() {
+    const w = 512, h = 128, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d'), rnd = rng(19);
+    const lg = g.createLinearGradient(0, 0, 0, h);
+    lg.addColorStop(0, '#e2b26f'); lg.addColorStop(.35, '#cf8e4a'); lg.addColorStop(.55, '#d79b57'); lg.addColorStop(1, '#e8c088');
+    g.fillStyle = lg; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(${150 + rnd() * 60|0},${80 + rnd() * 40|0},30,${.05 + rnd() * .08})`; g.beginPath(); g.arc(rnd() * w, rnd() * h, 2 + rnd() * 8, 0, TAU); g.fill(); }
+    for (let i = 0; i < 70; i++) { // manchas leopardo
+      const x = rnd() * w, y = h * (.15 + rnd() * .5), r = 1.5 + rnd() * 5.5;
+      const dg = g.createRadialGradient(x, y, 0, x, y, r * 1.8);
+      dg.addColorStop(0, 'rgba(45,24,14,.9)'); dg.addColorStop(.5, 'rgba(70,36,18,.6)'); dg.addColorStop(1, 'rgba(70,36,18,0)');
+      g.fillStyle = dg; g.beginPath(); g.arc(x, y, r * 1.8, 0, TAU); g.fill();
+    }
+    for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(255,248,235,${.15 + rnd() * .3})`; g.fillRect(rnd() * w, rnd() * h, 1.2, 1.2); }
+    const t = toTex(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+  }
+
+  function woodTexture() {
+    const s = 512, c = document.createElement('canvas'); c.width = c.height = s;
+    const g = c.getContext('2d'), rnd = rng(3);
+    g.fillStyle = '#8a5b3b'; g.fillRect(0, 0, s, s);
+    for (let y = 0; y < s; y += 1) {
+      const v = Math.sin(y * 0.05 + Math.sin(y * 0.013) * 3) * .5 + .5;
+      g.fillStyle = `rgba(${60 + v * 40|0},${34 + v * 22|0},${18 + v * 10|0},${.12 + v * .18})`; g.fillRect(0, y, s, 1);
+    }
+    for (let i = 0; i < 40; i++) { g.strokeStyle = `rgba(50,28,14,${.1 + rnd() * .2})`; g.lineWidth = .6 + rnd(); g.beginPath();
+      const y0 = rnd() * s; g.moveTo(0, y0); for (let x = 0; x <= s; x += 16) g.lineTo(x, y0 + Math.sin(x * .02 + i) * 4); g.stroke(); }
+    return toTex(c);
+  }
+
+  /* ---------- Materiais ---------- */
+  const env = 0.55;
+  const topMat = new THREE.MeshStandardMaterial({ map: pizzaTexture(LOW ? 1024 : 2048), roughness: .58, envMapIntensity: env });
+  const doughMat = new THREE.MeshStandardMaterial({ color: 0xe0b47a, roughness: .9, envMapIntensity: env });
+  const crustMat = new THREE.MeshStandardMaterial({ map: crustTexture(), roughness: .82, envMapIntensity: env });
+  const Phys = LOW ? THREE.MeshStandardMaterial : THREE.MeshPhysicalMaterial;
+  const tomatoMat = new Phys({ color: 0xc4321f, roughness: .28, envMapIntensity: .9, ...(LOW ? {} : { clearcoat: .7, clearcoatRoughness: .25 }) });
+  const basilMat = new Phys({ color: 0x3d6a2c, roughness: .42, side: THREE.DoubleSide, envMapIntensity: .8, ...(LOW ? {} : { sheen: .4, sheenColor: new THREE.Color(0x9fd27a) }) });
+  const mozzMat = new THREE.MeshStandardMaterial({ color: 0xf8efdc, roughness: .38, envMapIntensity: .7 });
+  const woodMat = new THREE.MeshStandardMaterial({ map: woodTexture(), roughness: .7, transparent: true, envMapIntensity: .5 });
+  const woodSide = new THREE.MeshStandardMaterial({ color: 0x5e3b25, roughness: .8, transparent: true });
+  const shadowMat = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, opacity: .35,
+    map: (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+      const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, 'rgba(60,30,15,.55)'); rg.addColorStop(1, 'rgba(60,30,15,0)');
+      g.fillStyle = rg; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })() });
+
+  /* ---------- Hierarquia: root (posição/escala) → tilt → spin → fatias ---------- */
+  const R = 1.5, H = 0.11, N = 8, CR = R * 0.97, TUBE = 0.155;
+  const rootG = new THREE.Group(), tiltG = new THREE.Group(), spinG = new THREE.Group();
+  rootG.add(tiltG); tiltG.add(spinG); scene.add(rootG);
+
+  // tábua de madeira
+  const board = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.16, R * 1.12, 0.09, LOW ? 48 : 96), [woodSide, woodMat, woodSide]);
+  board.position.y = -0.06; spinG.add(board);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(R * 3.4, R * 3.4), shadowMat);
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = -0.12; tiltG.add(shadow);
+
+  function crustNoise(x, y, z) { return Math.sin(x * 4.1 + y * 2.3) * .5 + Math.sin(y * 5.7 - z * 6.1 + x * 1.7) * .3 + Math.sin(x * 11.3 + y * 9.1 + z * 7.7) * .2; }
+  function displaceCrust(geo) {
+    const p = geo.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i), y = p.getY(i), z = p.getZ(i), phi = Math.atan2(y, x);
+      const cx = Math.cos(phi) * CR, cy = Math.sin(phi) * CR;
+      const bulge = 1 + .1 * Math.sin(phi * 5 + .7) + .07 * Math.sin(phi * 12 + 2) + .09 * Math.pow(Math.max(0, Math.sin(phi * 9 + 1.1)), 3) + .05 * crustNoise(x, y, z);
+      p.setXYZ(i, cx + (x - cx) * bulge, cy + (y - cy) * bulge, z * bulge);
+    }
+    geo.computeVertexNormals();
+  }
+
+  const slices = [], pickables = [];
+  const segArc = TAU / N;
+  for (let i = 0; i < N; i++) {
+    const a0 = i * segArc, a1 = a0 + segArc, mid = a0 + segArc / 2;
+    const group = new THREE.Group();
+    // base em cunha
+    const shape = new THREE.Shape(); shape.moveTo(0, 0); shape.absarc(0, 0, CR, a0, a1, false); shape.lineTo(0, 0);
+    const wedge = new THREE.ExtrudeGeometry(shape, { depth: H, bevelEnabled: false, curveSegments: LOW ? 8 : 18 });
+    const p = wedge.attributes.position, uv = wedge.attributes.uv;
+    for (let k = 0; k < p.count; k++) uv.setXY(k, p.getX(k) / (2 * R) + .5, p.getY(k) / (2 * R) + .5);
+    wedge.rotateX(-Math.PI / 2);
+    const wedgeMesh = new THREE.Mesh(wedge, [topMat, doughMat]);
+    // a tampa superior (z=H→y=H) e inferior compartilham o grupo 0; inferior fica oculta pela tábua
+    group.add(wedgeMesh);
+    // borda (cornicione)
+    const torus = new THREE.TorusGeometry(CR, TUBE, LOW ? 10 : 16, LOW ? 12 : 26, segArc); torus.rotateZ(a0);
+    const cap0 = new THREE.SphereGeometry(TUBE, 14, 10); cap0.translate(Math.cos(a0) * CR, Math.sin(a0) * CR, 0);
+    const cap1 = new THREE.SphereGeometry(TUBE, 14, 10); cap1.translate(Math.cos(a1) * CR, Math.sin(a1) * CR, 0);
+    const crustGeo = mergeGeometries([torus, cap0, cap1]);
+    displaceCrust(crustGeo);
+    crustGeo.rotateX(-Math.PI / 2); crustGeo.scale(1, .82, 1); crustGeo.translate(0, H * .7, 0);
+    const crustMesh = new THREE.Mesh(crustGeo, crustMat);
+    group.add(crustMesh);
+    spinG.add(group);
+    pickables.push(wedgeMesh, crustMesh);
+    slices.push({ group, mid, dir: new THREE.Vector3(Math.cos(mid), 0, -Math.sin(mid)), tangent: new THREE.Vector3(Math.sin(mid), 0, Math.cos(mid)), a0, a1 });
+  }
+
+  /* ---------- Coberturas ---------- */
+  const rnd = rng(42);
+  const placed = [];
+  function place(minR, maxR, size, tries = 160) {
+    for (let t = 0; t < tries; t++) {
+      const r = minR + Math.sqrt(rnd()) * (maxR - minR), a = rnd() * TAU;
+      const idx = Math.floor(a / segArc) % N, local = a - idx * segArc, margin = (size * .55) / Math.max(r, .2);
+      if (local < margin || local > segArc - margin) continue;
+      const x = Math.cos(a) * r, z = -Math.sin(a) * r;
+      if (placed.some(q => Math.hypot(q.x - x, q.z - z) < (q.s + size) * .48)) continue;
+      placed.push({ x, z, s: size }); return { x, z, idx };
+    }
+    return null;
+  }
+  const leafShape = new THREE.Shape(); leafShape.moveTo(0, 0);
+  leafShape.quadraticCurveTo(.13, .1, 0, .34); leafShape.quadraticCurveTo(-.13, .1, 0, 0);
+  const leafGeo = new THREE.ShapeGeometry(leafShape, 10);
+  { const lp = leafGeo.attributes.position; for (let k = 0; k < lp.count; k++) { const x = lp.getX(k), y = lp.getY(k); lp.setZ(k, x * x * 2.2 - Math.sin(y * 9) * .012); } }
+  leafGeo.translate(0, -.12, 0); leafGeo.rotateX(-Math.PI / 2); leafGeo.computeVertexNormals();
+  const tomatoGeo = new THREE.SphereGeometry(.105, 22, 12, 0, TAU, 0, Math.PI / 2); tomatoGeo.scale(1, .62, 1);
+  const mozzGeo = new THREE.SphereGeometry(.17, 20, 12);
+  { const mp = mozzGeo.attributes.position, mr = rng(5); for (let k = 0; k < mp.count; k++) { const f = 1 + (mr() - .5) * .18; mp.setXYZ(k, mp.getX(k) * f, mp.getY(k) * .2, mp.getZ(k) * f); } mozzGeo.computeVertexNormals(); }
+
+  for (let i = 0; i < 9; i++) { const s = place(.15, 1.08, .34); if (!s) continue;
+    const m = new THREE.Mesh(mozzGeo, mozzMat); m.position.set(s.x, H + .01, s.z); m.rotation.y = rnd() * TAU; m.scale.setScalar(.8 + rnd() * .45); slices[s.idx].group.add(m); }
+  for (let i = 0; i < 8; i++) { const s = place(.1, 1.0, .26); if (!s) continue;
+    const m = new THREE.Mesh(leafGeo, basilMat); m.position.set(s.x, H + .045, s.z); m.rotation.set((rnd() - .5) * .25, rnd() * TAU, (rnd() - .5) * .25); m.scale.setScalar(.9 + rnd() * .35); slices[s.idx].group.add(m); }
+  for (let i = 0; i < 10; i++) { const s = place(.12, 1.1, .2); if (!s) continue;
+    const g = new THREE.Group(); g.add(new THREE.Mesh(tomatoGeo, tomatoMat)); g.position.set(s.x, H + .005, s.z); g.scale.setScalar(.85 + rnd() * .3); slices[s.idx].group.add(g); }
+
+  /* ---------- Fios de queijo (aparecem ao erguer a fatia) ---------- */
+  const strings = [];
+  const strGeo = new THREE.CylinderGeometry(1, 1, 1, 6, 1, true); strGeo.translate(0, .5, 0);
+  const strMat = new THREE.MeshStandardMaterial({ color: 0xf6e6c4, roughness: .45, side: THREE.DoubleSide });
+  [[slices[0].a0, .45, 1], [slices[0].a0, .85, 1], [slices[0].a1, .55, N - 1], [slices[0].a1, .95, N - 1]].forEach(([a, r, nb]) => {
+    const local = new THREE.Vector3(Math.cos(a) * r, H, -Math.sin(a) * r);
+    const m = new THREE.Mesh(strGeo, strMat); m.visible = false; scene.add(m);
+    strings.push({ mesh: m, local, nb });
+  });
+  const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vD = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0);
+
+  /* ---------- Partículas de farinha / brasas ---------- */
+  const COUNT = REDUCE ? 260 : (LOW ? 420 : 1300);
+  const pg = new THREE.BufferGeometry(), pos = new Float32Array(COUNT * 3), seed = new Float32Array(COUNT), size = new Float32Array(COUNT);
+  const pr = rng(11);
+  for (let i = 0; i < COUNT; i++) { pos[i * 3] = (pr() - .5) * 16; pos[i * 3 + 1] = (pr() - .5) * 9; pos[i * 3 + 2] = -5 + pr() * 9; seed[i] = pr(); size[i] = .6 + Math.pow(pr(), 3) * 4.2; }
+  pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  pg.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+  pg.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
+  const pMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uTime: { value: 0 }, uPR: { value: renderer.getPixelRatio() }, uMouse: { value: new THREE.Vector2() }, uScroll: { value: 0 },
+      uNight: { value: 0 }, uColor: { value: new THREE.Color('#a8825c') }, uOpacity: { value: .55 } },
+    vertexShader: /* glsl */`
+      attribute float aSeed; attribute float aSize;
+      uniform float uTime, uPR, uScroll, uNight; uniform vec2 uMouse;
+      varying float vAlpha;
+      void main(){
+        vec3 p = position;
+        float speed = (0.05 + aSeed * 0.09) * (1.0 + uNight * 2.5);
+        p.y = mod(p.y + uTime * speed + uScroll * (0.6 + aSeed) + 4.5, 9.0) - 4.5;
+        p.x += sin(uTime * 0.3 + aSeed * 20.0) * 0.3 + uMouse.x * (0.15 + (p.z + 5.0) * 0.06);
+        p.z += cos(uTime * 0.25 + aSeed * 13.0) * 0.2;
+        p.y += uMouse.y * (0.08 + (p.z + 5.0) * 0.03);
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = aSize * uPR * (7.0 / -mv.z);
+        float flicker = mix(1.0, 0.55 + 0.45 * sin(uTime * (2.0 + aSeed * 4.0) + aSeed * 40.0), uNight);
+        vAlpha = smoothstep(4.5, 3.2, abs(p.y)) * (0.3 + 0.7 * fract(aSeed * 7.13)) * flicker;
+      }`,
+    fragmentShader: /* glsl */`
+      uniform vec3 uColor; uniform float uOpacity; varying float vAlpha;
+      void main(){
+        float d = length(gl_PointCoord - 0.5);
+        float a = smoothstep(0.5, 0.0, d);
+        gl_FragColor = vec4(uColor, a * a * vAlpha * uOpacity);
+        #include <colorspace_fragment>
+      }`
+  });
+  const particles = new THREE.Points(pg, pMat); scene.add(particles);
+  const dust = new THREE.Color('#a8825c'), ember = new THREE.Color('#ff8d45');
+
+  /* ---------- Poses por seção (a câmera acompanha o scroll) ---------- */
+  // x,y,z: posição da pizza · s: escala · rx: inclinação · ry: giro extra · cy/cz: câmera · ex: explodir fatias · lift: erguer fatia
+  const DESK = {
+    hero:      { x: 1.85, y: -.05, z: 0,   s: 1,    rx: .62, ry: 0,   cy: 0,   cz: 8,   ex: 0,   lift: 0 },
+    manifesto: { x: -2.1, y: -.15, z: -.4, s: .85,  rx: 1.0, ry: 1.3, cy: .2,  cz: 8.4, ex: 0,   lift: 0 },
+    forno:     { x: 1.85, y: .05,  z: 0,   s: .82,  rx: .9,  ry: 2.6, cy: 0,   cz: 7.6, ex: 1,   lift: 0 },
+    cardapio:  { x: -2.65,y: .15,  z: 0,   s: .78,  rx: .72, ry: 3.6, cy: 0,   cz: 8,   ex: 0,   lift: 1 },
+    numeros:   { x: 0,    y: -3.45,z: -.5, s: 1.3,  rx: 1.38,ry: 4.6, cy: .3,  cz: 8.6, ex: .12, lift: 0 },
+    reserva:   { x: 2.35, y: -.1,  z: 0,   s: .9,   rx: .6,  ry: 5.8, cy: 0,   cz: 8,   ex: 0,   lift: 0 },
+  };
+  const MOB = {
+    hero:      { x: 0,   y: 1.05, z: 0,   s: .6,  rx: .7,  ry: 0,   cy: 0,  cz: 8,   ex: 0,   lift: 0 },
+    manifesto: { x: 0,   y: -2.0, z: 0,   s: .62, rx: 1.15,ry: 1.3, cy: 0,  cz: 8.4, ex: 0,   lift: 0 },
+    forno:     { x: 0,   y: 1.45, z: 0,   s: .47, rx: .95, ry: 2.6, cy: 0,  cz: 8,   ex: 1,   lift: 0 },
+    cardapio:  { x: 0,   y: 1.5,  z: 0,   s: .55, rx: .75, ry: 3.6, cy: 0,  cz: 8,   ex: 0,   lift: 1 },
+    numeros:   { x: 0,   y: -3.0, z: -.5, s: .85, rx: 1.38,ry: 4.6, cy: 0,  cz: 8.6, ex: .12, lift: 0 },
+    reserva:   { x: 0,   y: 1.55, z: 0,   s: .5,  rx: .65, ry: 5.8, cy: 0,  cz: 8,   ex: 0,   lift: 0 },
+  };
+  let POSES = innerWidth <= 820 ? MOB : DESK;
+  const sections = [...document.querySelectorAll('[data-pose]')];
+  const keys = sections.map(s => s.dataset.pose);
+  const triggers = sections.map((s, i) => i === 0 ? null : ScrollTrigger.create({ trigger: s, start: 'top bottom', end: 'top 12%' }));
+  const night = { in: ScrollTrigger.create({ trigger: '#forno', start: 'top 70%', end: 'top 20%' }),
+                  out: ScrollTrigger.create({ trigger: '#forno', endTrigger: '#cardapio', start: 'bottom 80%', end: 'top 30%' }) };
+  const P = { ...POSES.hero };
+  function computePose() {
+    Object.assign(P, POSES[keys[0]]);
+    for (let i = 1; i < keys.length; i++) {
+      const t = smooth(triggers[i].progress); if (t <= 0) continue;
+      const k = POSES[keys[i]]; for (const f in P) P[f] = lerp(P[f], k[f], t);
+    }
+  }
+
+  /* ---------- Interação com o mouse ---------- */
+  const mouse = new THREE.Vector2(), sm = new THREE.Vector2(), ndc = new THREE.Vector2();
+  const ray = new THREE.Raycaster();
+  let hovering = false, dragging = false, lastX = 0, spinVel = 0, spin = 0, hoverAmt = 0, needsPick = false;
+  addEventListener('pointermove', e => {
+    mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1));
+    if (dragging) { const dx = e.clientX - lastX; lastX = e.clientX; spin += dx * .009; spinVel = dx * .0045; }
+    needsPick = e.pointerType === 'mouse';
+  }, { passive: true });
+  addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || !hovering || e.target.closest('a,button,input,select,textarea,label,.dish,.form-card')) return;
+    dragging = true; lastX = e.clientX; document.body.style.cursor = 'grabbing'; document.body.style.userSelect = 'none';
+  });
+  addEventListener('pointerup', () => { if (!dragging) return; dragging = false; document.body.style.userSelect = ''; document.body.style.cursor = hovering ? 'grab' : ''; });
+
+  /* ---------- Resize ---------- */
+  let lastW = innerWidth, lastH = innerHeight;
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    if (COARSE && w === lastW && Math.abs(h - lastH) < 140) return; // ignora barra de endereço do mobile
+    lastW = w; lastH = h;
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    POSES = w <= 820 ? MOB : DESK;
+  }
+  addEventListener('resize', resize);
+
+  /* ---------- Loop ---------- */
+  const state = { intro: 0 };
+  const bgDay = new THREE.Color('#F5EEE4'), bgNight = new THREE.Color('#17110D'), bgTmp = new THREE.Color();
+  let time = 0, lastNight = -1, lastTone = '';
+  const clock = new THREE.Clock();
+
+  function frame() {
+    const dt = Math.min(clock.getDelta(), .05);
+    if (!REDUCE) time += dt;
+    computePose();
+
+    // cor de fundo: creme → interior do forno
+    const nightV = smooth(night.in.progress) * (1 - smooth(night.out.progress));
+    if (Math.abs(nightV - lastNight) > .002) {
+      lastNight = nightV;
+      bgTmp.copy(bgDay).lerp(bgNight, nightV);
+      root.style.setProperty('--bg', '#' + bgTmp.getHexString());
+      const tone = nightV > .5 ? 'dark' : 'light';
+      if (tone !== lastTone) { root.dataset.tone = tone; lastTone = tone; }
+    }
+
+    // mouse suavizado
+    const k = 1 - Math.pow(.0015, dt);
+    sm.lerp(REDUCE ? sm.set(0, 0) : mouse, k * .9);
+
+    // hover / arraste
+    if (needsPick && !REDUCE) {
+      needsPick = false; ndc.copy(mouse); ray.setFromCamera(ndc, camera);
+      const hit = ray.intersectObjects(pickables, false).length > 0;
+      if (hit !== hovering) { hovering = hit; if (!dragging) document.body.style.cursor = hit ? 'grab' : ''; }
+    }
+    hoverAmt = lerp(hoverAmt, hovering || dragging ? 1 : 0, k * .6);
+    if (!dragging) spinVel *= Math.pow(.04, dt);
+    spin += (REDUCE ? 0 : dt * .11) + spinVel;
+
+    // transformação da pizza
+    const aspectK = innerWidth > 820 ? clamp(camera.aspect / 1.78, .72, 1.12) : 1;
+    const intro = smooth(state.intro);
+    rootG.position.set(P.x * aspectK, P.y + (REDUCE ? 0 : Math.sin(time * .8) * .05) - (1 - intro) * .8, P.z);
+    rootG.scale.setScalar(P.s * (.55 + .45 * intro) * (1 + hoverAmt * .035));
+    rootG.rotation.y = sm.x * .32;
+    tiltG.rotation.x = P.rx + sm.y * -.22;
+    tiltG.rotation.z = -sm.x * .1;
+    spinG.rotation.y = spin + P.ry + (1 - intro) * -2.2;
+
+    // fatias: explodir e erguer
+    const ex = P.ex, lift = REDUCE ? P.lift * .6 : P.lift;
+    slices.forEach((sl, i) => {
+      const g = sl.group, wob = Math.sin(i * 1.7 + time * .6) * .5 + .5;
+      g.position.copy(sl.dir).multiplyScalar(ex * .42);
+      g.position.y = ex * (.04 + wob * .12);
+      g.quaternion.setFromAxisAngle(sl.tangent, ex * (.08 + wob * .1));
+      if (i === 0 && lift > 0) {
+        g.position.addScaledVector(sl.dir, lift * .32); g.position.y += lift * .55;
+        g.quaternion.setFromAxisAngle(sl.tangent, lift * .32 + ex * .1);
+      }
+    });
+    const boardOp = 1 - smooth(clamp(ex * 1.4, 0, 1));
+    woodMat.opacity = woodSide.opacity = boardOp; board.visible = boardOp > .01;
+    shadowMat.opacity = .35 * (1 - ex * .6);
+
+    // fios de queijo
+    rootG.updateMatrixWorld(true);
+    strings.forEach((st, j) => {
+      const on = lift > .04;
+      st.mesh.visible = on; if (!on) return;
+      slices[0].group.localToWorld(vA.copy(st.local));
+      slices[st.nb].group.localToWorld(vB.copy(st.local));
+      vD.subVectors(vA, vB); const len = vD.length();
+      const thick = .012 * rootG.scale.x * (1.2 - Math.min(1, lift)) + .004 * (1 + Math.sin(time * 3 + j));
+      st.mesh.position.copy(vB); st.mesh.quaternion.setFromUnitVectors(UP, vD.normalize());
+      st.mesh.scale.set(thick, len, thick);
+    });
+
+    // câmera
+    camera.position.set(sm.x * .28, P.cy + sm.y * .16, P.cz);
+    camera.lookAt(sm.x * .1, P.cy * .6, 0);
+
+    // luzes
+    cursorLight.position.set(sm.x * 4.5, sm.y * 2.6 + .8, 3);
+    key.intensity = lerp(2.2, .55, nightV); hemi.intensity = lerp(.7, .12, nightV); rim.intensity = lerp(1.4, 2.4, nightV);
+    fire.intensity = nightV * 38 * (REDUCE ? 1 : .85 + Math.sin(time * 9) * .06 + Math.sin(time * 23) * .05);
+    fire.position.set(rootG.position.x, rootG.position.y - 1.6, 1.2);
+    renderer.toneMappingExposure = lerp(1.05, .95, nightV);
+
+    // partículas
+    pMat.uniforms.uTime.value = time;
+    pMat.uniforms.uMouse.value.copy(sm);
+    pMat.uniforms.uScroll.value = (lenis ? lenis.scroll : scrollY) / innerHeight * .25;
+    pMat.uniforms.uNight.value = nightV;
+    pMat.uniforms.uColor.value.copy(dust).lerp(ember, nightV);
+    pMat.uniforms.uOpacity.value = lerp(.5, .95, nightV);
+
+    renderer.render(scene, camera);
+  }
+
+  renderer.compile(scene, camera);
+  gsap.ticker.add(frame);
+  return { state };
+})();
+
+/* ==========================================================================
+   SEM 3D (sem WebGL / economia de dados): ainda atualiza o tom da seção noturna
+   ========================================================================== */
+if (!scene3d && gsap && ScrollTrigger) {
+  ScrollTrigger.create({ trigger: '#forno', start: 'top 55%', end: 'bottom 45%',
+    onToggle: self => { root.style.setProperty('--bg', self.isActive ? '#17110D' : '#F5EEE4'); root.dataset.tone = self.isActive ? 'dark' : 'light'; } });
+  document.body.style.transition = 'background-color .8s cubic-bezier(.22,1,.36,1), color .6s';
+}
+
+/* ==========================================================================
+   UI — animações e componentes
+   ========================================================================== */
+function splitWords(el) {
+  const out = [];
+  const walk = (node, parent) => [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      n.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { parent.appendChild(document.createTextNode(' ')); return; }
+        const o = document.createElement('span'), i = document.createElement('span');
+        o.className = 'w'; i.textContent = part; o.appendChild(i); parent.appendChild(o); out.push(i);
+      });
+    } else if (n.nodeType === 1) {
+      if (n.tagName === 'BR') { parent.appendChild(n.cloneNode()); return; }
+      const c = n.cloneNode(false); parent.appendChild(c); walk(n, c);
+    }
+  });
+  const frag = document.createElement('div'); walk(el, frag);
+  el.replaceChildren(...frag.childNodes);
+  return out;
+}
+
+function initUI() {
+  if (!gsap || !ScrollTrigger) return;
+
+  // barra de progresso + nav que se esconde ao descer
+  const nav = document.getElementById('nav'), bar = document.querySelector('.progress');
+  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: self => {
+    const y = self.scroll();
+    bar.style.transform = `scaleX(${self.progress})`;
+    nav.classList.toggle('is-scrolled', y > 24);
+    nav.classList.toggle('is-hidden', self.direction === 1 && y > 320);
+  } });
+
+  // temperatura e linha de progresso dos passos (scrub)
+  const temp = document.getElementById('temp'), tObj = { v: 20 };
+  gsap.to(tObj, { v: 485, ease: 'none', scrollTrigger: { trigger: '#forno', start: 'top 70%', end: 'center 50%', scrub: REDUCE ? false : .6 },
+    onUpdate: () => temp.textContent = Math.round(tObj.v) });
+  gsap.to('.steps-fill', { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '#steps', start: 'top 60%', end: 'bottom 60%', scrub: true } });
+  document.querySelectorAll('.step').forEach(s => ScrollTrigger.create({ trigger: s, start: 'top 62%', end: 'bottom 38%', toggleClass: 'is-active' }));
+
+  // contadores
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const end = +el.dataset.count, o = { v: 0 };
+    ScrollTrigger.create({ trigger: el, start: 'top 88%', once: true, onEnter: () =>
+      REDUCE ? (el.textContent = end) : gsap.to(o, { v: end, duration: 2, ease: 'expo.out', onUpdate: () => el.textContent = Math.round(o.v) }) });
+  });
+
+  if (REDUCE) return; // a partir daqui, apenas movimento decorativo
+
+  // reveals
+  gsap.utils.toArray('[data-reveal]').forEach(el => gsap.from(el, {
+    y: 36, opacity: 0, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } }));
+  // títulos palavra por palavra
+  document.querySelectorAll('.split').forEach(h => {
+    const words = splitWords(h);
+    gsap.from(words, { yPercent: 110, rotate: 4, duration: 1.3, ease: 'expo.out', stagger: .06, scrollTrigger: { trigger: h, start: 'top 85%' } });
+  });
+  // manifesto: palavras acendem com o scroll
+  const mWords = splitWords(document.getElementById('manifesto-text'));
+  gsap.fromTo(mWords, { opacity: .14 }, { opacity: 1, ease: 'none', stagger: .1,
+    scrollTrigger: { trigger: '#manifesto-text', start: 'top 78%', end: 'bottom 48%', scrub: true } });
+  // depoimentos com leve paralaxe
+  gsap.fromTo('.marquee-track', { x: 0 }, { x: -120, ease: 'none', scrollTrigger: { trigger: '.marquee', start: 'top bottom', end: 'bottom top', scrub: true } });
+  // footer
+  gsap.from('.footer-word', { yPercent: 40, opacity: 0, ease: 'expo.out', duration: 1.6, scrollTrigger: { trigger: '.footer', start: 'top 85%' } });
+
+  // botões magnéticos
+  if (matchMedia('(pointer: fine)').matches) document.querySelectorAll('.magnetic').forEach(b => {
+    const xTo = gsap.quickTo(b, 'x', { duration: .6, ease: 'expo.out' }), yTo = gsap.quickTo(b, 'y', { duration: .6, ease: 'expo.out' });
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); xTo((e.clientX - r.left - r.width / 2) * .28); yTo((e.clientY - r.top - r.height / 2) * .38); });
+    b.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
+  });
+}
+
+/* Abas do cardápio ------------------------------------------------------- */
+(() => {
+  const tabs = [...document.querySelectorAll('.tab')], pill = document.querySelector('.tab-pill'), cards = [...document.querySelectorAll('.dish')];
+  const movePill = t => { pill.style.width = t.offsetWidth + 'px'; pill.style.transform = `translateX(${t.offsetLeft}px)`; };
+  const current = () => tabs.find(t => t.getAttribute('aria-selected') === 'true');
+  requestAnimationFrame(() => movePill(current()));
+  document.fonts && document.fonts.ready.then(() => movePill(current()));
+  addEventListener('resize', () => movePill(current()));
+  tabs.forEach(t => t.addEventListener('click', () => {
+    if (t === current()) return;
+    tabs.forEach(x => x.setAttribute('aria-selected', x === t)); movePill(t);
+    const f = t.dataset.filter, show = c => f === 'all' || c.dataset.cat === f;
+    const apply = () => {
+      cards.forEach(c => c.hidden = !show(c));
+      const vis = cards.filter(c => !c.hidden);
+      if (gsap && !REDUCE) gsap.fromTo(vis, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .7, ease: 'expo.out', stagger: .05 });
+      ScrollTrigger && ScrollTrigger.refresh();
+    };
+    if (gsap && !REDUCE) gsap.to(cards.filter(c => !c.hidden), { opacity: 0, y: -10, duration: .22, ease: 'power2.in', onComplete: apply });
+    else apply();
+  }));
+})();
+
+/* Formulário de reserva -------------------------------------------------- */
+(() => {
+  const form = document.getElementById('reserva-form'), card = form.closest('.form-card');
+  const date = document.getElementById('f-data');
+  const today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  date.min = today.toISOString().slice(0, 10);
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const bad = [...form.querySelectorAll('[required]')].filter(i => !i.value.trim());
+    form.querySelectorAll('.field input,.field select').forEach(i => i.style.borderColor = '');
+    if (bad.length) { bad.forEach(i => i.style.borderColor = 'var(--accent)'); bad[0].focus();
+      gsap && !REDUCE && gsap.fromTo(card, { x: -8 }, { x: 0, duration: .6, ease: 'elastic.out(1,.3)' }); return; }
+    const nome = form.nome.value.trim().split(' ')[0];
+    document.getElementById('success-title').textContent = `Pedido recebido, ${nome}.`;
+    card.classList.add('is-sent');
+    gsap && !REDUCE && gsap.from('.form-success > *', { y: 20, opacity: 0, stagger: .08, duration: .9, ease: 'expo.out' });
+    ScrollTrigger && ScrollTrigger.refresh();
+  });
+})();
+
+/* ==========================================================================
+   INTRO — loader → hero
+   ========================================================================== */
+function intro() {
+  window.__lumeReady = true;
+  const loader = document.getElementById('loader');
+  initUI();
+  document.fonts && document.fonts.ready.then(() => ScrollTrigger && ScrollTrigger.refresh());
+
+  if (!gsap || REDUCE) {
+    if (scene3d) scene3d.state.intro = 1;
+    root.classList.add('loaded'); loader.remove(); lenis && lenis.start(); return;
+  }
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  tl.to('.loader-bar i', { scaleX: 1, duration: .9, ease: 'power3.inOut' })
+    .to('.loader-inner', { opacity: 0, y: -16, duration: .5, ease: 'power2.in' }, '+=.05')
+    .to(loader, { yPercent: -100, duration: 1.1, ease: 'expo.inOut', onStart: () => root.classList.add('loaded') }, '-=.1')
+    .add(() => { loader.remove(); lenis && lenis.start(); })
+    .from('.hero-title .line > span', { yPercent: 115, rotate: 3, duration: 1.5, stagger: .1 }, '-=.6')
+    .from('.hero-in', { y: 26, opacity: 0, duration: 1.2, stagger: .08 }, '-=1.15');
+  if (scene3d) tl.to(scene3d.state, { intro: 1, duration: 2.4, ease: 'expo.out' }, 1.25);
+}
+
+if (document.readyState === 'complete') intro(); else addEventListener('load', intro, { once: true });
+</script>
+</body>
+</html>
