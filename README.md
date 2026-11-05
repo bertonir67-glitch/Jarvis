@@ -1,285 +1,113 @@
-# JARVIS
+# Lume — Pizzeria Napoletana d'Autore
 
-Assistente pessoal por voz para Android, no espírito do JARVIS dos filmes: fica em espera
-ouvindo o próprio nome, entende o que você pede em português, **age no aparelho de verdade**
-e responde com voz masculina britânica.
+Site oficial da **Lume**: uma experiência 3D em que a pizza acompanha o scroll, se separa em
+fatias dentro do "forno", ergue uma fatia no cardápio e reage ao mouse. Tudo num único
+`index.html`, sem etapa de build.
 
-```
-"Jarvis"  →  ele acorda
-"abre o Spotify"                                  →  abre o app
-"manda mensagem pro João dizendo que atraso 10"   →  manda no WhatsApp
-"o que aconteceu na bolsa hoje?"                  →  pesquisa e responde falando
-"aumenta o volume" / "liga a lanterna"            →  controla o celular
-"quanto tem de bateria?"                          →  lê o estado do aparelho
-```
+![Prévia do site](assets/og-image.jpg)
 
 ---
 
-## Como funciona
+## Stack
 
-| Camada | O que usa | Custo |
-|---|---|---|
-| Palavra de ativação | Reconhecedor do Android (sem chave) ou **Porcupine** | **Grátis.** Sem cadastro nenhum no modo padrão. Com uma chave Picovoice a detecção fica bem mais leve — veja abaixo. |
-| Entender o que você falou | `SpeechRecognizer` do Android, pt-BR | **Grátis.** Já vem no celular e nos aparelhos atuais roda no próprio dispositivo. |
-| Decidir e agir | **Groq** (padrão) ou **Google Gemini**, com *function calling* | **Grátis, sem cartão.** O modelo escolhe a ação e chama a ferramenta. Não é lista de comandos fixos: "manda um zap pro meu irmão avisando que cheguei" funciona sem ninguém ter programado essa frase. |
-| Pesquisar | Busca embutida do cérebro escolhido | **Grátis.** Ele pesquisa e devolve a resposta pronta para falar, em vez de abrir o navegador. |
-| Falar | **Voz do Android** (padrão) ou **ElevenLabs** | **Grátis** nas duas opções — veja abaixo. |
-
-### Como ele é ativado
-
-Três modos, e nenhum deles é obrigatório para o app funcionar:
-
-| Modo | Precisa de quê | Bateria | Precisão |
-|---|---|---|---|
-| **Dizer "Jarvis"** (padrão) | Nada | Alta | Boa |
-| **Botão FALAR** | Nada | Nenhuma | Perfeita |
-| **Dizer "Jarvis" com Porcupine** | Chave Picovoice | Baixa | Ótima |
-
-O modo sem chave roda o reconhecedor de fala do próprio Android num laço, ouvindo trechos
-curtos e checando se você disse "Jarvis". Não exige cadastro nenhum, tudo fica no aparelho
-(`EXTRA_PREFER_OFFLINE`), e ele aceita as confusões comuns do reconhecedor — "jarves",
-"jarvez", "charles" — porque exigir a grafia exata deixaria o assistente praticamente surdo.
-
-O custo honesto: um reconhecedor de fala completo ligado o tempo todo gasta bem mais bateria
-que o Porcupine, que é um detector de uma palavra só. Vem ligado porque um assistente que só
-responde a botão não é o que se espera do JARVIS — se a bateria incomodar, desligue em
-`Configurações → Ativar por voz sem chave` e use o botão FALAR.
-
-Você também pode deixar o JARVIS como **assistente padrão do Android** e chamá-lo segurando o
-botão home: zero bateria e zero cadastro.
-
-### Sobre a voz
-
-Aqui está o único lugar onde grátis custa qualidade, então vale escolher com consciência:
-
-- **Sem chave nenhuma** (padrão): usa o TTS do próprio Android. O app escolhe automaticamente
-  a voz em português de maior qualidade instalada no aparelho — a padrão raramente é a melhor —
-  e você ajusta gravidade e velocidade em `Configurações → Voz`. Grátis, offline, ilimitado, e
-  ainda assim claramente sintético. Não é a voz do filme.
-- **Com chave do ElevenLabs**: voz britânica grave, bem mais próxima do original. O plano
-  gratuito dá cerca de 10 mil caracteres por mês, o que é mais ou menos 100 respostas curtas.
-  Quando a cota acaba, o app **volta sozinho** para a voz do Android — ele nunca fica mudo e
-  nunca gera cobrança.
-
-Ou seja: dá para usar as duas e nunca pagar nada. A voz boa entra enquanto tem cota, a local
-cobre o resto do mês.
-
-### Escolhendo o cérebro
-
-São três, selecionáveis em `Configurações → Cérebro`:
-
-| | Cadastro | Busca web | Custo |
-|---|---|---|---|
-| **Groq** (padrão) | Só e-mail | Sim, via `groq/compound-mini` | Grátis |
-| **Google Gemini** | Conta Google | Sim, via Google Search | Grátis |
-| **Anthropic Claude** | Conta Anthropic | Sim, server-side | **Pago** |
-
-O Groq é o padrão por um motivo prático: o AI Studio do Google fica **bloqueado em contas
-corporativas e escolares** pelo administrador, e a mensagem de erro não explica isso. O
-cadastro do Groq aceita e-mail comum e não esbarra nesse problema.
-
-IDs de modelo no Groq saem de circulação com alguma frequência. Se isso acontecer, o app
-tenta sozinho os substitutos conhecidos em vez de parar de funcionar.
-
-### Trocar para o Claude (opcional, pago)
-
-O app aceita a Claude API como cérebro alternativo — as respostas são melhores em pedidos
-ambíguos ou de várias etapas. É só escolher em `Configurações → Cérebro → Claude` e colar a
-chave. **Só ligue isso se você quiser pagar por uso**; no Gemini o app funciona inteiro sem
-custo. O prompt, as ferramentas e o comportamento são exatamente os mesmos nos dois.
-
----
-
-## O que você precisa antes de começar
-
-**Uma chave, gratuita, sem cartão de crédito.**
-
-| # | Serviço | Onde pegar | Custo |
-|---|---|---|---|
-| 1 | **Groq** — o cérebro | [console.groq.com/keys](https://console.groq.com/keys) → *Create API Key* | Grátis. Cadastro só com e-mail |
-
-**É só isso.** Uma chave, um cadastro, e o app funciona inteiro — inclusive falando e sendo
-ativado por voz.
-
-Alternativa ao Groq, se você preferir: **Google Gemini** em
-[aistudio.google.com/apikey](https://aistudio.google.com/apikey) — também grátis, mas exige
-conta Google pessoal (contas de empresa ou escola costumam ter o acesso bloqueado).
-
-Opcional, também grátis:
-
-| Serviço | Para quê | Custo |
-|---|---|---|
-| **ElevenLabs** | Voz britânica em vez da voz do Android | Grátis até ~10 mil caracteres/mês; depois volta sozinho para a voz local |
-| **Picovoice** | Palavra de ativação mais leve e precisa | Grátis, **mas o plano gratuito exige e-mail corporativo** |
-| **Anthropic** | Cérebro alternativo, melhor em pedidos complexos | **Pago** — só use se quiser |
-
-> **Não é preciso cadastrar cartão em lugar nenhum** para o app funcionar inteiro. Se você
-> estourar a cota diária gratuita, ele avisa por voz e volta a funcionar sozinho depois de
-> alguns minutos — não vira cobrança.
-
----
-
-## Instalação
-
-### Opção A — baixar o APK pronto (recomendado, não precisa instalar nada)
-
-**Link direto, sempre a última versão:**
-
-**https://github.com/bertonir67-glitch/Jarvis/releases/latest/download/jarvis.apk**
-
-Abra esse endereço no navegador **do próprio celular** e o download começa direto. Não precisa
-estar logado no GitHub, e não vem em zip.
-
-1. Baixe o `jarvis.apk` pelo link acima.
-2. Toque no arquivo baixado para instalar (o Android vai pedir para permitir "instalar apps de
-   fontes desconhecidas" — normal para apps fora da Play Store).
-3. Abra o app. Ele já abre na tela de **Configurações**. Cole a chave do Groq e salve —
-   só isso é obrigatório.
-
-Cada push gera um build novo e atualiza esse link. A lista de versões fica em
-[Releases](https://github.com/bertonir67-glitch/Jarvis/releases).
-
-As chaves ficam guardadas no aparelho — **não** vão para o APK nem para o repositório.
-
-### Opção B — compilar no seu computador
-
-Precisa do Android Studio (ou só do SDK do Android) e JDK 17.
-
-```bash
-git clone https://github.com/bertonir67-glitch/Jarvis.git
-cd Jarvis
-```
-
-Crie um arquivo `local.properties` na raiz (ele já está no `.gitignore`):
-
-```properties
-sdk.dir=/caminho/para/o/Android/Sdk
-
-GROQ_API_KEY=...
-
-# Opcionais
-PICOVOICE_ACCESS_KEY=...
-GEMINI_API_KEY=...
-ELEVENLABS_API_KEY=...
-ANTHROPIC_API_KEY=sk-ant-...
-```
-
-```bash
-./gradlew assembleRelease
-# APK em app/build/outputs/apk/release/
-```
-
----
-
-## Primeira execução
-
-1. **Permissões.** Ao tocar em ATIVAR, o app pede microfone, contatos, SMS, telefone e
-   notificações. Microfone é obrigatório; os outros só limitam funções específicas se você
-   recusar (sem telefone, por exemplo, ele abre o discador com o número em vez de ligar).
-2. Toque em **ATIVAR**. O reator acende e aparece `EM ESPERA` — pronto, ele está ouvindo.
-3. Diga **"Jarvis"**, espere o reator mudar para `OUVINDO`, e fale o comando. (O botão
-   **FALAR** faz a mesma coisa, se preferir não usar a voz.)
-
-### Dois ajustes que fazem diferença
-
-**Tirar o app da otimização de bateria.** Sem isso o Android mata o serviço depois de algumas
-horas e ele para de ouvir. O app mantém a CPU acordada (não a tela) para continuar ouvindo com
-o celular no bolso — isso custa bateria, e é o preço de um assistente de prontidão.
-`Configurações → Apps → JARVIS → Bateria → Sem restrições`
-(em Xiaomi/Samsung/Motorola o caminho muda de nome, procure por "bateria" ou "início automático").
-
-**Envio automático de mensagens.** Por padrão o JARVIS abre a conversa com o texto já escrito
-e você toca em enviar — o Android não deixa nenhum app enviar no WhatsApp por conta própria.
-Para o envio ficar realmente sem toque, ligue em `Configurações → Enviar mensagens automaticamente`
-e habilite o serviço de acessibilidade do JARVIS quando ele pedir. SMS já sai direto, sem isso.
-
-> O serviço de acessibilidade só age numa janela de 10 segundos depois que o próprio JARVIS
-> abriu a conversa. Ele não fica clicando em "enviar" sozinho enquanto você escreve à mão.
-
-### Botão home = JARVIS (opcional)
-
-Em `Configurações do Android → Apps → Assistente digital padrão`, escolha JARVIS. Aí segurar o
-botão home chama ele direto, sem precisar falar o nome.
-
----
-
-## Ajustando a voz
-
-Sem chave do ElevenLabs, ele fala com a voz do Android (grátis e ilimitada). Com a chave, a
-voz padrão é a **Daniel** (britânica, grave, tom de locutor). Para trocar:
-
-1. Entre em [elevenlabs.io/voice-library](https://elevenlabs.io/app/voice-lab), escolha ou clone
-   uma voz.
-2. Copie o **Voice ID**.
-3. Cole em `Configurações → ID da voz`.
-
-Para chegar mais perto do original, clonar uma voz a partir de áudios do filme dá o resultado
-mais fiel — mas cuidado, o ElevenLabs não permite clonar a voz de uma pessoa real sem
-autorização dela, e a voz do JARVIS é a do ator Paul Bettany. Uma voz britânica grave da
-biblioteca é a opção segura.
-
-**Latência:** `eleven_multilingual_v2` (padrão) soa melhor; `eleven_turbo_v2_5` responde bem
-mais rápido. Troque em `Configurações → Modelo de voz`.
-
----
-
-## O que ele sabe fazer
-
-| Ferramenta | Exemplos |
+| Camada | Tecnologia |
 |---|---|
-| `open_app` | "abre o Spotify", "chama o zap", "abre o insta" |
-| `send_message` | "manda mensagem pro João dizendo que atraso 10 minutos", "manda um SMS pra minha mãe avisando que cheguei" |
-| `web_search` | "o que aconteceu na bolsa hoje?", "vai chover amanhã?", "quem ganhou o jogo?" |
-| `open_url` | "abre o site do banco" |
-| `device_action` | "aumenta o volume", "põe o volume em 30%", "liga a lanterna", "abre o wi-fi" |
-| `device_status` | "quanto tem de bateria?", "quanto de espaço sobrou?" |
-| `set_alarm` | "me acorda às sete da manhã", "despertador pras seis e meia" |
-| `set_timer` | "timer de 10 minutos", "me avisa daqui meia hora" |
-| `control_music` | "toca Pink Floyd no Spotify", "pausa", "próxima", "volta a música" |
-| `make_call` | "liga pro João", "liga pra minha mãe" |
+| Cena 3D | [Three.js](https://threejs.org) 0.160 via CDN (importmap). Pizza, texturas e partículas geradas por código, sem imagens. |
+| Animações | [GSAP](https://gsap.com) 3.12.5 + ScrollTrigger |
+| Scroll suave | [Lenis](https://lenis.darkroom.engineering) 1.1.13 |
+| Tipografia | Cormorant Garamond (títulos) e Manrope (texto), via Google Fonts |
+| Hospedagem | GitHub Pages, com deploy automático pelo GitHub Actions |
 
-Se ele fizer uma pergunta de volta, continua ouvindo sem você precisar dizer "Jarvis" de novo.
+**Já incluído:** layout responsivo, `pixelRatio` limitado a 2 (1,5 no celular), versão leve no
+mobile, pizza em CSS quando não há WebGL ou quando o aparelho economiza dados, suporte a
+`prefers-reduced-motion`, SEO (meta tags, Open Graph, JSON-LD `Restaurant`, sitemap, robots),
+ícones para iOS/Android e página 404 da marca.
 
-**Alarmes e timers** entram no app de relógio que você já usa — o JARVIS não mantém
-agendamento próprio, então eles tocam mesmo se o app for fechado ou o celular reiniciar.
-
-**Play, pausa e próxima** funcionam em qualquer player (Spotify, YouTube Music, Deezer,
-podcast) porque usam as teclas de mídia do Android, não integração app por app. Só "toca tal
-música" precisa escolher um app.
-
----
-
-## Estrutura do código
+## Estrutura
 
 ```
-app/src/main/java/com/jarvis/assistant/
-├── MainActivity.kt              tela principal e permissões
-├── core/
-│   ├── JarvisService.kt         serviço em primeiro plano; ciclo ouvir→pensar→agir→falar
-│   ├── WakeWordDetector.kt      Porcupine ("Jarvis")
-│   ├── SpeechInput.kt           reconhecimento de fala pt-BR
-│   ├── VoiceEngine.kt           ElevenLabs + fallback do Android
-│   └── JarvisState.kt           estado compartilhado com a interface
-├── brain/
-│   ├── ClaudeClient.kt          laço de tool use da Claude API
-│   ├── Tools.kt                 definição das ferramentas
-│   └── SystemPrompt.kt          a personalidade
-├── skills/                      o que ele consegue fazer no aparelho
-├── accessibility/               clique automático em "enviar"
-└── ui/                          HUD (reator arc em Compose)
+.
+├── index.html               # o site inteiro (HTML + CSS + JS)
+├── 404.html                 # página "fatia não encontrada"
+├── assets/
+│   ├── og-image.jpg         # imagem de compartilhamento (1200×630)
+│   └── icons/               # favicon.svg e PNGs (32, 180, 192, 512, maskable)
+├── site.webmanifest         # instalação como app (PWA)
+├── robots.txt
+├── sitemap.xml
+├── .nojekyll
+└── .github/workflows/
+    └── deploy.yml           # publica no GitHub Pages
 ```
 
----
+## Rodar localmente
 
-## Limites que vale conhecer antes de se frustrar
+Não há dependências para instalar. Basta servir a pasta, porque módulos JavaScript não
+funcionam abrindo o arquivo direto com `file://` em todos os navegadores:
 
-- **Só WhatsApp/Telegram/SMS.** Instagram, Messenger e afins não têm como receber mensagem
-  de outro app no Android.
-- **O reconhecimento de fala precisa da tela ligada** em muitos aparelhos. A palavra de
-  ativação funciona com a tela apagada; o comando depois dela nem sempre.
-- **Falsos positivos acontecem.** Palavras parecidas com "Jarvis" acordam ele. Baixe a
-  sensibilidade nas configurações se incomodar.
-- **Fabricantes agressivos com bateria** (Xiaomi, Oppo, Vivo) matam serviços em segundo plano
-  mesmo com a otimização desligada. Procure "início automático" nas configurações do fabricante.
-- **Nada de controlar apps por dentro.** Abrir o Spotify sim; mandar o Spotify tocar uma
-  música específica não — isso exigiria a API de cada app.
+```bash
+python3 -m http.server 8000
+# ou
+npx serve .
+```
+
+Depois abra <http://localhost:8000>. É preciso internet para carregar as bibliotecas e as
+fontes das CDNs.
+
+## Publicar
+
+### GitHub Pages (já configurado)
+
+1. Em **Settings → Pages**, em *Build and deployment → Source*, escolha **GitHub Actions**.
+2. Pronto: cada commit na branch padrão publica o site. Para publicar sem commit,
+   use **Actions → Publicar site → Run workflow**.
+
+Sem domínio próprio, o site fica em `https://<usuario>.github.io/<repositorio>/`. Todos os
+caminhos do site são relativos, então funciona nesse subcaminho.
+
+### Domínio próprio
+
+1. Crie um arquivo `CNAME` na raiz contendo só o domínio, por exemplo `www.lumepizzeria.com.br`.
+2. No seu provedor de DNS, aponte um registro `CNAME` de `www` para `<usuario>.github.io`.
+3. Em **Settings → Pages**, informe o domínio e marque **Enforce HTTPS**.
+
+### Outras hospedagens
+
+Como é um site estático, também funciona em Netlify, Vercel ou Cloudflare Pages: aponte para
+a raiz do repositório, sem comando de build.
+
+## Personalizar os dados da empresa
+
+Os dados atuais (endereço, telefone, preços, avaliações e domínio) são **de exemplo**. Troque
+antes de divulgar:
+
+| O quê | Onde |
+|---|---|
+| Domínio `lumepizzeria.com.br` | `index.html` (canonical, Open Graph, JSON-LD), `robots.txt`, `sitemap.xml` |
+| Endereço, telefone, horários | `index.html`: bloco JSON-LD no `<head>`, seção `#reserva` (bloco `.info`) e botão de telefone no menu |
+| Nota e número de avaliações | `index.html`: JSON-LD (`aggregateRating`) e `.rating` no hero |
+| Cardápio e preços | `index.html`: seção `#cardapio`, cada prato é um `<article class="dish" data-cat="…">` (`classica`, `autoral` ou `doce`) |
+| Depoimentos | `index.html`: seção `#numeros`, bloco `.marquee`. Os 4 últimos são cópias para o loop contínuo e devem repetir os 4 primeiros. |
+| Instagram | links `instagram.com/` em `#reserva` e no rodapé |
+| Cores e fontes | variáveis em `:root` no início do `<style>` do `index.html` |
+| Imagem de compartilhamento | substitua `assets/og-image.jpg` (1200×630) |
+
+Para trocar o domínio de uma vez:
+
+```bash
+grep -rl "lumepizzeria.com.br" --exclude-dir=.git . | xargs sed -i 's/www\.lumepizzeria\.com\.br/www.seudominio.com.br/g'
+```
+
+> **Formulário de reserva:** hoje ele valida os campos e mostra a confirmação na tela, mas
+> **não envia os dados para lugar nenhum**. Para receber as reservas, ligue o `submit` (no fim
+> do `index.html`, bloco *Formulário de reserva*) a um link de WhatsApp, a um serviço de
+> formulários (Formspree, Getform) ou ao seu sistema de reservas.
+
+## Histórico
+
+Este repositório abrigava antes o app Android **Jarvis**. O código dele continua no histórico
+do git, no commit `4039d5a`. Para abrir aquela versão numa branch separada:
+
+```bash
+git switch -c jarvis-app 4039d5a
+```
