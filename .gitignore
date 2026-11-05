@@ -1,12 +1,13 @@
-*.iml
-.gradle/
-/local.properties
-/.idea/
+# Sistema
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-*.apk
-*.keystore
+Thumbs.db
+
+# Editores
+.idea/
+.vscode/
+*.swp
+
+# Ferramentas locais
+node_modules/
+_site/
+.env

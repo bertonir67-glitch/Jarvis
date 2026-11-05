@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Página não encontrada — Lume Pizzeria</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F5EEE4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23D9A05B'/%3E%3Ccircle cx='32' cy='32' r='23' fill='%23B5321C'/%3E%3Ccircle cx='24' cy='26' r='6' fill='%23FBF1DC'/%3E%3Ccircle cx='40' cy='36' r='7' fill='%23FBF1DC'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5EEE4;--ink:#2B201A;--ink-2:#6B5848;--line:rgba(43,32,26,.2);--accent:#B9603F;
+    --ff-display:"Cormorant Garamond",Georgia,serif;--ff-body:"Manrope",system-ui,sans-serif;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--ff-body);
+    display:grid;place-items:center;padding:24px 16px;-webkit-font-smoothing:antialiased;
+  }
+  main{display:grid;justify-items:center;text-align:center;gap:28px;max-width:560px}
+  .pizza{
+    width:min(56vw,240px);aspect-ratio:1;border-radius:50%;position:relative;
+    background:
+      radial-gradient(circle at 34% 38%, #3F6B2E 0 3.2%, transparent 3.6%),
+      radial-gradient(circle at 60% 30%, #C4321F 0 4%, transparent 4.4%),
+      radial-gradient(circle at 36% 66%, #C4321F 0 3.6%, transparent 4%),
+      radial-gradient(circle at 42% 44%, #FBF1DC 0 9%, transparent 9.6%),
+      radial-gradient(circle at 50% 68%, #F6E7C8 0 8%, transparent 8.6%),
+      radial-gradient(circle at 28% 54%, #F6E7C8 0 5.5%, transparent 6%),
+      radial-gradient(circle closest-side, #B5321C 0 60%, #A12B17 66%, #DDA563 68%, #C88443 78%, #E2B67A 84%, transparent 85%);
+    /* a fatia que falta */
+    -webkit-mask:conic-gradient(from 20deg, transparent 0 45deg, #000 45deg);
+            mask:conic-gradient(from 20deg, transparent 0 45deg, #000 45deg);
+    filter:drop-shadow(0 30px 40px rgba(80,40,20,.25));
+    animation:spin 40s linear infinite;
+  }
+  @keyframes spin{to{rotate:360deg}}
+  .code{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-2)}
+  h1{font-family:var(--ff-display);font-weight:300;font-size:clamp(2.6rem,9vw,4.4rem);line-height:1;letter-spacing:-.02em;margin:0}
+  h1 em{font-style:italic;color:var(--accent);font-weight:400}
+  p{margin:0;color:var(--ink-2);line-height:1.7}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 26px;border-radius:999px;
+    background:var(--ink);color:var(--bg);text-decoration:none;font-weight:500;font-size:15px;
+    transition:background .4s var(--ease),transform .4s var(--ease);
+  }
+  .btn:hover{background:var(--accent);transform:translateY(-2px)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (prefers-reduced-motion:reduce){.pizza{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="pizza" role="img" aria-label="Pizza com uma fatia faltando"></div>
+  <span class="code">Erro 404</span>
+  <h1>Alguém levou <em>esta fatia.</em></h1>
+  <p>A página que você procura não existe ou mudou de lugar. O resto da pizza continua quentinho na página inicial.</p>
+  <a class="btn" id="home" href="/">Voltar ao início <span aria-hidden="true">→</span></a>
+</main>
+<script>
+  // Funciona tanto em domínio próprio (/) quanto no subcaminho do GitHub Pages (/nome-do-repo/)
+  if (location.hostname.endsWith('github.io')) {
+    var seg = location.pathname.split('/')[1];
+    if (seg) document.getElementById('home').href = '/' + seg + '/';
+  }
+</script>
+</body>
+</html>
