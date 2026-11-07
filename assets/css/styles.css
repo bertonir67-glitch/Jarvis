@@ -335,6 +335,11 @@ figure { margin: 0; }
 
 .hero__eyebrow { margin-bottom: clamp(1rem, .8rem + .8vw, 1.5rem); }
 
+@media (max-width: 479.98px) {
+  .hide-sm { display: none; }
+  .hero__eyebrow { letter-spacing: .09em; }
+}
+
 .hero__title {
   margin: 0;
   font-size: var(--fs-hero);
