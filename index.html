@@ -17,18 +17,21 @@
   <meta property="og:title" content="CREMA | Massas que acolhem">
   <meta property="og:description" content="Delivery de massas artesanais em Guarulhos. Monte a sua: tamanho, massa, molho e extras. Chega quente e lacrada na sua porta.">
   <meta property="og:url" content="https://crema.com.br/">
-  <meta property="og:image" content="https://crema.com.br/assets/img/og-image.png">
+  <meta property="og:image" content="https://crema.com.br/assets/img/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="CREMA. Massas que acolhem. Delivery de massas artesanais em Guarulhos.">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="preconnect" href="https://images.unsplash.com">
-  <link rel="preload" as="image" fetchpriority="high"
-        href="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1920&q=72"
-        imagesrcset="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=960&q=72 960w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1280&q=72 1280w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1920&q=72 1920w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=2560&q=72 2560w"
-        imagesizes="(min-width: 1024px) 50vw, 100vw">
-  <link rel="preload" href="assets/fonts/big-shoulders.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" fetchpriority="high" media="(min-width: 720px)"
+        href="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1600&h=700&q=72"
+        imagesrcset="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1280&h=560&q=72 1280w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1600&h=700&q=72 1600w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=2000&h=875&q=72 2000w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=2560&h=1120&q=72 2560w"
+        imagesizes="(min-width: 1400px) 1280px, 92vw">
+  <link rel="preload" as="image" fetchpriority="high" media="(max-width: 719.98px)"
+        href="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=720&h=900&q=72"
+        imagesrcset="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=480&h=600&q=72 480w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=720&h=900&q=72 720w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=960&h=1200&q=72 960w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1200&h=1500&q=72 1200w"
+        imagesizes="90vw">
   <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/styles.css">
 
@@ -41,7 +44,7 @@
     "slogan": "Massas que acolhem",
     "description": "Delivery de massas artesanais em Guarulhos, SP. Monte sua massa escolhendo tamanho, massa, molho e extras.",
     "url": "https://crema.com.br/",
-    "image": "https://crema.com.br/assets/img/og-image.png",
+    "image": "https://crema.com.br/assets/img/og-image.jpg",
     "logo": "https://crema.com.br/assets/img/apple-touch-icon.png",
     "servesCuisine": ["Italiana", "Massas"],
     "priceRange": "$$",
@@ -71,9 +74,9 @@
           "@type": "MenuSection",
           "name": "Monte sua massa",
           "hasMenuItem": [
-            { "@type": "MenuItem", "name": "Massa P (300g)", "description": "Com 1 adicional incluso.", "offers": { "@type": "Offer", "price": "29.90", "priceCurrency": "BRL" } },
-            { "@type": "MenuItem", "name": "Massa M (450g)", "description": "Com 2 adicionais inclusos.", "offers": { "@type": "Offer", "price": "36.90", "priceCurrency": "BRL" } },
-            { "@type": "MenuItem", "name": "Massa G (600g)", "description": "Com 3 adicionais inclusos.", "offers": { "@type": "Offer", "price": "44.90", "priceCurrency": "BRL" } }
+            { "@type": "MenuItem", "name": "Massa P (300 g)", "description": "Com 1 adicional incluso.", "offers": { "@type": "Offer", "price": "29.90", "priceCurrency": "BRL" } },
+            { "@type": "MenuItem", "name": "Massa M (450 g)", "description": "Com 2 adicionais inclusos.", "offers": { "@type": "Offer", "price": "36.90", "priceCurrency": "BRL" } },
+            { "@type": "MenuItem", "name": "Massa G (600 g)", "description": "Com 3 adicionais inclusos.", "offers": { "@type": "Offer", "price": "44.90", "priceCurrency": "BRL" } }
           ]
         }
       ]
@@ -92,18 +95,13 @@
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-
-  <!-- Status da cozinha (atualizado pelo script conforme o horário de Guarulhos) -->
-  <div class="strip" data-status>
-    <p class="container strip__inner">
-      <span class="strip__state"><i class="dot" aria-hidden="true"></i><span data-status-text>Terça a domingo, das 18h às 23h</span></span>
-      <span class="strip__area">Delivery em Guarulhos e região</span>
-    </p>
-  </div>
+  <span class="top-sentinel" data-top aria-hidden="true"></span>
 
   <header class="nav" data-nav>
     <div class="container nav__inner">
-      <a class="wordmark" href="#topo" aria-label="CREMA Massas artesanais, voltar ao início"><span class="wordmark__name">CREMA</span> <span class="wordmark__sub hide-sm">Massas artesanais</span></a>
+      <a class="brand" href="#topo" aria-label="CREMA, voltar ao início">CREMA</a>
+
+      <p class="status nav__status" data-status><i class="dot" aria-hidden="true"></i><span data-status-text>Terça a domingo, das 18h às 23h</span></p>
 
       <nav class="nav__links" aria-label="Principal">
         <a href="#pratos">Cardápio</a>
@@ -113,7 +111,7 @@
       </nav>
 
       <button class="bag-btn" type="button" data-open-bag aria-haspopup="dialog">
-        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5.5 8.5h13l-1 11a1.6 1.6 0 0 1-1.6 1.5H8.1a1.6 1.6 0 0 1-1.6-1.5l-1-11Z"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5"/></svg>
         <span class="bag-btn__label">Sacola</span>
         <span class="bag-btn__count" data-bag-count hidden></span>
       </button>
@@ -131,66 +129,43 @@
       <a href="#entrega">Entrega</a>
       <a href="#duvidas">Dúvidas</a>
     </nav>
+    <p class="status sheet__status" data-status><i class="dot" aria-hidden="true"></i><span data-status-text>Terça a domingo, das 18h às 23h</span></p>
   </div>
 
   <main id="conteudo">
 
-    <!-- ============ HERO ============ -->
+    <!-- ============ TOPO ============ -->
     <section class="hero" id="topo" aria-labelledby="hero-title">
-      <div class="hero__media">
-        <img class="hero__img"
-             src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1920&q=72"
-             srcset="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=960&q=72 960w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1280&q=72 1280w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1920&q=72 1920w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=2560&q=72 2560w"
-             sizes="(min-width: 1024px) 50vw, 100vw"
-             width="1920" height="1280" fetchpriority="high" decoding="async"
-             alt="Fettuccine ao molho Alfredo cremoso, servido no prato">
+      <div class="container">
+        <p class="eyebrow hero__eyebrow">Delivery de massas artesanais em Guarulhos</p>
+        <h1 class="hero__title" id="hero-title">Massas que acolhem.</h1>
 
-        <div class="rail" aria-hidden="true"></div>
-        <svg class="hero__seal" viewBox="0 0 160 160" aria-hidden="true">
-          <defs><path id="seal-circle" d="M80 80m-56 0a56 56 0 1 1 112 0a56 56 0 1 1-112 0"/></defs>
-          <circle cx="80" cy="80" r="78" fill="#F4EEE2"/>
-          <circle cx="80" cy="80" r="70" fill="none" stroke="#922A23" stroke-width="3"/>
-          <circle cx="80" cy="80" r="40" fill="none" stroke="#922A23" stroke-width="2"/>
-          <text fill="#922A23" font-family="Martian Mono, monospace" font-size="11" font-weight="700" letter-spacing="4.2"><textPath href="#seal-circle">LACRADO NA COZINHA • CREMA •</textPath></text>
-          <text x="80" y="99" text-anchor="middle" fill="#922A23" font-family="Big Shoulders, sans-serif" font-weight="900" font-size="54">C</text>
-        </svg>
-        <div class="hang">
-          <span class="hang__clip" aria-hidden="true"></span>
-          <div class="hang__window">
-          <div class="ticket ticket--hero" data-status aria-label="Situação da cozinha agora">
-            <div class="ticket__paper">
-              <p class="t-brand">CREMA</p>
-              <p class="t-meta" data-today>Guarulhos</p>
-              <hr class="t-rule">
-              <dl class="t-rows">
-                <div style="--i:0"><dt>Cozinha</dt><dd data-kitchen-state>ter a dom</dd></div>
-                <div style="--i:1"><dt>Pedidos</dt><dd data-kitchen-until>18h às 23h</dd></div>
-                <div style="--i:2"><dt>Entrega</dt><dd>35–50 min</dd></div>
-                <div style="--i:3"><dt>Área</dt><dd>Guarulhos e região</dd></div>
-              </dl>
-              <hr class="t-rule">
-              <a class="t-link" href="#monte">Monte a sua massa</a>
-            </div>
-          </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero__copy">
-        <div class="hero__top">
-          <p class="tag hero__tag">Delivery de massas <span class="hide-sm">artesanais </span>em Guarulhos</p>
-          <h1 class="display hero__title" id="hero-title">Massas que acolhem.</h1>
-          <p class="hero__lead">Massa artesanal com molho feito na hora do pedido. Você monta do seu jeito, a gente fecha a embalagem com o lacre e entrega quente na sua porta.</p>
+        <div class="hero__row">
+          <p class="hero__lead">Massa fresca e molho feito na hora do pedido. Você monta do seu jeito, a gente entrega quente na sua porta.</p>
           <div class="hero__actions">
-            <a class="btn btn--light" href="#monte">Montar minha massa<svg aria-hidden="true" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></svg></a>
-            <a class="btn btn--line" href="#pratos">Ver pratos da casa</a>
+            <a class="btn btn--primary" href="#monte">Montar minha massa</a>
+            <a class="btn btn--ghost" href="#pratos">Ver pratos da casa</a>
           </div>
         </div>
-        <div class="hero__facts">
-          <p>Terça a domingo<br>18h às 23h</p>
-          <p>Entrega em<br>35 a 50 minutos</p>
-          <p>Pix, cartão<br>ou dinheiro</p>
-        </div>
+
+        <figure class="hero__media">
+          <picture>
+            <source media="(min-width: 720px)" width="2560" height="1120"
+                    srcset="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1280&h=560&q=72 1280w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1600&h=700&q=72 1600w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=2000&h=875&q=72 2000w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=2560&h=1120&q=72 2560w"
+                    sizes="(min-width: 1400px) 1280px, 92vw">
+            <img src="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=720&h=900&q=72"
+                 srcset="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=480&h=600&q=72 480w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=720&h=900&q=72 720w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=960&h=1200&q=72 960w, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=1200&h=1500&q=72 1200w"
+                 sizes="90vw" width="1200" height="1500" fetchpriority="high" decoding="async"
+                 alt="Fettuccine ao molho cremoso num prato fundo, sobre a mesa de madeira">
+          </picture>
+        </figure>
+
+        <dl class="hero__facts">
+          <div class="status" data-status><dt>Cozinha</dt><dd><i class="dot" aria-hidden="true"></i><span data-status-text>Terça a domingo, das 18h às 23h</span></dd></div>
+          <div><dt>Entrega</dt><dd>35 a 50 minutos</dd></div>
+          <div><dt>Área</dt><dd>Guarulhos e região</dd></div>
+          <div><dt>Pagamento</dt><dd>Pix, cartão ou dinheiro</dd></div>
+        </dl>
       </div>
     </section>
 
@@ -198,97 +173,89 @@
     <section class="section" id="pratos" aria-labelledby="pratos-title">
       <div class="container">
         <header class="section-head reveal">
-          <h2 class="display h2" id="pratos-title">Pratos da casa</h2>
-          <p class="section-lead">Combinações que a cozinha já acertou. Toque no tamanho e o prato vai direto para a sacola, ou ajuste do seu jeito.</p>
+          <h2 class="h2" id="pratos-title">Pratos da casa</h2>
+          <p class="section-head__lead">Combinações que a cozinha já acertou. Escolha o tamanho e o prato vai direto para a sacola, ou personalize do seu jeito.</p>
         </header>
 
         <ul class="dishes" role="list">
-          <li class="dish reveal" data-dish data-name="Fettuccine Alfredo" data-pasta="Fettuccine" data-sauce="Alfredo cremoso" data-extras="Alho frito|Parmesão extra">
-            <div class="dish__body">
-              <figure class="dish__photo">
-                <img loading="lazy" decoding="async" width="720" height="900"
-                     src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=600&q=70"
-                     srcset="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=300&q=70 300w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=600&q=70 600w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=1200&q=72 1200w"
-                     sizes="(min-width: 1024px) 23vw, (min-width: 720px) 45vw, 120px"
-                     alt="Fettuccine Alfredo com molho cremoso e parmesão">
-              </figure>
-              <p class="dish__tag dish__tag--red">A favorita da casa</p>
-              <h3 class="dish__name">Fettuccine Alfredo</h3>
-              <p class="dish__desc">Molho cremoso clássico, alho frito crocante e lascas de parmesão por cima.</p>
-              <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
-              <div class="quick" role="group" aria-label="Adicionar Fettuccine Alfredo à sacola">
-                <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Fettuccine Alfredo P, 300 gramas, R$ 34,90"><b>P</b><span>R$ 34,90</span></button>
-                <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Fettuccine Alfredo M, 450 gramas, R$ 36,90"><b>M</b><span>R$ 36,90</span></button>
-                <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Fettuccine Alfredo G, 600 gramas, R$ 44,90"><b>G</b><span>R$ 44,90</span></button>
-              </div>
-              <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
+          <li class="dish reveal" style="--d:0" data-dish data-name="Fettuccine Alfredo" data-pasta="Fettuccine" data-sauce="Alfredo cremoso" data-extras="Alho frito|Parmesão extra">
+            <figure class="dish__photo">
+              <img loading="lazy" decoding="async" width="800" height="1000"
+                   src="https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=600&h=750&q=70"
+                   srcset="https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=400&h=500&q=70 400w, https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=600&h=750&q=70 600w, https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=800&h=1000&q=70 800w, https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=1000&h=1250&q=70 1000w"
+                   sizes="(min-width: 1100px) 22vw, (min-width: 640px) 45vw, 80vw"
+                   alt="Fettuccine ao molho Alfredo cremoso, visto de cima">
+            </figure>
+            <p class="dish__note dish__note--house">A favorita da casa</p>
+            <h3 class="dish__name">Fettuccine Alfredo</h3>
+            <p class="dish__desc">Molho cremoso clássico, alho frito crocante e lascas de parmesão por cima.</p>
+            <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
+            <div class="quick" role="group" aria-label="Adicionar Fettuccine Alfredo à sacola">
+              <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Fettuccine Alfredo P, 300 gramas, R$ 34,90"><span class="quick__size">P</span><span class="quick__price">R$ 34,90</span></button>
+              <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Fettuccine Alfredo M, 450 gramas, R$ 36,90"><span class="quick__size">M</span><span class="quick__price">R$ 36,90</span></button>
+              <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Fettuccine Alfredo G, 600 gramas, R$ 44,90"><span class="quick__size">G</span><span class="quick__price">R$ 44,90</span></button>
             </div>
+            <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
           </li>
 
-          <li class="dish reveal" data-dish data-name="Tagliatelle al Sugo" data-pasta="Tagliatelle" data-sauce="Sugo San Marzano" data-extras="Parmesão extra">
-            <div class="dish__body">
-              <figure class="dish__photo">
-                <img loading="lazy" decoding="async" width="720" height="900"
-                     src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=600&q=70"
-                     srcset="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=300&q=70 300w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=600&q=70 600w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=72 1200w"
-                     sizes="(min-width: 1024px) 23vw, (min-width: 720px) 45vw, 120px"
-                     alt="Tagliatelle ao sugo de tomates San Marzano">
-              </figure>
-              <p class="dish__tag">Molho vermelho</p>
-              <h3 class="dish__name">Tagliatelle al Sugo</h3>
-              <p class="dish__desc">Tomates San Marzano, manjericão fresco e azeite extra virgem, com parmesão.</p>
-              <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
-              <div class="quick" role="group" aria-label="Adicionar Tagliatelle al Sugo à sacola">
-                <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Tagliatelle al Sugo P, 300 gramas, R$ 29,90"><b>P</b><span>R$ 29,90</span></button>
-                <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Tagliatelle al Sugo M, 450 gramas, R$ 36,90"><b>M</b><span>R$ 36,90</span></button>
-                <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Tagliatelle al Sugo G, 600 gramas, R$ 44,90"><b>G</b><span>R$ 44,90</span></button>
-              </div>
-              <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
+          <li class="dish reveal" style="--d:1" data-dish data-name="Tagliatelle al Sugo" data-pasta="Tagliatelle" data-sauce="Sugo San Marzano" data-extras="Parmesão extra">
+            <figure class="dish__photo">
+              <img loading="lazy" decoding="async" width="800" height="1000"
+                   src="https://images.unsplash.com/photo-1673442635965-34f1b36d8944?auto=format&fit=crop&w=600&h=750&q=70"
+                   srcset="https://images.unsplash.com/photo-1673442635965-34f1b36d8944?auto=format&fit=crop&w=400&h=500&q=70 400w, https://images.unsplash.com/photo-1673442635965-34f1b36d8944?auto=format&fit=crop&w=600&h=750&q=70 600w, https://images.unsplash.com/photo-1673442635965-34f1b36d8944?auto=format&fit=crop&w=800&h=1000&q=70 800w, https://images.unsplash.com/photo-1673442635965-34f1b36d8944?auto=format&fit=crop&w=1000&h=1250&q=70 1000w"
+                   sizes="(min-width: 1100px) 22vw, (min-width: 640px) 45vw, 80vw"
+                   alt="Massa ao sugo de tomate com manjericão fresco, num prato fundo branco">
+            </figure>
+            <p class="dish__note">Molho vermelho</p>
+            <h3 class="dish__name">Tagliatelle al Sugo</h3>
+            <p class="dish__desc">Tomates San Marzano, manjericão fresco e azeite extra virgem, com parmesão.</p>
+            <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
+            <div class="quick" role="group" aria-label="Adicionar Tagliatelle al Sugo à sacola">
+              <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Tagliatelle al Sugo P, 300 gramas, R$ 29,90"><span class="quick__size">P</span><span class="quick__price">R$ 29,90</span></button>
+              <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Tagliatelle al Sugo M, 450 gramas, R$ 36,90"><span class="quick__size">M</span><span class="quick__price">R$ 36,90</span></button>
+              <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Tagliatelle al Sugo G, 600 gramas, R$ 44,90"><span class="quick__size">G</span><span class="quick__price">R$ 44,90</span></button>
             </div>
+            <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
           </li>
 
-          <li class="dish reveal" data-dish data-name="Pappardelle al Bacon" data-pasta="Pappardelle" data-sauce="Rosé especial" data-extras="Bacon defumado">
-            <div class="dish__body">
-              <figure class="dish__photo">
-                <img loading="lazy" decoding="async" width="720" height="900"
-                     src="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=70"
-                     srcset="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=300&q=70 300w, https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=600&q=70 600w, https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=1200&q=72 1200w"
-                     sizes="(min-width: 1024px) 23vw, (min-width: 720px) 45vw, 120px"
-                     alt="Pappardelle com bacon defumado crocante">
-              </figure>
-              <p class="dish__tag">Com bacon</p>
-              <h3 class="dish__name">Pappardelle al Bacon</h3>
-              <p class="dish__desc">Fitas largas no molho rosé especial, com bacon defumado crocante.</p>
-              <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
-              <div class="quick" role="group" aria-label="Adicionar Pappardelle al Bacon à sacola">
-                <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Pappardelle al Bacon P, 300 gramas, R$ 29,90"><b>P</b><span>R$ 29,90</span></button>
-                <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Pappardelle al Bacon M, 450 gramas, R$ 36,90"><b>M</b><span>R$ 36,90</span></button>
-                <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Pappardelle al Bacon G, 600 gramas, R$ 44,90"><b>G</b><span>R$ 44,90</span></button>
-              </div>
-              <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
+          <li class="dish reveal" style="--d:2" data-dish data-name="Pappardelle al Bacon" data-pasta="Pappardelle" data-sauce="Rosé especial" data-extras="Bacon defumado">
+            <figure class="dish__photo">
+              <img loading="lazy" decoding="async" width="800" height="1000"
+                   src="https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=600&h=750&q=70"
+                   srcset="https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=400&h=500&q=70 400w, https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=600&h=750&q=70 600w, https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=800&h=1000&q=70 800w, https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=1000&h=1250&q=70 1000w"
+                   sizes="(min-width: 1100px) 22vw, (min-width: 640px) 45vw, 80vw"
+                   alt="Pappardelle com molho encorpado e salsinha, numa tigela escura">
+            </figure>
+            <p class="dish__note">Com bacon</p>
+            <h3 class="dish__name">Pappardelle al Bacon</h3>
+            <p class="dish__desc">Fitas largas no molho rosé especial, com bacon defumado crocante.</p>
+            <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
+            <div class="quick" role="group" aria-label="Adicionar Pappardelle al Bacon à sacola">
+              <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Pappardelle al Bacon P, 300 gramas, R$ 29,90"><span class="quick__size">P</span><span class="quick__price">R$ 29,90</span></button>
+              <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Pappardelle al Bacon M, 450 gramas, R$ 36,90"><span class="quick__size">M</span><span class="quick__price">R$ 36,90</span></button>
+              <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Pappardelle al Bacon G, 600 gramas, R$ 44,90"><span class="quick__size">G</span><span class="quick__price">R$ 44,90</span></button>
             </div>
+            <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
           </li>
 
-          <li class="dish reveal" data-dish data-name="Linguine al Pesto" data-pasta="Linguine" data-sauce="Pesto genovês" data-extras="Tomate cereja">
-            <div class="dish__body">
-              <figure class="dish__photo">
-                <img loading="lazy" decoding="async" width="720" height="900"
-                     src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=70"
-                     srcset="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=300&q=70 300w, https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=70 600w, https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=70 900w, https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=72 1200w"
-                     sizes="(min-width: 1024px) 23vw, (min-width: 720px) 45vw, 120px"
-                     alt="Linguine ao pesto genovês com tomate cereja">
-              </figure>
-              <p class="dish__tag dish__tag--oliva">Sem carne</p>
-              <h3 class="dish__name">Linguine al Pesto</h3>
-              <p class="dish__desc">Pesto genovês de manjericão fresco, pinoli e pecorino, com tomate cereja.</p>
-              <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
-              <div class="quick" role="group" aria-label="Adicionar Linguine al Pesto à sacola">
-                <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Linguine al Pesto P, 300 gramas, R$ 29,90"><b>P</b><span>R$ 29,90</span></button>
-                <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Linguine al Pesto M, 450 gramas, R$ 36,90"><b>M</b><span>R$ 36,90</span></button>
-                <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Linguine al Pesto G, 600 gramas, R$ 44,90"><b>G</b><span>R$ 44,90</span></button>
-              </div>
-              <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
+          <li class="dish reveal" style="--d:3" data-dish data-name="Linguine al Pesto" data-pasta="Linguine" data-sauce="Pesto genovês" data-extras="Tomate cereja">
+            <figure class="dish__photo">
+              <img loading="lazy" decoding="async" width="800" height="1000"
+                   src="https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=600&h=750&q=70"
+                   srcset="https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=400&h=500&q=70 400w, https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=600&h=750&q=70 600w, https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=800&h=1000&q=70 800w, https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=1000&h=1250&q=70 1000w"
+                   sizes="(min-width: 1100px) 22vw, (min-width: 640px) 45vw, 80vw"
+                   alt="Linguine ao pesto genovês com folha de manjericão">
+            </figure>
+            <p class="dish__note dish__note--veg">Sem carne</p>
+            <h3 class="dish__name">Linguine al Pesto</h3>
+            <p class="dish__desc">Pesto genovês de manjericão fresco, pinoli e pecorino, com tomate cereja.</p>
+            <p class="quick__label" aria-hidden="true">Adicionar à sacola</p>
+            <div class="quick" role="group" aria-label="Adicionar Linguine al Pesto à sacola">
+              <button class="quick__btn" type="button" data-quick="P" aria-label="Adicionar Linguine al Pesto P, 300 gramas, R$ 29,90"><span class="quick__size">P</span><span class="quick__price">R$ 29,90</span></button>
+              <button class="quick__btn" type="button" data-quick="M" aria-label="Adicionar Linguine al Pesto M, 450 gramas, R$ 36,90"><span class="quick__size">M</span><span class="quick__price">R$ 36,90</span></button>
+              <button class="quick__btn" type="button" data-quick="G" aria-label="Adicionar Linguine al Pesto G, 600 gramas, R$ 44,90"><span class="quick__size">G</span><span class="quick__price">R$ 44,90</span></button>
             </div>
+            <button class="link-btn" type="button" data-customize>Personalizar este prato</button>
           </li>
         </ul>
       </div>
@@ -296,39 +263,39 @@
 
     <!-- ============ MONTE SUA MASSA ============ -->
     <section class="section build" id="monte" aria-labelledby="monte-title">
-      <div class="container build__grid">
-        <div class="build__main">
-          <header class="section-head reveal">
-            <h2 class="display h2" id="monte-title">Monte sua massa</h2>
-            <p class="section-lead">Escolha o tamanho, a massa, o molho e os extras. A comanda mostra exatamente o que vai para a cozinha.</p>
-          </header>
+      <div class="container">
+        <header class="section-head reveal">
+          <h2 class="h2" id="monte-title">Monte sua massa</h2>
+          <p class="section-head__lead">Escolha o tamanho, a massa, o molho e os extras. O valor aparece na hora, sem surpresa no final.</p>
+        </header>
 
-          <noscript><p class="noscript">Para montar seu pedido aqui, ative o JavaScript. Você também pode pedir pelo WhatsApp ou pelo iFood.</p></noscript>
+        <noscript><p class="noscript">Para montar seu pedido aqui, ative o JavaScript. Você também pode pedir pelo WhatsApp ou pelo iFood.</p></noscript>
 
+        <div class="build__grid">
           <form class="builder" data-builder novalidate>
             <fieldset class="group" data-group="size">
               <legend class="group__legend"><span class="group__title">Tamanho</span><span class="group__req" data-req>Obrigatório</span></legend>
-              <p class="group__hint">Todo tamanho já vem com adicionais inclusos.</p>
+              <p class="group__hint">Todo tamanho já vem com extras inclusos.</p>
               <div class="sizes">
                 <label class="size">
                   <input type="radio" name="size" value="P">
                   <span class="size__letter">P</span>
-                  <span class="size__grams">300g</span>
-                  <span class="size__inc">1 adicional incluso</span>
+                  <span class="size__grams">300 g</span>
+                  <span class="size__inc">1 extra incluso</span>
                   <span class="size__price">R$ 29,90</span>
                 </label>
                 <label class="size">
                   <input type="radio" name="size" value="M">
                   <span class="size__letter">M</span>
-                  <span class="size__grams">450g</span>
-                  <span class="size__inc">2 adicionais inclusos</span>
+                  <span class="size__grams">450 g</span>
+                  <span class="size__inc">2 extras inclusos</span>
                   <span class="size__price">R$ 36,90</span>
                 </label>
                 <label class="size">
                   <input type="radio" name="size" value="G">
                   <span class="size__letter">G</span>
-                  <span class="size__grams">600g</span>
-                  <span class="size__inc">3 adicionais inclusos</span>
+                  <span class="size__grams">600 g</span>
+                  <span class="size__inc">3 extras inclusos</span>
                   <span class="size__price">R$ 44,90</span>
                 </label>
               </div>
@@ -339,23 +306,23 @@
               <p class="group__hint">Massa fresca, aberta na hora.</p>
               <div class="options">
                 <label class="option">
-                  <input type="radio" name="pasta" value="Fettuccine">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="pasta" value="Fettuccine" data-photo="1608219992759-8d74ed8d76eb">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Fettuccine</span><span class="option__desc">Tiras largas e planas. Abraçam molhos cremosos.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="pasta" value="Tagliatelle">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="pasta" value="Tagliatelle" data-photo="1551183053-bf91a1d81141">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Tagliatelle</span><span class="option__desc">Longa e delicada. Vai bem com qualquer molho.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="pasta" value="Pappardelle">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="pasta" value="Pappardelle" data-photo="1473093226795-af9932fe5856">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Pappardelle</span><span class="option__desc">Fitas largas e rústicas, para molhos encorpados.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="pasta" value="Linguine">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="pasta" value="Linguine" data-photo="1579631542720-3a87824fff86">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1579631542720-3a87824fff86?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Linguine</span><span class="option__desc">Fina e elegante. Casa muito bem com pesto.</span></span>
                 </label>
               </div>
@@ -366,23 +333,23 @@
               <p class="group__hint">Todos preparados na hora do pedido.</p>
               <div class="options">
                 <label class="option">
-                  <input type="radio" name="sauce" value="Alfredo cremoso">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="sauce" value="Alfredo cremoso" data-photo="1645112411341-6c4fd023714a">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Alfredo cremoso</span><span class="option__desc">Creme de leite, manteiga e parmesão.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="sauce" value="Sugo San Marzano">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="sauce" value="Sugo San Marzano" data-photo="1626844131082-256783844137">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1626844131082-256783844137?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1626844131082-256783844137?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1626844131082-256783844137?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Sugo San Marzano</span><span class="option__desc">Tomates San Marzano, manjericão e azeite.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="sauce" value="Pesto genovês">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="sauce" value="Pesto genovês" data-photo="1567608285969-48e4bbe0d399">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1567608285969-48e4bbe0d399?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Pesto genovês</span><span class="option__desc">Manjericão fresco, azeite, pinoli e pecorino.</span></span>
                 </label>
                 <label class="option">
-                  <input type="radio" name="sauce" value="Rosé especial">
-                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=224&h=224&q=70 2x">
+                  <input type="radio" name="sauce" value="Rosé especial" data-photo="1622973536968-3ead9e780960">
+                  <img class="thumb" loading="lazy" decoding="async" width="112" height="112" alt="" src="https://images.unsplash.com/photo-1622973536968-3ead9e780960?auto=format&fit=crop&w=112&h=112&q=70" srcset="https://images.unsplash.com/photo-1622973536968-3ead9e780960?auto=format&fit=crop&w=112&h=112&q=70 1x, https://images.unsplash.com/photo-1622973536968-3ead9e780960?auto=format&fit=crop&w=224&h=224&q=70 2x">
                   <span class="option__text"><span class="option__name">Rosé especial</span><span class="option__desc">Sugo e Alfredo juntos, cremoso e encorpado.</span></span>
                 </label>
               </div>
@@ -390,95 +357,85 @@
 
             <fieldset class="group" data-group="extras">
               <legend class="group__legend"><span class="group__title">Extras</span><span class="group__req group__req--optional">Opcional</span></legend>
-              <p class="group__hint" data-extras-hint>Escolha o tamanho para ver quantos adicionais estão inclusos. Cada extra a mais custa R$ 5,00.</p>
-              <div class="chips">
-                <label class="chip"><input type="checkbox" name="extras" value="Bacon defumado"><span class="chip__dot" style="--dot:#7A3B22" aria-hidden="true"></span><span class="chip__name">Bacon defumado</span><span class="chip__state" data-chip-state></span></label>
-                <label class="chip"><input type="checkbox" name="extras" value="Alho frito"><span class="chip__dot" style="--dot:#C69A40" aria-hidden="true"></span><span class="chip__name">Alho frito</span><span class="chip__state" data-chip-state></span></label>
-                <label class="chip"><input type="checkbox" name="extras" value="Calabresa"><span class="chip__dot" style="--dot:#8A2F24" aria-hidden="true"></span><span class="chip__name">Calabresa</span><span class="chip__state" data-chip-state></span></label>
-                <label class="chip"><input type="checkbox" name="extras" value="Parmesão extra"><span class="chip__dot" style="--dot:#EEE4C4" aria-hidden="true"></span><span class="chip__name">Parmesão extra</span><span class="chip__state" data-chip-state></span></label>
-                <label class="chip"><input type="checkbox" name="extras" value="Rúcula fresca"><span class="chip__dot" style="--dot:#4E6B2E" aria-hidden="true"></span><span class="chip__name">Rúcula fresca</span><span class="chip__state" data-chip-state></span></label>
-                <label class="chip"><input type="checkbox" name="extras" value="Tomate cereja"><span class="chip__dot" style="--dot:#C0392B" aria-hidden="true"></span><span class="chip__name">Tomate cereja</span><span class="chip__state" data-chip-state></span></label>
+              <p class="group__hint" data-extras-hint>Escolha o tamanho para ver quantos extras estão inclusos. Cada extra a mais custa R$ 5,00.</p>
+              <div class="extras">
+                <label class="extra"><input type="checkbox" name="extras" value="Bacon defumado"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Bacon defumado</span><span class="extra__state" data-extra-state></span></label>
+                <label class="extra"><input type="checkbox" name="extras" value="Alho frito"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Alho frito</span><span class="extra__state" data-extra-state></span></label>
+                <label class="extra"><input type="checkbox" name="extras" value="Calabresa"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Calabresa</span><span class="extra__state" data-extra-state></span></label>
+                <label class="extra"><input type="checkbox" name="extras" value="Parmesão extra"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Parmesão extra</span><span class="extra__state" data-extra-state></span></label>
+                <label class="extra"><input type="checkbox" name="extras" value="Rúcula fresca"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Rúcula fresca</span><span class="extra__state" data-extra-state></span></label>
+                <label class="extra"><input type="checkbox" name="extras" value="Tomate cereja"><span class="extra__box" aria-hidden="true"></span><span class="extra__name">Tomate cereja</span><span class="extra__state" data-extra-state></span></label>
               </div>
             </fieldset>
           </form>
+
+          <aside class="plate" aria-label="Seu prato" data-plate>
+            <div class="plate__card">
+              <figure class="plate__photo" data-plate-photo data-default="1546549032-9571cd6b27df">
+                <img class="plate__img is-current" alt="" decoding="async" width="1280" height="720"
+                     src="https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=960&h=540&q=72"
+                     srcset="https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=640&h=360&q=72 640w, https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=960&h=540&q=72 960w, https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=1280&h=720&q=72 1280w"
+                     sizes="(min-width: 1024px) 44vw, 92vw" loading="lazy">
+                <img class="plate__img" alt="" decoding="async" width="1280" height="720" sizes="(min-width: 1024px) 44vw, 92vw">
+              </figure>
+              <div class="plate__body">
+                <p class="eyebrow">Seu prato</p>
+                <p class="plate__title is-empty" data-plate-title>Seu prato aparece aqui</p>
+                <p class="plate__meta" data-plate-meta>Escolha o tamanho, a massa e o molho.</p>
+                <ul class="plate__lines" data-lines role="list"></ul>
+                <p class="plate__total"><span>Total</span><span data-ticket-total aria-live="polite">—</span></p>
+                <p class="plate__status" data-ticket-status>Falta escolher tamanho, massa e molho</p>
+                <div class="plate__actions">
+                  <div class="qty" role="group" aria-label="Quantidade">
+                    <button type="button" data-qty="-1" aria-label="Diminuir quantidade">−</button>
+                    <output data-qty-value aria-live="polite">1</output>
+                    <button type="button" data-qty="1" aria-label="Aumentar quantidade">+</button>
+                  </div>
+                  <button class="btn btn--primary" type="button" data-add disabled>Adicionar à sacola</button>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
 
-        <aside class="build__side" aria-label="Comanda do seu pedido">
-          <div class="ticket ticket--order" data-order-ticket>
-            <div class="ticket__paper">
-              <div class="t-head">
-                <p class="t-brand">CREMA</p>
-                <p class="t-meta">Massas artesanais, Guarulhos</p>
-              </div>
-              <hr class="t-rule">
-              <p class="t-empty" data-ticket-empty>Escolha o tamanho para abrir a comanda.</p>
-              <ul class="t-lines" data-lines></ul>
-              <hr class="t-rule">
-              <p class="t-total"><span>Total</span><span data-ticket-total aria-live="polite">—</span></p>
-              <div class="t-foot">
-              <p class="t-status" data-ticket-status>Falta escolher tamanho, massa e molho</p>
-              <svg class="t-stamp" viewBox="0 0 120 120" aria-hidden="true">
-                <defs>
-                  <path id="stamp-circle" d="M60 60m-43 0a43 43 0 1 1 86 0a43 43 0 1 1-86 0"/>
-                  <filter id="stamp-ink"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/></filter>
-                </defs>
-                <g filter="url(#stamp-ink)" fill="none" stroke="currentColor">
-                  <circle cx="60" cy="60" r="56" stroke-width="3"/>
-                  <circle cx="60" cy="60" r="31" stroke-width="1.4"/>
-                  <text fill="currentColor" stroke="none" font-family="Martian Mono, monospace" font-size="9" font-weight="700" letter-spacing="3.2"><textPath href="#stamp-circle">LACRADO NA COZINHA • CREMA •</textPath></text>
-                  <text fill="currentColor" stroke="none" x="60" y="75" text-anchor="middle" font-family="Big Shoulders, sans-serif" font-weight="900" font-size="42">C</text>
-                </g>
-              </svg>
-              </div>
-            </div>
-          </div>
-
-          <div class="build__actions">
-            <span class="qty-label" aria-hidden="true">Quantidade</span>
-            <div class="qty" role="group" aria-label="Quantidade">
-              <button type="button" data-qty="-1" aria-label="Diminuir quantidade">−</button>
-              <output data-qty-value aria-live="polite">1</output>
-              <button type="button" data-qty="1" aria-label="Aumentar quantidade">+</button>
-            </div>
-            <button class="btn btn--primary btn--block" type="button" data-add disabled>Falta escolher tamanho, massa e molho</button>
-          </div>
-        </aside>
-
-        <!-- Barra fixa no celular: a ponta da comanda + botão de adicionar -->
+        <!-- Barra fixa no celular, enquanto a seção está na tela -->
         <div class="build__bar" data-build-bar>
-          <div class="build__bar-paper">
+          <img class="build__bar-thumb" data-bar-thumb alt="" width="96" height="96" loading="lazy" decoding="async"
+               src="https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=96&h=96&q=70">
+          <span class="build__bar-text">
             <span class="build__bar-line" data-bar-line>Escolha o tamanho</span>
             <span class="build__bar-total" data-bar-total>—</span>
-          </div>
-          <button class="btn btn--primary" type="button" data-add disabled>Adicionar</button>
+          </span>
+          <button class="btn btn--light btn--sm" type="button" data-add disabled>Adicionar</button>
         </div>
       </div>
     </section>
 
-    <!-- ============ COMO CHEGA ============ -->
+    <!-- ============ DO FOGÃO À SUA PORTA ============ -->
     <section class="section journey" id="como-chega" aria-labelledby="chega-title">
       <div class="container journey__grid">
         <figure class="journey__photo reveal">
-          <img loading="lazy" decoding="async" width="1536" height="1920"
-               src="https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=1280&q=72"
-               srcset="https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=640&q=72 640w, https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=960&q=72 960w, https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=1280&q=72 1280w, https://images.unsplash.com/photo-1481931098730-318b6f776db0?auto=format&fit=crop&w=1920&q=72 1920w"
-               sizes="(min-width: 1024px) 44vw, 100vw"
-               alt="Massa fresca artesanal sendo preparada à mão">
+          <img loading="lazy" decoding="async" width="1280" height="1600"
+               src="https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=960&h=1200&q=72"
+               srcset="https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=640&h=800&q=72 640w, https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=960&h=1200&q=72 960w, https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=1280&h=1600&q=72 1280w"
+               sizes="(min-width: 1024px) 46vw, 92vw"
+               alt="Mãos mexendo a frigideira no fogão, com vapor subindo">
         </figure>
 
         <div class="journey__text">
-          <h2 class="display h2 reveal" id="chega-title">Do fogão à sua porta</h2>
-          <ol class="route" role="list">
-            <li class="route__stop reveal">
-              <h3>Feita na hora</h3>
+          <h2 class="h2 reveal" id="chega-title">Do fogão à sua porta</h2>
+          <p class="journey__lead reveal">A gente só cozinha depois que o pedido chega. É por isso que a massa chega no ponto.</p>
+          <ol class="steps" role="list">
+            <li class="step reveal">
+              <h3 class="step__title">Feita na hora</h3>
               <p>A massa só vai para a panela quando o seu pedido chega. O molho é preparado na hora, com receita da casa.</p>
             </li>
-            <li class="route__stop reveal">
-              <h3>Lacrada na cozinha</h3>
+            <li class="step reveal">
+              <h3 class="step__title">Lacrada na cozinha</h3>
               <p>Fechamos a embalagem térmica com o lacre CREMA. Ela segura o calor no caminho e só quem abre é você.</p>
             </li>
-            <li class="route__stop reveal">
-              <h3>Quente na sua porta</h3>
+            <li class="step reveal">
+              <h3 class="step__title">Quente na sua porta</h3>
               <p>Entregamos em Guarulhos e região, de terça a domingo, à noite. É abrir e servir.</p>
             </li>
           </ol>
@@ -490,37 +447,37 @@
     <section class="section delivery" id="entrega" aria-labelledby="entrega-title">
       <div class="container">
         <header class="section-head reveal">
-          <h2 class="display h2" id="entrega-title">Onde e quando entregamos</h2>
+          <h2 class="h2" id="entrega-title">Onde e quando entregamos</h2>
+          <p class="section-head__lead">Atendemos Guarulhos e os bairros vizinhos, todas as noites menos segunda.</p>
         </header>
+
         <div class="delivery__grid">
-        <div>
           <dl class="facts">
             <div class="fact reveal"><dt>Região</dt><dd>Guarulhos e região, até cerca de 10 km. A taxa depende do bairro e a gente confirma no WhatsApp.</dd></div>
             <div class="fact reveal"><dt>Horário</dt><dd>Terça a domingo, das 18h às 23h. Às segundas a cozinha descansa.</dd></div>
             <div class="fact reveal"><dt>Tempo</dt><dd>De 35 a 50 minutos depois da confirmação. No horário de pico pode levar um pouco mais.</dd></div>
             <div class="fact reveal"><dt>Pagamento</dt><dd>Pix, cartão de débito ou crédito e dinheiro, na entrega.</dd></div>
           </dl>
-        </div>
 
-        <div class="delivery__side reveal">
-          <form class="area" data-area novalidate>
-            <label class="area__label" for="bairro-consulta">Entregamos no seu bairro?</label>
-            <p class="area__hint">Digite o bairro e pergunte direto pra gente no WhatsApp.</p>
-            <div class="area__row">
-              <input class="input" id="bairro-consulta" name="bairro" type="text" autocomplete="address-level3" placeholder="Ex.: Vila Galvão">
-              <button class="btn btn--primary" type="submit">Perguntar no WhatsApp</button>
-            </div>
-            <p class="form-error" data-area-error role="alert"></p>
-          </form>
+          <div class="delivery__card reveal">
+            <form class="area" data-area novalidate>
+              <label class="area__label" for="bairro-consulta">Entregamos no seu bairro?</label>
+              <p class="area__hint">Digite o bairro e pergunte direto pra gente no WhatsApp.</p>
+              <div class="area__row">
+                <input class="input" id="bairro-consulta" name="bairro" type="text" autocomplete="address-level3" placeholder="Ex.: Vila Galvão">
+                <button class="btn btn--primary" type="submit">Perguntar no WhatsApp</button>
+              </div>
+              <p class="form-error" data-area-error role="alert"></p>
+            </form>
 
-          <div class="apps">
-            <p class="apps__title">Prefere pedir por aplicativo?</p>
-            <div class="apps__row">
-              <a class="app-link" data-link="ifood" href="https://www.ifood.com.br" target="_blank" rel="noopener">iFood <svg class="ext" aria-hidden="true" viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
-              <a class="app-link" data-link="rappi" href="https://www.rappi.com.br" target="_blank" rel="noopener">Rappi <svg class="ext" aria-hidden="true" viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+            <div class="apps">
+              <p class="apps__title">Prefere pedir por aplicativo?</p>
+              <div class="apps__row">
+                <a class="app-link" data-link="ifood" href="https://www.ifood.com.br" target="_blank" rel="noopener">iFood <svg class="ext" aria-hidden="true" viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+                <a class="app-link" data-link="rappi" href="https://www.rappi.com.br" target="_blank" rel="noopener">Rappi <svg class="ext" aria-hidden="true" viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </section>
@@ -528,11 +485,14 @@
     <!-- ============ DÚVIDAS ============ -->
     <section class="section faq" id="duvidas" aria-labelledby="duvidas-title">
       <div class="container faq__grid">
-        <h2 class="display h2 reveal" id="duvidas-title">Dúvidas</h2>
+        <div class="faq__intro reveal">
+          <h2 class="h2" id="duvidas-title">Dúvidas</h2>
+          <p>Não achou o que procurava? <a class="text-link" data-link="whatsapp" href="#" target="_blank" rel="noopener">Fale com a gente no WhatsApp</a>.</p>
+        </div>
         <div class="faq__list">
           <details class="qa">
             <summary>Quanto custa cada tamanho?</summary>
-            <p>P (300g) sai por R$ 29,90 com 1 adicional incluso. M (450g) por R$ 36,90 com 2 adicionais. G (600g) por R$ 44,90 com 3 adicionais. Cada adicional a mais custa R$ 5,00.</p>
+            <p>P (300 g) sai por R$ 29,90 com 1 extra incluso. M (450 g) por R$ 36,90 com 2 extras. G (600 g) por R$ 44,90 com 3 extras. Cada extra a mais custa R$ 5,00.</p>
           </details>
           <details class="qa">
             <summary>Como faço o pedido pelo site?</summary>
@@ -564,16 +524,19 @@
 
     <!-- ============ FECHAMENTO ============ -->
     <section class="closing" aria-labelledby="closing-title">
-      <div class="closing__inner reveal">
-        <h2 class="display h2" id="closing-title" data-closing-title>A cozinha acende à noite.</h2>
-        <p class="closing__text" data-closing-text>De terça a domingo, das 18h às 23h. Monte a sua quando quiser.</p>
-        <a class="btn btn--primary" href="#monte">Montar minha massa<svg aria-hidden="true" viewBox="0 0 20 20"><path d="M3 10h13M11 5l5 5-5 5"/></svg></a>
-      </div>
-      <div class="closing__media">
-        <img class="closing__img" loading="lazy" decoding="async" width="1920" height="1280" alt=""
-             src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1920&q=70"
-             srcset="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=960&q=70 960w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1280&q=70 1280w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1920&q=70 1920w, https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=2560&q=70 2560w"
-             sizes="(min-width: 1024px) 50vw, 100vw">
+      <div class="container closing__grid">
+        <div class="closing__text reveal">
+          <p class="status closing__status" data-status><i class="dot" aria-hidden="true"></i><span data-status-text>Terça a domingo, das 18h às 23h</span></p>
+          <h2 class="h2" id="closing-title" data-closing-title>A cozinha acende à noite.</h2>
+          <p class="closing__lead" data-closing-text>De terça a domingo, das 18h às 23h. Monte a sua quando quiser.</p>
+          <a class="btn btn--light" href="#monte">Montar minha massa</a>
+        </div>
+        <figure class="closing__photo reveal">
+          <img loading="lazy" decoding="async" width="1600" height="1280" alt=""
+               src="https://images.unsplash.com/photo-1627042633145-b780d842ba45?auto=format&fit=crop&w=1200&h=960&q=70"
+               srcset="https://images.unsplash.com/photo-1627042633145-b780d842ba45?auto=format&fit=crop&w=800&h=640&q=70 800w, https://images.unsplash.com/photo-1627042633145-b780d842ba45?auto=format&fit=crop&w=1200&h=960&q=70 1200w, https://images.unsplash.com/photo-1627042633145-b780d842ba45?auto=format&fit=crop&w=1600&h=1280&q=70 1600w"
+               sizes="(min-width: 1024px) 46vw, 92vw">
+        </figure>
       </div>
     </section>
   </main>
@@ -581,7 +544,7 @@
   <footer class="footer">
     <div class="container footer__grid">
       <div class="footer__brand">
-        <p class="wordmark wordmark--lg"><span class="wordmark__name">CREMA</span></p>
+        <p class="brand brand--footer">CREMA</p>
         <p class="footer__slogan">Massas que acolhem.</p>
       </div>
       <div class="footer__col">
@@ -612,8 +575,8 @@
 
   <!-- Barra de pedido no celular -->
   <div class="dock" data-dock>
-    <a class="btn btn--primary btn--block" href="#monte" data-dock-build>Montar minha massa</a>
-    <button class="btn btn--primary btn--block dock__bag" type="button" data-open-bag data-dock-bag hidden>
+    <a class="btn btn--dark btn--block" href="#monte" data-dock-build>Montar minha massa</a>
+    <button class="btn btn--dark btn--block dock__bag" type="button" data-open-bag data-dock-bag hidden>
       <span>Ver sacola</span><span class="dock__sum" data-dock-sum></span>
     </button>
   </div>
@@ -625,7 +588,7 @@
       <header class="drawer__head">
         <h2 class="drawer__title" id="sacola-title">Sua sacola</h2>
         <button class="icon-btn" type="button" data-close-bag aria-label="Fechar sacola">
-          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>
         </button>
       </header>
 
@@ -637,16 +600,10 @@
         </div>
 
         <div class="bag-filled" data-bag-filled hidden>
-          <div class="ticket ticket--bag">
-            <div class="ticket__paper">
-              <p class="t-brand">CREMA</p>
-              <p class="t-meta">Sua comanda</p>
-              <hr class="t-rule">
-              <ul class="bag-items" data-bag-items></ul>
-              <hr class="t-rule">
-              <p class="t-row"><span>Subtotal</span><span data-bag-subtotal>—</span></p>
-              <p class="t-row t-row--muted"><span>Entrega</span><span>a confirmar</span></p>
-            </div>
+          <ul class="bag-items" data-bag-items role="list"></ul>
+          <div class="bag-sum">
+            <p class="row"><span>Subtotal</span><span data-bag-subtotal>—</span></p>
+            <p class="row row--muted"><span>Entrega</span><span>a confirmar</span></p>
           </div>
 
           <form class="checkout" data-checkout novalidate>
@@ -691,7 +648,7 @@
             <p class="checkout__note" data-checkout-note hidden></p>
             <p class="form-error" data-checkout-error role="alert"></p>
 
-            <button class="btn btn--whats btn--block" type="submit">
+            <button class="btn btn--primary btn--block" type="submit">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2.2A9.8 9.8 0 0 0 3.6 17l-1.4 4.8 4.9-1.3A9.8 9.8 0 1 0 12 2.2Z"/><path class="fill" d="M8.6 7.6c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.4.6c-.2.2-.3.4-.1.7a7.3 7.3 0 0 0 3.4 3c.3.1.5.1.6-.1l.7-.9c.2-.2.3-.2.6-.1l1.8.9c.3.1.4.2.5.3 0 .2 0 .9-.3 1.4-.3.5-1.4 1.1-2 1.1-.5 0-1.1.2-3.7-.9-3.1-1.4-5-4.6-5.1-4.8-.2-.2-1.2-1.6-1.2-3 0-1.4.7-2.1 1-2.4Z"/></svg>
               Enviar pedido pelo WhatsApp
             </button>
@@ -703,7 +660,7 @@
           <p class="bag-sent__title" tabindex="-1">Pedido escrito no WhatsApp</p>
           <p>Confira a mensagem e toque em enviar. Assim que confirmarmos, sua massa vai para a panela.</p>
           <div class="bag-sent__actions">
-            <button class="btn btn--quiet" type="button" data-clear-bag>Esvaziar sacola</button>
+            <button class="btn btn--ghost" type="button" data-clear-bag>Esvaziar sacola</button>
             <button class="link-btn" type="button" data-back-to-bag>Voltar para a sacola</button>
           </div>
         </div>

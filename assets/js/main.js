@@ -1,9 +1,9 @@
-/* CREMA — vitrine e pedido */
+/* CREMA, vitrine e pedido */
 (() => {
   'use strict';
 
   /* ================================================================
-     Configuração — troque pelos dados reais da CREMA
+     Configuração: troque pelos dados reais da CREMA
      ================================================================ */
   const CONFIG = {
     whatsapp: '5511999999999',          // DDI + DDD + número, só dígitos
@@ -17,13 +17,21 @@
   };
 
   const SIZES = {
-    P: { price: 29.9, included: 1, grams: '300g' },
-    M: { price: 36.9, included: 2, grams: '450g' },
-    G: { price: 44.9, included: 3, grams: '600g' },
+    P: { price: 29.9, included: 1, grams: '300 g' },
+    M: { price: 36.9, included: 2, grams: '450 g' },
+    G: { price: 44.9, included: 3, grams: '600 g' },
   };
   const EXTRA_PRICE = 5;
   const BAG_KEY = 'crema:sacola:v1';
   const DAYS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+
+  // como cada molho aparece no nome do prato
+  const SAUCE_NAME = {
+    'Alfredo cremoso': 'ao Alfredo',
+    'Sugo San Marzano': 'ao sugo San Marzano',
+    'Pesto genovês': 'ao pesto genovês',
+    'Rosé especial': 'ao molho rosé',
+  };
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -33,8 +41,9 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const listPt = (items) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`);
   const waLink = (text) => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
+  const photo = (id, w, h) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=72`;
 
-  document.documentElement.classList.remove('no-js');
+  document.documentElement.classList.replace('no-js', 'js');
 
   /* ---------- Links configuráveis ---------- */
   $$('[data-link]').forEach((a) => {
@@ -64,32 +73,26 @@
     return { state: 'closed', next: ahead === 1 ? 'amanhã' : DAYS[(day + ahead) % 7] };
   }
 
-  const kitchen = { state: 'closed', next: '' };
-
   function renderKitchen() {
-    Object.assign(kitchen, kitchenNow());
-    const { state, next } = kitchen;
+    const { state, next } = kitchenNow();
     const h = `${CONFIG.opensAt}h`;
     const until = `${CONFIG.closesAt}h`;
 
     const copy = {
       open: {
-        strip: `Aberto agora. Pedidos até ${until}`,
-        cozinha: 'aberta', pedidos: `até ${until}`,
+        status: `Aberto agora. Pedidos até ${until}`,
         title: 'A cozinha está acesa.',
         text: `Pedidos até as ${until}. Monte a sua e a massa vai para a panela.`,
         note: '',
       },
       later: {
-        strip: `Abrimos hoje às ${h}`,
-        cozinha: `abre ${h}`, pedidos: `${h} às ${until}`,
+        status: `Abrimos hoje às ${h}`,
         title: 'A cozinha já vai acender.',
         text: `Abrimos hoje às ${h}. Monte a sua agora e envie quando quiser.`,
         note: `Estamos fechados agora. Você pode enviar o pedido e a gente responde a partir das ${h}.`,
       },
       closed: {
-        strip: `Fechado agora. Abrimos ${next} às ${h}`,
-        cozinha: 'fechada', pedidos: `${next}, ${h}`,
+        status: `Fechado agora. Abrimos ${next} às ${h}`,
         title: 'Hoje a cozinha descansa.',
         text: `Abrimos ${next} às ${h}. Deixe a sua montada na sacola.`,
         note: `Estamos fechados agora. Você pode enviar o pedido e a gente responde ${next}, a partir das ${h}.`,
@@ -101,13 +104,10 @@
       el.classList.toggle('is-later', state === 'later');
       el.classList.toggle('is-closed', state === 'closed');
     });
-    const set = (sel, value, html = false) => $$(sel).forEach((el) => { el[html ? 'innerHTML' : 'textContent'] = value; });
-    set('[data-status-text]', copy.strip);
-    set('[data-kitchen-state]', copy.cozinha);
-    set('[data-kitchen-until]', copy.pedidos);
+    const set = (sel, value) => $$(sel).forEach((el) => { el.textContent = value; });
+    set('[data-status-text]', copy.status);
     set('[data-closing-title]', copy.title);
     set('[data-closing-text]', copy.text);
-    set('[data-today]', new Intl.DateTimeFormat('pt-BR', { timeZone: CONFIG.timezone, weekday: 'long', day: 'numeric', month: 'short' }).format(new Date()).replace('.', ''));
 
     const note = $('[data-checkout-note]');
     if (note) { note.textContent = copy.note; note.hidden = !copy.note; }
@@ -177,19 +177,19 @@
 
     bagList.innerHTML = bag.map((it) => {
       const size = SIZES[it.size];
-      const extras = it.extras.map((x, i) => `+ ${esc(x)} ${i < size.included ? '(incluso)' : `(+${num(EXTRA_PRICE)})`}`).join(' · ');
+      const extras = it.extras.map((x, i) => `${esc(x)} ${i < size.included ? '(incluso)' : `(+ ${num(EXTRA_PRICE)})`}`).join(', ');
       return `
         <li class="bag-item" data-id="${esc(it.id)}">
-          <div class="bag-item__top"><span>${it.qty}x ${esc(it.name)}</span><span>${num(unitPrice(it) * it.qty)}</span></div>
-          <p class="bag-item__meta">${esc(it.size)} · ${size.grams} · ${esc(it.pasta)} · molho ${esc(it.sauce)}</p>
+          <div class="bag-item__top"><span>${it.qty}x ${esc(it.name)}</span><span>${brl(unitPrice(it) * it.qty)}</span></div>
+          <p class="bag-item__meta">${esc(it.size)}, ${size.grams} · ${esc(it.pasta)} · molho ${esc(it.sauce)}</p>
           ${extras ? `<p class="bag-item__meta">${extras}</p>` : ''}
           <div class="bag-item__ctrl">
-            <div class="qty qty--paper" role="group" aria-label="Quantidade de ${esc(it.name)}">
+            <div class="qty qty--sm" role="group" aria-label="Quantidade de ${esc(it.name)}">
               <button type="button" data-item-qty="-1" aria-label="Diminuir">−</button>
               <output>${it.qty}</output>
               <button type="button" data-item-qty="1" aria-label="Aumentar">+</button>
             </div>
-            <button class="paper-link" type="button" data-item-remove>Remover</button>
+            <button class="text-btn" type="button" data-item-remove>Remover</button>
           </div>
         </li>`;
     }).join('');
@@ -212,11 +212,12 @@
   /* ---------- Gaveta da sacola ---------- */
   const drawer = $('[data-drawer]');
   const panel = $('.drawer__panel', drawer);
-  const outside = [$('main'), $('.nav'), $('.strip'), $('.footer'), $('[data-dock]')];
+  const outside = [$('main'), $('.nav'), $('.footer'), $('[data-dock]')];
   let lastFocus = null;
 
   function openBag() {
     lastFocus = document.activeElement;
+    toastEl.classList.remove('is-visible');
     showSent(false);
     drawer.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -231,7 +232,7 @@
     drawer.classList.remove('is-open');
     document.body.style.overflow = '';
     outside.forEach((el) => el && (el.inert = false));
-    setTimeout(() => { if (!drawer.classList.contains('is-open')) drawer.hidden = true; }, reduceMotion ? 0 : 450);
+    setTimeout(() => { if (!drawer.classList.contains('is-open')) drawer.hidden = true; }, reduceMotion ? 0 : 500);
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
 
@@ -343,8 +344,9 @@
      Monte sua massa
      ================================================================ */
   const builder = $('[data-builder]');
-  const orderTicket = $('[data-order-ticket]');
-  const ticketLines = $('[data-lines]');
+  const plate = $('[data-plate]');
+  const plateTitle = $('[data-plate-title]');
+  const plateLines = $('[data-lines]');
   const state = { size: null, pasta: null, sauce: null, extras: [], qty: 1 };
   const COMBOS = $$('[data-dish]').map((card) => ({
     name: card.dataset.name,
@@ -354,59 +356,74 @@
   }));
 
   const missingPicks = () => [['size', 'tamanho'], ['pasta', 'massa'], ['sauce', 'molho']].filter(([key]) => !state[key]).map(([, label]) => label);
+
+  // nome do prato: o da casa, se a combinação for igual; senão, massa + molho
   const dishName = () => {
     const combo = COMBOS.find((c) => c.pasta === state.pasta && c.sauce === state.sauce
       && [...c.extras].sort().join('|') === [...state.extras].sort().join('|'));
-    return combo ? combo.name : `${state.pasta} ao ${state.sauce}`;
+    if (combo) return combo.name;
+    if (state.pasta && state.sauce) return `${state.pasta} ${SAUCE_NAME[state.sauce]}`;
+    if (state.pasta) return state.pasta;
+    if (state.sauce) return `Massa ${SAUCE_NAME[state.sauce]}`;
+    return '';
   };
 
+  /* foto do prato: a do molho, senão a da massa, senão a de abertura */
+  const photoBox = $('[data-plate-photo]');
+  const barThumb = $('[data-bar-thumb]');
+  let shownPhoto = photoBox.dataset.default;
+  let photoTurn = 0;
+
+  const pickedPhoto = () => {
+    const input = (name) => state[name] && $$(`input[name="${name}"]`, builder).find((el) => el.value === state[name]);
+    const chosen = input('sauce') || input('pasta');
+    return chosen ? chosen.dataset.photo : photoBox.dataset.default;
+  };
+
+  function showPhoto(id) {
+    if (id === shownPhoto) return;
+    shownPhoto = id;
+    const turn = ++photoTurn;
+    const [a, b] = $$('.plate__img', photoBox);
+    const current = a.classList.contains('is-current') ? a : b;
+    const next = current === a ? b : a;
+    next.srcset = [640, 960, 1280].map((w) => `${photo(id, w, w * 9 / 16)} ${w}w`).join(', ');
+    next.src = photo(id, 960, 540);
+    const swap = () => {
+      if (turn !== photoTurn) return;
+      next.classList.add('is-current');
+      current.classList.remove('is-current');
+    };
+    if (reduceMotion || !next.decode) swap();
+    else next.decode().then(swap, swap);
+    barThumb.src = photo(id, 96, 96);
+  }
+
   function linesFor() {
-    const lines = [];
     const size = state.size && SIZES[state.size];
-    if (size) lines.push({ key: 'size', left: `Massa ${state.size} · ${size.grams}`, right: num(size.price) });
-    if (state.pasta) lines.push({ key: 'pasta', left: state.pasta, right: '', sub: true });
-    if (state.sauce) lines.push({ key: 'sauce', left: `Molho ${state.sauce}`, right: '', sub: true });
-    state.extras.forEach((x, i) => lines.push({
-      key: `x:${x}`, left: `+ ${x}`, right: size && i < size.included ? 'incluso' : num(EXTRA_PRICE), sub: true,
-    }));
+    if (!size) return [];
+    const lines = [{ key: 'size', left: `Massa ${state.size}, ${size.grams}`, right: num(size.price) }];
+    const charged = Math.max(0, state.extras.length - size.included);
+    if (charged) lines.push({ key: 'charged', left: `${charged} ${charged === 1 ? 'extra a mais' : 'extras a mais'}`, right: `+ ${num(charged * EXTRA_PRICE)}` });
     if (state.qty > 1) lines.push({ key: 'qty', left: 'Quantidade', right: `${state.qty}x` });
     return lines;
   }
 
-  function renderTicket() {
-    const lines = linesFor();
-    const keys = new Set(lines.map((l) => l.key));
+  function renderLines() {
+    const before = new Set($$('.plate__line', plateLines).map((li) => li.dataset.key));
+    plateLines.innerHTML = linesFor().map((l) => `
+      <li class="plate__line${before.has(l.key) ? '' : ' is-new'}" data-key="${l.key}"><span>${esc(l.left)}</span><span>${esc(l.right)}</span></li>`).join('');
+  }
 
-    $$('.t-line', ticketLines).forEach((li) => {
-      if (keys.has(li.dataset.key) || li.classList.contains('is-out')) return;
-      if (reduceMotion) { li.remove(); return; }
-      li.classList.remove('is-new');
-      li.classList.add('is-out');
-      setTimeout(() => li.remove(), 240);
-    });
-
-    let prev = null;
-    lines.forEach((line) => {
-      let li = $$('.t-line', ticketLines).find((el) => el.dataset.key === line.key && !el.classList.contains('is-out'));
-      if (!li) {
-        li = document.createElement('li');
-        li.className = `t-line is-new${line.sub ? ' t-line--sub' : ''}`;
-        li.dataset.key = line.key;
-        li.innerHTML = '<span class="t-line__in"><span class="t-l"></span><span class="t-r"></span></span>';
-        setTimeout(() => li.classList.remove('is-new'), 700);
-      } else if ($('.t-r', li).textContent !== line.right) {
-        li.classList.remove('is-flash');
-        void li.offsetWidth;
-        li.classList.add('is-flash');
-      }
-      $('.t-l', li).textContent = line.left;
-      $('.t-r', li).textContent = line.right;
-      if (prev) { if (prev.nextElementSibling !== li) prev.after(li); }
-      else if (ticketLines.firstElementChild !== li) ticketLines.prepend(li);
-      prev = li;
-    });
-
-    $('[data-ticket-empty]').hidden = lines.length > 0;
+  function plateMeta(size) {
+    const parts = [];
+    if (state.extras.length) parts.push(`Com ${listPt(state.extras.map((x) => x.toLowerCase()))}.`);
+    if (size && state.extras.length < size.included) {
+      const left = size.included - state.extras.length;
+      parts.push(left === 1 ? 'Ainda cabe 1 extra incluso.' : `Ainda cabem ${left} extras inclusos.`);
+    }
+    if (!parts.length) parts.push(state.size ? 'Sem extras.' : 'Escolha o tamanho, a massa e o molho.');
+    return parts.join(' ');
   }
 
   function syncBuilder() {
@@ -424,36 +441,48 @@
       req.textContent = done ? 'Escolhido' : 'Obrigatório';
     });
 
-    $$('.chip', builder).forEach((chip) => {
-      const value = $('input', chip).value;
+    $$('.extra', builder).forEach((row) => {
+      const value = $('input', row).value;
       const pos = state.extras.indexOf(value);
       const included = size && pos > -1 && pos < size.included;
-      chip.classList.toggle('is-on', pos > -1 && (included || !size));
-      chip.classList.toggle('is-charged', Boolean(size) && pos > -1 && !included);
-      $('[data-chip-state]', chip).textContent = pos === -1 ? '' : included ? 'incluso' : `+ ${brl(EXTRA_PRICE)}`;
+      row.classList.toggle('is-on', pos > -1);
+      row.classList.toggle('is-charged', Boolean(size) && pos > -1 && !included);
+      $('[data-extra-state]', row).textContent = pos === -1 ? '' : !size ? 'escolhido' : included ? 'incluso' : `+ ${brl(EXTRA_PRICE)}`;
     });
 
     $('[data-extras-hint]').textContent = size
-      ? `O tamanho ${state.size} inclui ${size.included} ${size.included === 1 ? 'adicional' : 'adicionais'}. Cada extra a mais custa ${brl(EXTRA_PRICE)}.`
-      : `Escolha o tamanho para ver quantos adicionais estão inclusos. Cada extra a mais custa ${brl(EXTRA_PRICE)}.`;
+      ? `O tamanho ${state.size} inclui ${size.included} ${size.included === 1 ? 'extra' : 'extras'}. Cada extra a mais custa ${brl(EXTRA_PRICE)}.`
+      : `Escolha o tamanho para ver quantos extras estão inclusos. Cada extra a mais custa ${brl(EXTRA_PRICE)}.`;
 
-    renderTicket();
+    // o nome do prato se forma conforme as escolhas
+    const name = dishName();
+    const title = name || 'Seu prato aparece aqui';
+    if (plateTitle.textContent !== title) {
+      plateTitle.textContent = title;
+      plateTitle.classList.toggle('is-empty', !name);
+      if (!reduceMotion) {
+        plateTitle.classList.remove('is-changing');
+        void plateTitle.offsetWidth;
+        plateTitle.classList.add('is-changing');
+      }
+    }
+    $('[data-plate-meta]').textContent = plateMeta(size);
+    showPhoto(pickedPhoto());
+
+    renderLines();
     $('[data-ticket-total]').textContent = total === null ? '—' : brl(total);
-    $('[data-ticket-status]').textContent = ready ? 'Pronto para a cozinha' : `Falta escolher ${listPt(missing)}`;
-    orderTicket.classList.toggle('is-ready', ready);
+    $('[data-ticket-status]').textContent = ready ? 'Pronto para a sacola' : `Falta escolher ${listPt(missing)}`;
+    plate.classList.toggle('is-ready', ready);
     $('[data-qty-value]').textContent = state.qty;
 
     $$('[data-add]').forEach((btn) => {
       btn.disabled = !ready;
       const compact = btn.closest('[data-build-bar]');
-      btn.textContent = ready
-        ? (compact ? 'Adicionar' : `Adicionar à sacola · ${brl(total)}`)
-        : (compact ? 'Adicionar' : `Falta escolher ${listPt(missing)}`);
+      btn.textContent = compact ? 'Adicionar' : ready ? `Adicionar · ${brl(total)}` : 'Adicionar à sacola';
     });
 
-    const barLine = [state.size && `${state.size} · ${size.grams}`, state.pasta, state.sauce].filter(Boolean).join(' · ');
-    $('[data-bar-line]').textContent = barLine || 'Escolha o tamanho';
-    $('[data-bar-total]').textContent = ready ? brl(total) : missing.length ? `Falta ${listPt(missing)}` : '—';
+    $('[data-bar-line]').textContent = name || (state.size ? `Tamanho ${state.size}, ${size.grams}` : 'Escolha o tamanho');
+    $('[data-bar-total]').textContent = ready ? `${state.size}, ${size.grams} · ${brl(total)}` : `Falta ${listPt(missing)}`;
   }
 
   builder.addEventListener('change', (e) => {
@@ -477,22 +506,20 @@
     syncBuilder();
   }
 
-  let tearing = false;
+  let adding = false;
   function addFromBuilder() {
-    if (tearing || missingPicks().length) return;
+    if (adding || missingPicks().length) return;
     const name = dishName();
     addToBag({ name, size: state.size, pasta: state.pasta, sauce: state.sauce, extras: [...state.extras], qty: state.qty });
     toast(`${name} na sacola`);
     if (reduceMotion) { resetBuilder(); return; }
-    tearing = true;
-    orderTicket.classList.add('is-tearing');
+    adding = true;
+    plate.classList.add('is-sent');
     setTimeout(() => {
-      tearing = false;
-      orderTicket.classList.remove('is-tearing', 'is-ready');
+      adding = false;
+      plate.classList.remove('is-sent');
       resetBuilder();
-      orderTicket.classList.add('is-fresh');
-      setTimeout(() => orderTicket.classList.remove('is-fresh'), 520);
-    }, 480);
+    }, 500);
   }
   $$('[data-add]').forEach((btn) => btn.addEventListener('click', addFromBuilder));
 
@@ -554,10 +581,10 @@
   /* ================================================================
      Navegação, barra do celular e revelações
      ================================================================ */
-  // a borda da navegação aparece quando a faixa de status sai da tela — sem ler o scroll a cada quadro
+  // a navegação ganha fundo quando o topo da página sai da tela, sem ler o scroll a cada quadro
   const nav = $('[data-nav]');
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => nav.classList.toggle('is-scrolled', !entry.isIntersecting)).observe($('.strip'));
+    new IntersectionObserver(([entry]) => nav.classList.toggle('is-scrolled', !entry.isIntersecting)).observe($('[data-top]'));
   }
 
   const menuBtn = $('[data-menu-toggle]');
@@ -566,6 +593,7 @@
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
     document.body.style.overflow = open ? 'hidden' : '';
+    document.body.classList.toggle('menu-open', open);
     if (open) {
       sheet.hidden = false;
       requestAnimationFrame(() => sheet.classList.add('is-open'));

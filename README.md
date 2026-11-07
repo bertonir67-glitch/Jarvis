@@ -10,7 +10,7 @@ Site estático: HTML, CSS e JavaScript puros, sem build e sem dependências.
 index.html          página única (conteúdo, SEO e dados estruturados)
 assets/css/         estilos
 assets/js/main.js   sacola, montador, status da cozinha e pedido no WhatsApp
-assets/fonts/       fontes (Big Shoulders, Archivo, Martian Mono)
+assets/fonts/       fonte Archivo (um arquivo, larguras e pesos variáveis)
 assets/img/         favicon, ícone do iPhone e imagem de compartilhamento
 robots.txt · sitemap.xml
 ```
@@ -19,25 +19,25 @@ robots.txt · sitemap.xml
 
 ## Conceito
 
-**Caixa de entrega.** A página se parece com a embalagem de um delivery, não com um
-template: blocos de cor chapada, cantos retos, filetes grossos e etiquetas impressas,
-como o adesivo colado na caixa. Letras retas e estreitas em caixa alta, de placa de
-cozinha e de embalagem.
+**Jantar em casa.** A página se comporta como a recepção de um bom restaurante:
+fundo claro e calmo, fotos grandes fazendo o apetite, letra larga e leve, muito
+espaço. A cor aparece como luz, não como bloco: o vermelho Pomodoro fica só nos
+botões de pedido, e o fim da página escurece como a noite em que a cozinha funciona.
 
-**A assinatura é a comanda.** O papel de pedido que fica pendurado no trilho da cozinha:
+**A assinatura é o "Seu prato".** No montador, o prato ganha forma enquanto o cliente
+escolhe:
 
-- no topo, mostra a situação da cozinha agora (aberta, abre às 18h, fechada);
-- no montador, imprime o prato linha por linha conforme as escolhas e recebe o
-  **lacre CREMA** quando o prato está completo;
-- na sacola, vira o resumo do pedido;
-- é exatamente o texto que chega no WhatsApp da loja.
+- a foto muda para o molho (ou para a massa, enquanto o molho não foi escolhido);
+- o nome se compõe sozinho, como num cardápio: "Pappardelle ao pesto genovês";
+- logo abaixo aparecem os extras, quantos ainda cabem inclusos e o total;
+- no celular, uma barra fixa leva a foto pequena, o nome e o botão de adicionar.
 
 ## Estrutura da página
 
-1. Faixa de status com horário de Guarulhos
-2. Topo em vermelho com o título, a foto do prato, o lacre e a comanda pendurada
+1. Navegação com a situação da cozinha agora (aberta, abre às 18h, fechada)
+2. Topo: título, chamada, botões e a foto panorâmica do prato
 3. Pratos da casa: combinações prontas, adicionadas à sacola com um toque no tamanho
-4. Monte sua massa: tamanho, massa, molho e extras, com a comanda ao vivo
+4. Monte sua massa: tamanho, massa, molho e extras, com o "Seu prato" ao lado
 5. Do fogão à sua porta: feita na hora, lacrada, quente na porta
 6. Onde e quando entregamos, com consulta de bairro pelo WhatsApp
 7. Dúvidas frequentes
@@ -48,30 +48,57 @@ cozinha e de embalagem.
 
 | Onde aparece | Nome | Cor |
 |---|---|---|
-| Topo, "Do fogão à sua porta", botões de pedido e lacre | Pomodoro | `#922A23` |
-| Fundo claro, comanda e texto sobre o preto | Osso | `#F4EEE2` |
-| Montador, fechamento, rodapé e texto sobre o claro | Forno | `#0B0A08` |
-| Cozinha aberta, item escolhido e prato sem carne | Oliva | `#5A6B3B` |
+| Fundo da página | Osso | `#F4EEE2` |
+| Fundo do montador | Linho | `#EBE3D5` |
+| Cartões, campos e opções | Papel | `#FBF8F2` |
+| Texto, fechamento e rodapé | Tinta | `#0B0A08` |
+| Botões de pedido e ícone | Pomodoro | `#922A23` |
+| Cozinha aberta, item escolhido, prato sem carne | Oliva | `#5A6B3B` |
+| Cozinha abre mais tarde | Ouro | `#C6A86B` |
 
-**Tipografia** (servida pelo próprio site, em `assets/fonts/`, licença OFL)
+**Tipografia**: uma família só, a **Archivo** (licença OFL, servida pelo próprio site),
+usada em duas larguras:
 
-- **Big Shoulders**: títulos e a marca. Sempre em caixa alta, pesos 800 e 900.
-- **Archivo**: textos, botões e formulários. Botões em caixa alta, peso 800.
-- **Martian Mono**: comanda, preços, etiquetas e horários, na largura estreita, como
-  a impressora térmica que solta o pedido.
+- **Archivo Expanded, peso leve**: títulos e nomes dos pratos. Letras largas, de
+  proporção quase quadrada, só com a primeira letra maiúscula. A marca CREMA usa a
+  mesma largura em maiúsculas espaçadas.
+- **Archivo normal**: textos, botões, preços e formulários.
 
-**Fotos**: as do topo, da seção "Do fogão à sua porta" e do fechamento são carregadas em
-Full HD (até 2560 px), e o montador mostra a foto de cada massa e molho.
+**Formas**: botões em pílula, cartões e fotos com cantos arredondados suaves, linhas
+finas para separar. Nada de blocos de cor chapada.
 
-**Movimento**: a comanda desce do trilho e imprime ao carregar; no montador cada
-escolha imprime uma linha e o lacre é carimbado; ao adicionar, a comanda é destacada e
-vai para a sacola. Ao rolar, cada seção entra com um deslize curto. Com "reduzir
-movimento" ativado no aparelho, tudo aparece sem animação.
+**Movimento**: o topo entra com um leve deslize e a foto assenta devagar; ao rolar,
+cada seção aparece com um deslize curto; no montador, a foto do prato troca com
+transição suave. Com "reduzir movimento" ativado no aparelho, tudo aparece sem animação.
 
-**O que a página evita**, para não parecer feita por IA: degradês, palavras em itálico
-dourado, cantos arredondados, emojis, numeração decorativa (01, 02, 03), travessões no
-texto e depoimentos inventados. Preços, gramas e horários aparecem só onde o cliente
-precisa deles para pedir.
+**O que a página evita**, para não parecer feita por IA nem por jogo: degradês, letras
+pesadas e espremidas, selos e carimbos, etiquetas coladas, emojis, numeração decorativa
+(01, 02, 03), travessões no texto e depoimentos inventados. Preços, gramas e horários
+aparecem só onde o cliente precisa deles para pedir.
+
+## Fotos
+
+As fotos vêm do Unsplash (uso comercial liberado, sem necessidade de crédito) e são
+carregadas no tamanho certo para cada tela, até 2560 px no topo.
+
+| Onde | Foto |
+|---|---|
+| Topo, Alfredo no montador, imagem de compartilhamento | `photo-1645112411341-6c4fd023714a` |
+| Fettuccine Alfredo e fettuccine no montador | `photo-1608219992759-8d74ed8d76eb` |
+| Tagliatelle al Sugo | `photo-1673442635965-34f1b36d8944` |
+| Pappardelle al Bacon | `photo-1611270629569-8b357cb88da9` |
+| Linguine al Pesto e pesto no montador | `photo-1567608285969-48e4bbe0d399` |
+| Tagliatelle no montador | `photo-1551183053-bf91a1d81141` |
+| Pappardelle no montador | `photo-1473093226795-af9932fe5856` |
+| Linguine no montador | `photo-1579631542720-3a87824fff86` |
+| Sugo no montador | `photo-1626844131082-256783844137` |
+| Rosé no montador | `photo-1622973536968-3ead9e780960` |
+| "Seu prato" antes de escolher | `photo-1546549032-9571cd6b27df` |
+| Do fogão à sua porta | `photo-1528712306091-ed0763094c98` |
+| Fechamento | `photo-1627042633145-b780d842ba45` |
+
+Para trocar por fotos próprias, substitua o endereço da foto em `index.html` (e, no
+montador, o atributo `data-photo` da opção).
 
 ---
 
@@ -95,9 +122,9 @@ Checklist:
 
 - [ ] Número real do WhatsApp em `CONFIG.whatsapp`
 - [ ] Links diretos da loja no iFood e no Rappi
-- [ ] **Fotos reais dos pratos da CREMA** no lugar das fotos de banco (Unsplash). É o
-      que mais aumenta pedidos. Troque as URLs em `index.html`; use fotos de cima ou a
-      45°, com luz quente, de pelo menos 1800 px na foto do topo.
+- [ ] **Fotos reais dos pratos da CREMA** no lugar das fotos de banco. É o que mais
+      aumenta pedidos. Use fotos de cima ou a 45°, com luz quente, de pelo menos 1800 px
+      na foto do topo.
 - [ ] Domínio final em `canonical`, `og:url`, `og:image`, nos dados estruturados,
       em `robots.txt` e em `sitemap.xml` (hoje: `https://crema.com.br/`)
 - [ ] Telefone e endereço nos dados estruturados (`application/ld+json`) quando houver
@@ -116,13 +143,9 @@ O GitHub Pages também funciona, mas em repositório privado exige plano pago.
 
 ## Qualidade
 
-Medido com Lighthouse num servidor local (sem compressão, e com fotos externas
-bloqueadas no ambiente de teste). No celular, mediana de três medições.
+Medido com Lighthouse num servidor local, sem compressão:
 
 | | Desempenho | Acessibilidade | Boas práticas | SEO |
 |---|---|---|---|---|
-| Celular | 98 | 100 | 96 | 100 |
-| Computador | 100 | 100 | 96 | 100 |
-
-Os pontos perdidos em boas práticas vêm só das fotos que o ambiente de teste não
-conseguiu baixar.
+| Celular | 98 | 100 | 100 | 100 |
+| Computador | 100 | 100 | 100 | 100 |
